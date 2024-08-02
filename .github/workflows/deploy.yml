@@ -3,7 +3,7 @@ name: Deploy to GH Pages
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build-deploy:
@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
         with:
           persist-credentials: false
 
@@ -19,7 +19,7 @@ jobs:
         run: yarn install
 
       - name: Build 🏗️
-        run: npm run build
+        run: yarn build
         env:
           NODE_ENV: production
 
