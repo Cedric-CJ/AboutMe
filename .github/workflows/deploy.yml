@@ -16,11 +16,11 @@ jobs:
           persist-credentials: false
 
       - name: Install 🔧
-        run: yarn install
+        run: npm install
         working-directory: ./vue-deploy
 
       - name: Build 🏗️
-        run: yarn build
+        run: npm run build
         working-directory: ./vue-deploy
         env:
           NODE_ENV: production
