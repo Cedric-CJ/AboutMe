@@ -15,6 +15,14 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: List files
+        run: ls -la
+        shell: bash
+
+      - name: List files in work directory
+        run: ls -la /home/runner/work/AboutMe/AboutMe
+        shell: bash
+
       - name: Install 🔧
         run: yarn install
 
