@@ -79,12 +79,6 @@
       </div>
     </main>
     <footer>
-      <div class="footer-content">
-      </div>
-      <div class="footer-links">
-        <router-link to="/impressum">Impressum</router-link> |
-        <router-link to="/datenschutz">Datenschutz</router-link>
-      </div>
     </footer>
   </div>
 </template>
@@ -95,5 +89,5 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 </style>

@@ -5,20 +5,23 @@ body {
     padding: 0;
     color: var(--text-color);
     background-color: var(--background-color);
-    transition: all 0.3s ease-in-out;
+    height: 100vh;
+    overflow-x: hidden;
 }
 
 main {
     transform: none;
     background-color: inherit;
+    padding: 20px;
 }
 
 /* Light Mode */
 :root {
     --background-color: #ffffff;
     --text-color: #000000;
-    --primary-color: #11ff00;
-    --menu-background-color: #9F9B9BFF;
+    --primary-color: #333;
+    --menu-background-color: #ffffff;
+    --timline-background: #f39c12;
 }
 
 /* Dark Mode */
@@ -26,7 +29,7 @@ main {
     --background-color: #121212;
     --text-color: #ffffff;
     --primary-color: #9e2b2b;
-    --menu-background-color: #000000;
+    --menu-background-color: #333;
 }
 
 /* Navigation Menu Styling */
@@ -40,26 +43,30 @@ header {
     background: var(--primary-color);
     border: none;
     color: var(--text-color);
-    padding: 10px 20px;
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     border-radius: 5px;
+    padding: 15px;
+    box-sizing: border-box;
 }
 
 #navMenu {
     display: flex;
     flex-direction: column;
-    position: absolute;
-    top: 50px;
-    left: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
     background: var(--menu-background-color);
     border: 1px solid var(--primary-color);
     border-radius: 5px;
-    padding: 10px;
+    padding-top: 50px;
     z-index: 1000;
+    height: 95vh;
+    width: 250px;
     opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
 #navMenu.visible {
@@ -77,6 +84,10 @@ header {
     text-decoration: none;
     padding: 10px 0;
     font-size: 1.5rem;
+}
+
+#navMenu a:hover {
+    color: var(--primary-color);
 }
 
 #navMenu .small-link {
@@ -139,7 +150,6 @@ footer {
     background: var(--background-color);
     color: var(--text-color);
     text-align: center;
-    padding: 20px 0;
     position: fixed;
     bottom: 0;
     width: 100%;
@@ -150,28 +160,13 @@ footer a {
     text-decoration: none;
 }
 
-#navMenu {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 95%;
-    padding-top: 50px;
-    width: 250px;
-    transition: transform 0.3s ease;
-    transform: translateX(-100%);
-    z-index: 1000;
-}
-
-#navMenu.visible {
-    transform: translateX(0);
-}
-
 #navMenu .footer-links {
     position: absolute;
     bottom: 50px;
     width: 100%;
     left: 40px
 }
+
 .menu-links {
     position: relative;
     text-align: center;
@@ -188,20 +183,21 @@ footer a {
 
 #closeMenuButton {
     position: relative;
-    top: -275px;
-    padding-top: 10px;
+    left: -10vh;
+    top: -32vh;
+    padding: 10px;
     background: none;
     border: none;
     cursor: pointer;
     color: var(--text-color);
-    font-size: 1.2rem;
+    font-size: 2rem;
 }
 
 #menuButton {
-    position: relative;
+    position: fixed;
     cursor: pointer;
-    background: none;
-    left: 70px
+    background: var(--background-color);
+    z-index: 1;
 }
 
 .hidden {
@@ -212,6 +208,9 @@ footer a {
     display: block;
 }
 
+img {
+    width: 25vh;
+}
 
 /* TIMELINE
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
@@ -222,7 +221,7 @@ footer a {
     width: 6px;
     margin: 0 auto;
     padding-top: 50px;
-    background: #9f9b9b;
+    background: var(--primary-color);
 }
 
 .timeline ul li::after {
@@ -243,7 +242,7 @@ footer a {
     bottom: 0;
     width: 400px;
     padding: 15px;
-    background: #f39c12;
+    background: var(--timline-background);
 }
 
 .timeline ul li div::before {
@@ -256,23 +255,24 @@ footer a {
 }
 
 .timeline ul li:nth-child(odd) div {
-    left: 45px;
+    left: 40px;
+    box-sizing: border-box;
 }
 
 .timeline ul li:nth-child(odd) div::before {
     left: -15px;
     border-width: 8px 16px 8px 0;
-    border-color: transparent #f39c12 transparent transparent;
+    border-color: transparent var(--timline-background) transparent transparent;
 }
 
 .timeline ul li:nth-child(even) div {
-    left: -439px;
+    left: -465px;
 }
 
 .timeline ul li:nth-child(even) div::before {
     right: -15px;
     border-width: 8px 0 8px 16px;
-    border-color: transparent transparent transparent #f39c12;
+    border-color: transparent transparent transparent var(--timline-background);
 }
 
 time {
@@ -290,7 +290,7 @@ time {
 }
 
 .timeline ul li.in-view::after {
-    background: #f39c12;
+    background: var(--timline-background);
 }
 
 .timeline ul li div {
@@ -321,7 +321,7 @@ time {
         width: 250px;
     }
     .timeline ul li:nth-child(even) div {
-        left: -289px;
+        left: -320px;
         /*250+45-6*/
     }
 }
@@ -339,7 +339,7 @@ time {
     .timeline ul li:nth-child(even) div::before {
         left: -15px;
         border-width: 8px 16px 8px 0;
-        border-color: transparent #f39c12 transparent transparent;
+        border-color: transparent var(--timline-background) transparent transparent;
     }
 }
 
