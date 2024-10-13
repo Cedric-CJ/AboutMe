@@ -233,16 +233,56 @@ img {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: inherit;
+    background: var(--timline-background);
     z-index: 1;
 }
 
 .timeline ul li div {
     position: relative;
-    bottom: 0;
     width: 400px;
+    min-height: 100px;
     padding: 15px;
     background: var(--timline-background);
+    border-radius: 10px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.timeline ul li:nth-child(odd) div,
+.timeline ul li:nth-child(even) div {
+    left: 0; /* Beide Seiten gleich positionieren */
+    margin-left: 5px; /* Abstand zwischen der Zeitleiste und den Boxen */
+}
+
+@media screen and (max-width: 600px) {
+    .timeline ul li div {
+        width: 90%; /* Setze die Breite auf 90% des Viewports */
+        left: 5%; /* Zentriere das Kästchen */
+        transform: none; /* Entferne eventuelle Transformationen */
+    }
+
+    .timeline ul li:nth-child(even) div,
+    .timeline ul li:nth-child(odd) div {
+        left: 5%;
+    }
+
+    /* Anpassung der Pfeile */
+    .timeline ul li div::before {
+        left: -15px;
+        border-width: 8px 16px 8px 0;
+        border-color: transparent var(--timline-background) transparent transparent;
+    }
+
+    /* Entferne die unterschiedliche Positionierung der geraden und ungeraden Elemente */
+    .timeline ul li:nth-child(even) div::before {
+        left: -15px;
+        border-width: 8px 16px 8px 0;
+        border-color: transparent var(--timline-background) transparent transparent;
+    }
 }
 
 .timeline ul li div::before {
@@ -255,7 +295,7 @@ img {
 }
 
 .timeline ul li:nth-child(odd) div {
-    left: 40px;
+    left: 60px;
     box-sizing: border-box;
 }
 

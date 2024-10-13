@@ -10,6 +10,51 @@
         <p class="fade-in">Hier findest du Informationen über mich und meine Projekte.</p>
         <p class="fade-in">Viel Spaß beim Stöbern!</p>
       </div>
+      <section class="who-am-i">
+        <h2>Wer bin ich?</h2>
+        <p>Mein Name ist Cedric Arnhold und ich studiere derzeit Wirtschaftsinformatik an der Hochschule für Technik und Wirtschaft Berlin (HTW).</p>
+      </section>
+      <section class="why-this-site">
+        <h2>Warum mache ich diese Seite?</h2>
+        <p>Diese Webseite dient als zentrale Anlaufstelle und spiegelt meine aktuellen Projekte wider. Mein Ziel ist es, kleinen und mittelständischen Unternehmen beim Umstieg in die Digitalisierung zu helfen. Viele Unternehmen haben nicht die Zeit, sich kontinuierlich um ihre Online-Präsenz zu kümmern, bis ein Brief vom Provider sie darauf hinweist, dass das Impressum, die Datenschutzerklärung oder die Sicherheit der Seite gefährdet sind. Dies kann letztendlich zu Strafen führen.</p>
+      </section>
+      <section class="my-skills">
+        <h2>Meine Fähigkeiten</h2>
+        <div class="skills-list">
+          <div class="skill-category">
+            <h3>Frontend</h3>
+            <ul>
+              <li>HTML</li>
+              <li>CSS</li>
+              <li>JavaScript</li>
+              <li>Vue</li>
+              <li>React</li>
+            </ul>
+          </div>
+          <div class="skill-category">
+            <h3>Backend</h3>
+            <ul>
+              <li>Python</li>
+              <li>Java</li>
+              <li>Spring Boot</li>
+            </ul>
+          </div>
+          <div class="skill-category">
+            <h3>Datenbanken</h3>
+            <ul>
+              <li>PostgreSQL</li>
+              <li>Oracle</li>
+            </ul>
+          </div>
+          <div class="skill-category">
+            <h3>Sonstiges</h3>
+            <ul>
+              <li>Docker</li>
+              <li>Render</li>
+            </ul>
+          </div>
+        </div>
+      </section>
       <h1>Mein Lebenslauf</h1>
       <div class="timeline">
         <ul>
@@ -76,6 +121,7 @@ const handleEscapeKey = (event) => {
 
 const events = ref([
   { year: 2026, title: "Bachelor of Science - Wirtschaftsinformatik", description: "An der Hochschule für Technik und Wirtschaft Berlin. Studium von 2022–2026." },
+  { year: 2024, title: "Praktikum im BMDV Abteilung z33", description: "4. Fachsemester 3,5 Monatiges Betriebspraktikum im Betrieb der Informationstechnik (IT-Betrieb)/Fach-Auftraggeberschnittstelle (F-AGS) BMDV"},
   { year: 2022, title: "Werksstudent bei Kaufland", description: "Kaufland Deutschland. Seit Juni 2022 als Werksstudent tätig." },
   { year: 2022, title: "Abitur", description: "Ernst-Haeckel-Schule. Abschluss mit 2,8er im Mathe-Geschichte Abitur." },
   { year: 2018, title: "Praktikum Finanzamt Marzahn-Hellersdorf", description: "Praktikum beim Finanzamt Marzahn-Hellersdorf, mit Erfahrungen sowohl im Büro als auch bei Verhandlungen." },
@@ -110,7 +156,9 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
-
+section {
+  margin: 40px 0;
+}
 /* Projekte-Layout */
 .projects-list {
   display: flex;
@@ -190,6 +238,15 @@ a {
   height: auto;
   object-fit: contain;
   border-radius: 10px;
+}
+.timeline {
+  margin-left: -50px; /* Verschiebt die gesamte Zeitleiste nach links */
+  position: relative;
+  z-index: 0;
+}
+
+.timeline ul li {
+  margin-left: -50px; /* Passt die Position der einzelnen Elemente an */
 }
 
 </style>

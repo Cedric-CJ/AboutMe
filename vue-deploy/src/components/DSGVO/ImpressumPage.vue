@@ -22,6 +22,11 @@
             E-Mail: <a href="mailto:cedric.jon.arnhold@gmail.com">cedric.jon.arnhold@gmail.com</a></p>
         </div>
       </div>
+      <div class="impressum-section">
+        <h2><strong>Hosting</strong><br></h2>
+          <p>Diese Webseite wird gehostet bei <a href="https://pages.github.com/">GitHub Pages</a>.</p>
+          <p>Der Quellcode dieser Webseite ist zudem auf <a href="https://github.com/Cedric-CJ/AboutMe">GitHub</a> verfügbar.</p>
+      </div>
       <div class="legal-notes">
         <h2>Urheberrecht</h2>
         <p>
@@ -43,13 +48,8 @@
           Der Autor erklärt hiermit ausdrücklich, dass zum Zeitpunkt der Linksetzung keine illegalen Inhalte auf den zu verlinkenden Seiten erkennbar waren. Auf die aktuelle und zukünftige Gestaltung, die Inhalte oder die Urheberschaft der gelinkten/verknüpften Seiten hat der Autor keinerlei Einfluss. Deshalb distanziert er sich hiermit ausdrücklich von allen Inhalten aller gelinkten/verknüpften Seiten, die nach der Linksetzung verändert wurden. Diese Feststellung gilt für alle innerhalb des eigenen Internetangebotes gesetzten Links und Verweise sowie für Fremdeinträge in vom Autor eingerichteten Gästebüchern, Diskussionsforen und Mailinglisten. Für illegale, fehlerhafte oder unvollständige Inhalte und insbesondere für Schäden, die aus der Nutzung oder Nichtnutzung solcherart dargebotener Informationen entstehen, haftet allein der Anbieter der Seite, auf welche verwiesen wurde, nicht derjenige, der über Links auf die jeweilige Veröffentlichung lediglich verweist.
         </p>
 
-        <h2>Rechtswirksamkeit dieses Haftungsausschlusses</h2>
-        <p>
-          Dieser Haftungsausschluss ist als Teil der Internetpräsenz, mz24.net, zu betrachten. Sofern Teile oder einzelne Formulierungen dieses Textes der geltenden Rechtslage nicht, nicht mehr oder nicht vollständig entsprechen sollten, bleiben die übrigen Teile des Textes in Ihrem Inhalt und Ihrer Gültigkeit davon unberührt.
-        </p>
-
         <h2>Erstellung</h2>
-        <p>Diese Webseite wurde unentgeltlich von Cedric Jon Arnhold erstellt. Da er noch Student ist und über begrenzte Erfahrung verfügt, können möglicherweise Fehler auftreten, einschließlich rechtlicher. Link zu seiner Webseite <a href="https://cedric-cj.github.io/AboutMe/">GitHub-Seite</a>.</p>
+        <p>Diese Webseite wurde selbst von Cedric Jon Arnhold erstellt. Da er noch Student ist und über begrenzte Erfahrung verfügt, können möglicherweise Fehler auftreten, einschließlich rechtlicher.</p>
       </div>
     </main>
     <footer>
