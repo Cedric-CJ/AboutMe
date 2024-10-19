@@ -71,12 +71,14 @@ header {
 
 #navMenu.visible {
     opacity: 1;
-    transform: scale(1);
+    transform: translateX(0);
+    pointer-events: auto;
 }
 
 #navMenu.hidden {
     opacity: 0;
-    transform: scale(0.9);
+    transform: translateX(-100%);
+    pointer-events: none;
 }
 
 #navMenu a {
@@ -145,7 +147,6 @@ input:checked + .slider:before {
     transform: translateX(14px);
 }
 
-/* Footer Styling */
 footer {
     background: var(--background-color);
     color: var(--text-color);
@@ -162,9 +163,10 @@ footer a {
 
 #navMenu .footer-links {
     position: absolute;
-    bottom: 50px;
+    text-align: center;
+    bottom: 10px;
     width: 100%;
-    left: 40px
+    left: 1vh;
 }
 
 .menu-links {
@@ -173,18 +175,20 @@ footer a {
     top: 50px;
 }
 
-.DarkModeToggle{
-    position: relative;
-    top: 350px;
-    padding: 10px;
+.DarkModeToggle {
+    position: absolute;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
     cursor: pointer;
+    padding: 10px;
     border-radius: 5px;
 }
 
 #closeMenuButton {
-    position: relative;
-    left: -10vh;
-    top: -32vh;
+    position: fixed;
+    left: 10px;
+    top: 10px;
     padding: 10px;
     background: none;
     border: none;
@@ -216,12 +220,20 @@ img {
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 .timeline ul li {
-    list-style-type: none;
+list-style-type: none;
     position: relative;
     width: 6px;
     margin: 0 auto;
     padding-top: 50px;
     background: var(--primary-color);
+}
+
+@media screen and (min-width: 600px) {
+    .timeline ul li div {
+        width: 400px;
+        left: 60px;
+        transform: translate3d(200px, 0, 0); /* Keep the animation for larger screens */
+    }
 }
 
 .timeline ul li::after {
@@ -368,19 +380,22 @@ time {
 
 @media screen and (max-width: 600px) {
     .timeline ul li {
-        margin-left: 20px;
+        margin-left: 0px;
+        right: 10px;
     }
     .timeline ul li div {
         width: calc(100vw - 91px);
+        padding: 10px;
     }
-    .timeline ul li:nth-child(even) div {
-        left: 45px;
+    .timeline ul li:nth-child(even) div,
+    .timeline ul li:nth-child(odd) div{
+        left: 50px;
     }
     .timeline ul li:nth-child(even) div::before {
         left: -15px;
         border-width: 8px 16px 8px 0;
         border-color: transparent var(--timline-background) transparent transparent;
-    }
+        }
 }
 
 /* EXTRA/CLIP PATH STYLES

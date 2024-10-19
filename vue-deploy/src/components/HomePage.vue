@@ -152,6 +152,10 @@ onMounted(() => {
 })
 </script>
 <style>
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -217,7 +221,6 @@ a {
   transform: scale(1.05);
 }
 
-/* Vollbildmodus */
 .fullscreen-overlay {
   position: fixed;
   top: 0;
@@ -239,14 +242,14 @@ a {
   object-fit: contain;
   border-radius: 10px;
 }
+
 .timeline {
-  margin-left: -50px; /* Verschiebt die gesamte Zeitleiste nach links */
+  margin-left: -50px;
   position: relative;
   z-index: 0;
 }
 
 .timeline ul li {
-  margin-left: -50px; /* Passt die Position der einzelnen Elemente an */
+  margin-left: -50px;
 }
-
 </style>
