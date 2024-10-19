@@ -19,9 +19,10 @@ main {
 :root {
     --background-color: #ffffff;
     --text-color: #000000;
-    --primary-color: #333;
-    --menu-background-color: #ffffff;
+    --primary-color: #9f9b9b;
+    --menu-background-color: rgba(255, 255, 255, 0.95);
     --timline-background: #f39c12;
+    --card-background-color: #9f9b9b;
 }
 
 /* Dark Mode */
@@ -29,7 +30,8 @@ main {
     --background-color: #121212;
     --text-color: #ffffff;
     --primary-color: #9e2b2b;
-    --menu-background-color: #333;
+    --menu-background-color: rgba(73, 73, 73, 0.95);
+    --card-background-color: #424242;
 }
 
 /* Navigation Menu Styling */
@@ -380,7 +382,7 @@ time {
 
 @media screen and (max-width: 600px) {
     .timeline ul li {
-        margin-left: 0px;
+        margin-left: 0;
         right: 10px;
     }
     .timeline ul li div {

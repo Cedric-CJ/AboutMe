@@ -8,6 +8,9 @@
             <router-link to="/">Home</router-link>
           </p>
           <p>
+            <router-link to="/contact">Contact</router-link>
+          </p>
+          <p>
             <router-link to="/workInProgress">...</router-link>
           </p>
         </div>
@@ -62,7 +65,7 @@ export default {
 
 <style>
 /* CSS für das Highlighten der Links */
-.highlight-link {
+.highlight-link, #closeMenuButton {
   color: var(--text-color);
   text-decoration: none;
   padding: 5px;
@@ -70,7 +73,7 @@ export default {
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 
-.highlight-link:hover {
+.highlight-link:hover, #closeMenuButton:hover {
   color: var(--primary-color);
   border-color: var(--primary-color);
   background-color: var(--menu-background-color);

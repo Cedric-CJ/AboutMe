@@ -177,7 +177,7 @@ section {
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 5px;
-  background-color: #f9f9f9;
+  background-color: var(--background-color);
 }
 
 a {
@@ -204,7 +204,7 @@ a {
 
 .project-link {
   text-decoration: none;
-  color: black;
+  color: var(--text-color);
   font-weight: bold;
   cursor: pointer;
   transition: color 0.2s;
@@ -214,7 +214,7 @@ a {
 }
 
 .project-link:hover {
-  color: blue;
+  color: var(--primary-color);
 }
 
 .project-img:hover {
@@ -227,7 +227,7 @@ a {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--background-color, 0.6%);
   display: flex;
   justify-content: center;
   align-items: center;
