@@ -69,7 +69,13 @@
       <h1>Meine Projekte</h1>
       <div class="projects-list">
         <div class="project" v-for="(project, projectIndex) in projects" :key="project.name">
-          <span>{{ project.name }}</span>
+          <div class="project-header">
+            <span>{{ project.name }}</span>
+            <button @click="toggleDescription(projectIndex)" class="description-button">Beschreibung</button>
+          </div>
+          <transition name="slide-fade">
+            <p v-if="project.showDescription" class="project-description">{{ project.description }}</p>
+          </transition>
           <div class="image-gallery">
             <div class="image-container" v-for="(img, index) in project.images" :key="img">
               <img :src="img" alt="Projektbild" class="project-img" @click="showFullScreen(img, projectIndex, index)" />
@@ -95,15 +101,33 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
-import VP from "@/assets/Pictures/Virtual-pet.png"
+import VP1 from "@/assets/Pictures/VP_1.png"
+import VP2 from "@/assets/Pictures/VP_2.png"
+import VP3 from "@/assets/Pictures/VP_3.png"
+import VP4 from "@/assets/Pictures/VP_4.png"
+import VP5 from "@/assets/Pictures/VP_5.png"
+
 import MZ24_1 from "@/assets/Pictures/MZ24_1.png"
 import MZ24_3 from "@/assets/Pictures/MZ24_3.png"
 
 // Projekte- und Bilddaten
 const projects = ref([
-  { name: "Virtual Pet", images: [VP], link: "https://github.com/Cedric-CJ/virtual-pet" },
-  { name: "Metallbaumeister Webseite", images: [MZ24_1, MZ24_3], link: "http://mz24.net/" }
+  { name: "Virtual Pet",
+    images: [VP1, VP2, VP3, VP4, VP5],
+    link: "https://virtual-pet-bcky.onrender.com/",
+    description: "Ein Studienprojekt mit Funktionen zur Benutzerregistrierung, Anmeldung und Verwaltung eines virtuellen Haustiers, bei dem der Benutzer zwischen zwei Tieren wählen, ihnen Namen geben und sie füttern, pflegen oder mit ihnen spielen kann. Die Bedürfnisse der Tiere werden über Statusleisten angezeigt, und bei mangelnder Pflege kann das Tier sterben, sodass ein neues erstellt werden muss. Eine Bestenliste zeigt die Top-Tiere an.\n\n"+"*Derzeit leider nicht funktionsfähig, da die Datenbank nicht mehr aktiv ist.",
+    showDescription: false },
+
+  { name: "Metallbaumeister Webseite",
+    images: [MZ24_1, MZ24_3],
+    link: "https://mz24.net/",
+    description: "Modernisierung der Webseite meines Vaters mit aktualisierten Datenschutz- und Impressumsseiten, einer dynamischeren Gestaltung und einer verbesserten Galerie mit Bild-Durchschaltung und Vorher-Nachher-Slider für einen modernen Look. Die Seite wurde so konzipiert, dass sie benutzerfreundlicher und optisch ansprechender ist, mit intuitiven Navigationselementen und verbesserter Ladezeit.",
+    showDescription: false }
 ]);
+
+const toggleDescription = (projectIndex) => {
+  projects.value[projectIndex].showDescription = !projects.value[projectIndex].showDescription;
+};
 
 // Zustand für das Vollbildbild und den Index
 const fullScreenImage = ref(null);
@@ -207,6 +231,31 @@ body {
   padding: 10px;
   border-radius: 5px;
   background-color: #f8f8f8;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.description-button {
+  background: none;
+  border: none;
+  color: #0073e6;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 5px 0;
+  margin-bottom: 10px;
+}
+.project-description {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
 a {
