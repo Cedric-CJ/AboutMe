@@ -16,7 +16,7 @@ const routes = [
     { path: '/test', name: "TestPage", component: TestPage}];
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory('/AboutMe/'),
     routes,
 });
 
