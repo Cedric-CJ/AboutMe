@@ -68,57 +68,89 @@
       </div>
       <h1>Meine Projekte</h1>
       <div class="projects-list">
-        <div class="project" v-for="project in projects" :key="project.name">
+        <div class="project" v-for="(project, projectIndex) in projects" :key="project.name">
           <span>{{ project.name }}</span>
           <div class="image-gallery">
-            <div class="image-container" v-for="img in project.images" :key="img">
-              <img :src="img" alt="Projektbild" class="project-img" @click="showFullScreen(img)">
+            <div class="image-container" v-for="(img, index) in project.images" :key="img">
+              <img :src="img" alt="Projektbild" class="project-img" @click="showFullScreen(img, projectIndex, index)" />
             </div>
           </div>
           <a :href="project.link" target="_blank" class="project-link">Link zum Projekt</a>
         </div>
       </div>
-      <div class="Images">
+
+      <!-- Lightbox -->
+      <div v-if="isFullScreenOpen" class="fullscreen-overlay" @click.self="hideFullScreen">
+        <button class="close-button" @click="hideFullScreen">×</button>
+        <button class="nav-button prev" @click.stop="prevImage">‹</button>
+        <img :src="fullScreenImage" class="fullscreen-image" alt="Vollbild" />
+        <button class="nav-button next" @click.stop="nextImage">›</button>
       </div>
     </main>
     <footer>
     </footer>
-    <div v-if="fullScreenImage" class="fullscreen-overlay" @click="hideFullScreen">
-      <img :src="fullScreenImage" class="fullscreen-image" alt="Vollbild">
     </div>
-  </div>
 </template>
 
 <script setup>
-import VP from "@/assets/Pictures/Virtual-pet.png"
 import { ref, onMounted } from 'vue';
+
+import VP from "@/assets/Pictures/Virtual-pet.png"
 import MZ24_1 from "@/assets/Pictures/MZ24_1.png"
-import MZ24_2 from "@/assets/Pictures/MZ24_2.png"
 import MZ24_3 from "@/assets/Pictures/MZ24_3.png"
 
+// Projekte- und Bilddaten
 const projects = ref([
   { name: "Virtual Pet", images: [VP], link: "https://github.com/Cedric-CJ/virtual-pet" },
-  { name: "Metallbaumeister Webseite", images: [MZ24_1, MZ24_2, MZ24_3], link: "http://mz24.net/" }
+  { name: "Metallbaumeister Webseite", images: [MZ24_1, MZ24_3], link: "http://mz24.net/" }
 ]);
 
+// Zustand für das Vollbildbild und den Index
 const fullScreenImage = ref(null);
+const isFullScreenOpen = ref(false);
+const currentImageIndex = ref(0);
+const currentProjectIndex = ref(0);
 
-const showFullScreen = (src) => {
+// Funktion zum Anzeigen des Vollbildmodus und Hinzufügen von Keydown-Listenern
+const showFullScreen = (src, projectIndex, index) => {
   fullScreenImage.value = src;
-  document.addEventListener('keydown', handleEscapeKey);
+  currentProjectIndex.value = projectIndex;
+  currentImageIndex.value = index;
+  isFullScreenOpen.value = true;
+  document.addEventListener('keydown', handleKeyDown);
 };
 
+// Funktion zum Verlassen des Vollbildmodus und Entfernen von Keydown-Listenern
 const hideFullScreen = () => {
+  isFullScreenOpen.value = false;
   fullScreenImage.value = null;
-  document.removeEventListener('keydown', handleEscapeKey);
+  document.removeEventListener('keydown', handleKeyDown);
 };
 
-const handleEscapeKey = (event) => {
+// Bildnavigations-Funktionen
+const nextImage = () => {
+  const images = projects.value[currentProjectIndex.value].images;
+  currentImageIndex.value = (currentImageIndex.value + 1) % images.length;
+  fullScreenImage.value = images[currentImageIndex.value];
+};
+
+const prevImage = () => {
+  const images = projects.value[currentProjectIndex.value].images;
+  currentImageIndex.value =
+      (currentImageIndex.value - 1 + images.length) % images.length;
+  fullScreenImage.value = images[currentImageIndex.value];
+};
+
+// Tasteneingaben (ESC, Pfeiltasten) behandeln
+const handleKeyDown = (event) => {
   if (event.key === 'Escape') {
     hideFullScreen();
+  } else if (event.key === 'ArrowRight') {
+    nextImage();
+  } else if (event.key === 'ArrowLeft') {
+    prevImage();
   }
 };
-
 const events = ref([
   { year: 2026, title: "Bachelor of Science - Wirtschaftsinformatik", description: "An der Hochschule für Technik und Wirtschaft Berlin. Studium von 2022–2026." },
   { year: 2024, title: "Praktikum im BMDV Abteilung z33", description: "4. Fachsemester 3,5 Monatiges Betriebspraktikum im Betrieb der Informationstechnik (IT-Betrieb)/Fach-Auftraggeberschnittstelle (F-AGS) BMDV"},
@@ -160,10 +192,7 @@ body {
   margin: 0;
   font-family: Arial, sans-serif;
 }
-section {
-  margin: 40px 0;
-}
-/* Projekte-Layout */
+
 .projects-list {
   display: flex;
   flex-direction: column;
@@ -177,7 +206,7 @@ section {
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 5px;
-  background-color: var(--background-color);
+  background-color: #f8f8f8;
 }
 
 a {
@@ -204,17 +233,14 @@ a {
 
 .project-link {
   text-decoration: none;
-  color: var(--text-color);
+  color: #333;
   font-weight: bold;
   cursor: pointer;
   transition: color 0.2s;
-  display: inline;
-  padding: 0;
-  margin: 0;
 }
 
 .project-link:hover {
-  color: var(--primary-color);
+  color: #0073e6;
 }
 
 .project-img:hover {
@@ -227,20 +253,71 @@ a {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: var(--background-color, 0.6%);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1;
 }
 
 .fullscreen-image {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 95%;
+  max-height: 95%;
   width: auto;
   height: auto;
   object-fit: contain;
   border-radius: 10px;
+}
+
+.nav-button {
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  font-size: 2em;
+  color: #333;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+}
+
+@media (max-width: 768px) {
+  .nav-button {
+    top: 80%;
+  }
+}
+
+.nav-button.prev {
+  left: 10%;
+}
+
+.nav-button.next {
+  right: 10%;
+}
+
+.close-button {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  background: white;
+  border: none;
+  font-size: 2em;
+  color: #333;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .timeline {

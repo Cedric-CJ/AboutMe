@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="0; URL=./index.html">
+    <script>
+        // Diese Funktion sorgt dafür, dass alle Unterseiten korrekt zur index.html geleitet werden
+        // und Vue.js die Routensteuerung übernimmt.
+        document.addEventListener("DOMContentLoaded", function() {
+            const redirectUrl = window.location.href.split("/AboutMe/")[0] + "/AboutMe/";
+            window.location.replace(redirectUrl);
+        });
+    </script>
+    <title>
+    </title>
+</head>
+<body>
+</body>
+</html>

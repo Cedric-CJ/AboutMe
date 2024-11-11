@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHashHistory} from 'vue-router';
 import HomePage from '@/components/HomePage.vue';
 import ImpressumPage from '@/components/DSGVO/ImpressumPage.vue';
 import PrivacyPolicy from "@/components/DSGVO/PrivacyPolicy.vue";
@@ -16,7 +16,7 @@ const routes = [
     { path: '/test', name: "TestPage", component: TestPage}];
 
 const router = createRouter({
-    history: createWebHistory('/AboutMe/'),
+    history: createWebHashHistory('/AboutMe/'),
     routes,
 });
 
