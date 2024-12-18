@@ -54,6 +54,14 @@
             </ul>
           </div>
         </div>
+        <div class="skill-category">
+          <h3>Aktuell am Ausprobieren</h3>
+          <ul>
+            <li>Dart/Flutter</li>
+            <li>Lokale Ki</li>
+          </ul>
+        </div>
+
       </section>
       <h1>Mein Lebenslauf</h1>
       <div class="timeline">
@@ -227,10 +235,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--text-color);
   padding: 10px;
   border-radius: 5px;
-  background-color: #f8f8f8;
+  background-color: var(--background-color);
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -282,7 +290,7 @@ a {
 
 .project-link {
   text-decoration: none;
-  color: #333;
+  color: var(--primary-color);
   font-weight: bold;
   cursor: pointer;
   transition: color 0.2s;
