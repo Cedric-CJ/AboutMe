@@ -20,7 +20,7 @@
       <button @click="closeMessage">Verstanden</button>
     </div>
     <div class="footer-credits">
-      <b href="#" @click.prevent="confirmRedirect">Erstellt von Cedric</b>
+      <b ref="#" @click.prevent="confirmRedirect">Erstellt von Cedric</b>
     </div>
   </div>
 </template>
@@ -53,21 +53,21 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   max-width: 90%;
-  background-color: #333;
-  color: white;
+  background-color: var(--card-background-color);
+  color: var(--text-color);
   text-align: center;
   padding: 20px;
-  z-index: 1000;
+  z-index: 1;
   border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px var(--text-color);
 }
 .info-message p {
-  color: white;
+  color: var(--text-color);
   margin: 0;
   padding: 0;
 }
 .footer-credits {
-  color: gray;
+  color: var(--text-color);
   font-size: 10px;
   padding: 2px;
   text-decoration: none;
@@ -75,26 +75,26 @@ export default {
   display: inline-block;
 }
 .show-more-link {
-  color: #f39c12;
+  color: var(--primary-color);
   text-decoration: underline;
   cursor: pointer;
   font-size: 0.9em;
 }
 .info-message a {
-  color: #f39c12;
+  color: var(--primary-color);
   text-decoration: none;
 }
 .info-message button {
   margin-top: 10px;
   padding: 10px;
   border: none;
-  background-color: #f39c12;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color);
   cursor: pointer;
   border-radius: 5px;
 }
 .info-message button:hover {
-  background-color: #e08e0b;
+  background-color: var(--card-background-color);
 }
 .extended-info {
   margin-top: 10px;

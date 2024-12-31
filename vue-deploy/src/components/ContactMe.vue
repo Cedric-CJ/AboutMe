@@ -133,7 +133,7 @@ export default {
 /* Card hover effect */
 .card:hover {
   transform: scale(0.97);
-  border: 2px solid rgb(145, 65, 76); /* Glowing border */
+  border: 2px solid var(--primary-color); /* Glowing border */
 }
 
 .card::before {
@@ -146,7 +146,7 @@ export default {
   border-radius: inherit;
   background: radial-gradient(
       circle at var(--xPos, 50%) var(--yPos, 50%),
-      rgba(255, 0, 50, 0.5),
+      var(--primary-color),
       transparent 100%
   );
   transition: opacity 0.3s ease-in-out;

@@ -15,23 +15,12 @@ main {
     padding: 20px;
 }
 
-/* Light Mode */
 :root {
-    --background-color: #ffffff;
-    --text-color: #000000;
-    --primary-color: #9f9b9b;
-    --menu-background-color: rgba(255, 255, 255, 0.95);
-    --timline-background: #f39c12;
-    --card-background-color: #9f9b9b;
-}
-
-/* Dark Mode */
-.dark-mode {
-    --background-color: #121212;
+    --background-color: #2E2E2E;
     --text-color: #ffffff;
-    --primary-color: #9e2b2b;
-    --menu-background-color: rgba(73, 73, 73, 0.95);
-    --card-background-color: #424242;
+    --primary-color: #228B22;
+    --timline-background: #f39c12;
+    --card-background-color: #737373;
 }
 
 /* Navigation Menu Styling */
@@ -58,7 +47,7 @@ header {
     position: fixed;
     top: 0;
     left: 0;
-    background: var(--menu-background-color);
+    background: var(--background-color);
     border: 1px solid var(--primary-color);
     border-radius: 5px;
     padding-top: 50px;
