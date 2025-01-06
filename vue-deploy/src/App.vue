@@ -139,7 +139,7 @@ export default {
   align-items: center;
   justify-content: center;
   background-color: #121212;
-  z-index: 1000;
+  z-index: 1001;
 }
 
 .fade-out {

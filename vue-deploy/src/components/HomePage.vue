@@ -1,67 +1,25 @@
 ### Erstellt von Cedric visit my [GitHub](https://cedric-cj.github.io/AboutMe/)
 //Timeline inspiriert von https://github.com/ftes/react-dual-timeline
+//Glich-Animation inspiriert von https://github.com/adenekan41/codewonders
 <template>
   <div class="container">
-    <main>
-      <h1>Willkommen auf meiner Seite</h1>
-      <div class="about-me">
-        <p class="fade-in">Hier findest du Informationen über mich und meine Projekte.</p>
-        <p class="fade-in">Viel Spaß beim Stöbern!</p>
-      </div>
-      <section class="who-am-i">
-        <h2>Wer bin ich?</h2>
-        <p>Mein Name ist Cedric Arnhold und ich studiere derzeit Wirtschaftsinformatik an der Hochschule für Technik und Wirtschaft Berlin (HTW).</p>
-      </section>
-      <section class="why-this-site">
-        <h2>Warum mache ich diese Seite?</h2>
-        <p>Diese Webseite dient als zentrale Anlaufstelle und spiegelt meine aktuellen Projekte wider. Mein Ziel ist es, kleinen und mittelständischen Unternehmen beim Umstieg in die Digitalisierung zu helfen. Viele Unternehmen haben nicht die Zeit, sich kontinuierlich um ihre Online-Präsenz zu kümmern, bis ein Brief vom Provider sie darauf hinweist, dass das Impressum, die Datenschutzerklärung oder die Sicherheit der Seite gefährdet sind. Dies kann letztendlich zu Strafen führen.</p>
-      </section>
+    <section class="intro">
+      <h1 data-text="Hi, Ich bin Cedric">Hi, Ich bin Cedric</h1>
+      <p class="info">
+        Diese Webseite habe ich als persönliches Hobby gestaltet, um meine Leidenschaft für Webentwicklung und Digitalisierung auszuleben. Sie dient gleichzeitig als Inspirationsquelle für Unternehmen oder Privatpersonen, die ihre eigene Online-Präsenz modernisieren oder neu aufbauen möchten.
+        <br><br>
+        Wenn Sie Unterstützung bei der Gestaltung oder Optimierung Ihrer Webseite benötigen, können Sie sich gerne bei mir melden. Ich helfe Ihnen, Ihre Ideen umzusetzen und Ihre digitale Präsenz zu stärken.
+      </p>
+    </section>
       <section class="my-skills">
         <h2>Meine Fähigkeiten</h2>
-        <div class="skills-list">
-          <div class="skill-category">
-            <h3>Frontend</h3>
-            <ul>
-              <li>HTML</li>
-              <li>CSS</li>
-              <li>JavaScript</li>
-              <li>Vue</li>
-              <li>React</li>
-            </ul>
-          </div>
-          <div class="skill-category">
-            <h3>Backend</h3>
-            <ul>
-              <li>Python</li>
-              <li>Java</li>
-              <li>Spring Boot</li>
-            </ul>
-          </div>
-          <div class="skill-category">
-            <h3>Datenbanken</h3>
-            <ul>
-              <li>PostgreSQL</li>
-              <li>Oracle</li>
-            </ul>
-          </div>
-          <div class="skill-category">
-            <h3>Sonstiges</h3>
-            <ul>
-              <li>Docker</li>
-              <li>Render</li>
-            </ul>
+        <div class="skills-cloud">
+          <div v-for="(skill, index) in skills" :key="index" class="skill" :style="generateStyle()">
+            {{ skill }}
           </div>
         </div>
-        <div class="skill-category">
-          <h3>Aktuell am Ausprobieren</h3>
-          <ul>
-            <li>Dart/Flutter</li>
-            <li>Lokale Ki</li>
-          </ul>
-        </div>
-
       </section>
-      <h1>Mein Lebenslauf</h1>
+      <h2>Mein Lebenslauf</h2>
       <div class="timeline">
         <ul>
           <li v-for="event in events" :key="event.year">
@@ -85,12 +43,78 @@
           <p class="project-description">{{ project.description }}</p>
         </div>
       </div>
-    </main>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
+
+const skills = ref([
+  "JavaScript",
+  "Vue",
+  "Python",
+  "HTML",
+  "Web Development",
+  "CSS",
+  "SQL",
+  "React",
+  "Java",
+  "Spring Boot",
+  "Docker",
+  "PostgreSQL",
+  "Oracle",
+  "Flutter",
+  "Render",
+  "Dart",
+  ]);
+
+const generateStyle = () => {
+  const safeZoneX = Math.random() * 70; // X-Position in % innerhalb eines sicheren Bereichs
+  const safeZoneY = Math.random() * 40 + 5; // Y-Position in % innerhalb eines sicheren Bereichs
+  const randomZ = Math.random() * 50 - 25; // Tiefe (-25px bis 25px)
+  const randomSize = Math.random() * 2 + 2; // Dynamische Schriftgröße (0.8 bis 2.3)
+  const randomColor = Math.random() > 0.5 ? 'var(--primary-color)' : 'var(--text-color)'; // Zufällige Farbe
+  const animationDuration = Math.random() * 12 + 5; // Animationsdauer (10 bis 30s)
+  const animationDelay = Math.random() * 5; // Verzögerung (0 bis 5s)
+
+  // Zufällige Bewegung (chaotischer Effekt)
+  const keyframesName = `float-${Math.random().toString(36).slice(2, 7)}`; // Verwende `slice` statt `substr`
+  const keyframes = `
+    @keyframes ${keyframesName} {
+      0% {
+        transform: translate3d(${safeZoneX}vw, ${safeZoneY}vh, ${randomZ}px) scale(${randomSize});
+        opacity: 0;
+      }
+      10% {
+        opacity: 1; /* Wörter erscheinen */
+      }
+      25% {
+        transform: translate3d(${safeZoneX + Math.random() * 5 - 2.5}vw, ${safeZoneY + Math.random() * 5 - 2.5}vh, ${randomZ + Math.random() * 10 - 5}px);
+      }
+      50% {
+        transform: translate3d(${safeZoneX - Math.random() * 5 + 2.5}vw, ${safeZoneY - Math.random() * 5 + 2.5}vh, ${randomZ - Math.random() * 10 + 5}px);
+      }
+      75% {
+        transform: translate3d(${safeZoneX + Math.random() * 2.5 - 1.25}vw, ${safeZoneY + Math.random() * 2.5 - 1.25}vh, ${randomZ + Math.random() * 5 - 2.5}px);
+      }
+      100% {
+        transform: translate3d(${safeZoneX}vw, ${safeZoneY}vh, ${randomZ}px);
+        opacity: 0; /* Wörter verschwinden */
+      }
+    }
+  `;
+
+  // Keyframes dem Dokument hinzufügen
+  const styleSheet = document.styleSheets[0] || document.head.appendChild(document.createElement('style')).sheet;
+  styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+
+  return {
+    animation: `${keyframesName} ${animationDuration}s infinite ease-in-out ${animationDelay}s`,
+    color: randomColor,
+    opacity: 0, // Start als unsichtbar
+    zIndex: Math.round(randomZ), // Z-Index basierend auf Tiefe
+  };
+};
 
 const projects = ref([
   {
@@ -140,6 +164,33 @@ onMounted(() => {
 <style>
 html, body {
   overflow-x: hidden;
+}
+
+.intro {
+  height: 50vh; /* Nimmt den gesamten sichtbaren Bereich ein */
+}
+
+.info {
+  font-family: "Poppins", sans-serif; /* Wähle eine moderne Schriftart */
+  color: var(--text-color);
+  text-align: justify;
+  text-align-last: center;
+  background: linear-gradient(120deg, var(--primary-color), #f39c12);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  max-width: 800px;
+  margin: 2rem auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.my-skills {
+  margin-top: 50vh; /* Scrollbar setzt hier ein */
+}
+
+.container {
+  scroll-behavior: smooth; /* Sanftes Scrollen */
 }
 
 body {
@@ -210,4 +261,104 @@ body {
   border: none;
 }
 
+h1 {
+  font-size: 4rem;
+  text-align: center;
+  color: #fff;
+  position: relative;
+  text-transform: uppercase;
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+h1::before,
+h1::after {
+  content: attr(data-text); /* Dupliziert den Text */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
+
+h1::before {
+  text-shadow: -2px 0 red, 2px 0 blue;
+  z-index: 0;
+  animation: glitch-animation 2s steps(8) infinite;
+}
+
+h1::after {
+  text-shadow: -2px 0 blue, 2px 0 red;
+  z-index: 0;
+  animation: glitch-animation 3s steps(8) infinite reverse;
+}
+
+@keyframes glitch-animation {
+  0% {
+    clip-path: polygon(0 3%, 100% 3%, 100% 12%, 0 12%);
+    transform: translate(2px, -2px);
+    opacity: 1;
+  }
+  10% {
+    clip-path: polygon(0 7%, 100% 7%, 100% 20%, 0 20%);
+    transform: translate(-3px, 3px) skewX(5deg);
+    opacity: 0.8;
+  }
+  20% {
+    clip-path: polygon(0 12%, 100% 12%, 100% 25%, 0 25%);
+    transform: translate(3px, -1px) rotate(1deg);
+    opacity: 0.5;
+  }
+  30% {
+    clip-path: polygon(0 30%, 100% 30%, 100% 38%, 0 38%);
+    transform: translate(-2px, 2px) skewY(3deg);
+    opacity: 0.7;
+  }
+  40% {
+    clip-path: polygon(0 45%, 100% 45%, 100% 55%, 0 55%);
+    transform: translate(1px, -3px) skewX(-5deg);
+    opacity: 0.9;
+  }
+  50% {
+    clip-path: polygon(0 50%, 100% 50%, 100% 60%, 0 60%);
+    transform: translate(-3px, 1px);
+    opacity: 0.6;
+  }
+  60% {
+    clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%);
+    transform: translate(2px, 2px) skewY(-3deg);
+    opacity: 1;
+  }
+  80% {
+    clip-path: polygon(0 85%, 100% 85%, 100% 90%, 0 90%);
+    transform: translate(3px, 3px) skewX(4deg);
+    opacity: 0.5;
+  }
+  100% {
+    clip-path: polygon(0 10%, 100% 10%, 100% 15%, 0 15%);
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+}
+
+.skills-cloud {
+  position: relative;
+  width: 100vw; /* Vollbildbreite */
+  height: 50vh; /* Halbe Bildschirmhöhe */
+  perspective: 1000px; /* 3D-Effekt */
+  overflow: hidden;
+}
+
+.skill {
+  position: absolute;
+  font-size: calc(1.5vw + 2vh); /* Dynamische Schriftgröße */
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  animation: none; /* Animation wird per JS hinzugefügt */
+  opacity: 0; /* Start als unsichtbar */
+  white-space: nowrap;
+}
 </style>
