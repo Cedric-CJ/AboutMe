@@ -75,20 +75,20 @@ export default {
   display: inline-block;
 }
 .show-more-link {
-  color: var(--primary-color);
+  color: var(--timeline-background);
   text-decoration: underline;
   cursor: pointer;
   font-size: 0.9em;
 }
 .info-message a {
-  color: var(--primary-color);
+  color: var(--timeline-background);
   text-decoration: none;
 }
 .info-message button {
   margin-top: 10px;
   padding: 10px;
   border: none;
-  background-color: var(--primary-color);
+  background-color: var(--timeline-background);
   color: var(--text-color);
   cursor: pointer;
   border-radius: 5px;

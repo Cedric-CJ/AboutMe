@@ -74,17 +74,31 @@ export default {
   },
   methods: {
     toggleMenu() {
-      this.isMenuHidden = !this.isMenuHidden;
+      const navMenu = document.getElementById('navMenu');
+
+      if (this.isMenuHidden) {
+        // Menü einblenden
+        this.isMenuHidden = false;
+        navMenu.classList.remove('hidden');
+        navMenu.classList.add('visible');
+      } else {
+        // Menü ausblenden
+        navMenu.classList.remove('visible');
+        navMenu.classList.add('hidden');
+        // Sofort das `isMenuHidden` setzen, keine Verzögerung
+        this.isMenuHidden = true;
+      }
     },
+
     handleClickOutside(event) {
       if (!this.$el.querySelector('#navMenu').contains(event.target) && !this.isMenuHidden) {
-        this.isMenuHidden = true;
+        this.toggleMenu();
       }
     },
     setAccentColor(color) {
       this.accentColor = color;
       document.documentElement.style.setProperty('--primary-color', color);
-      document.documentElement.style.setProperty('--timline-background', color);
+      document.documentElement.style.setProperty('--timeline-background', color);
     },
   },
   mounted() {
