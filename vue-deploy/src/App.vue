@@ -241,8 +241,8 @@ body {
 }
 
 #backToTopButton {
-  opacity: 1 !important; /* Sichtbar machen */
-  visibility: visible !important; /* Sichtbar machen */
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 #backToTopButton {
@@ -254,7 +254,7 @@ body {
   border-radius: 50%; /* Rund machen */
   background-color: transparent; /* Hintergrund durchsichtig */
   border: none;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Schatten für 3D-Effekt */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Schatten für 3D-Effekt */
   cursor: pointer;
   display: flex;
   justify-content: center;
