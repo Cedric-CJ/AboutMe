@@ -210,12 +210,17 @@ onMounted(() => {
 })
 </script>
 <style>
-html, body {
+.timeline {
   overflow-x: hidden;
+  position: relative;
 }
 
 .intro {
   height: 50vh; /* Nimmt den gesamten sichtbaren Bereich ein */
+}
+
+.overlay {
+  pointer-events: none;
 }
 
 .overlay.active {
@@ -273,12 +278,6 @@ html, body {
 
 .my-skills {
   margin-top: 50vh; /* Scrollbar setzt hier ein */
-}
-
-.container {
-  scroll-behavior: smooth; /* Sanftes Scrollen */
-  position: relative;
-  overflow-x: hidden;
 }
 
 body {

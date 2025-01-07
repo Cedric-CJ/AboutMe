@@ -11,7 +11,6 @@
         </g>
       </svg>
     </div>
-
     <header>
       <button id="menuButton" @click.stop="toggleMenu">☰ Menü</button>
       <nav :class="{ hidden: isMenuHidden, visible: !isMenuHidden }" id="navMenu" @click.stop>
@@ -44,8 +43,10 @@
         <button id="closeMenuButton" @click.stop="toggleMenu">←</button>
       </nav>
     </header>
-
     <InfoMessage v-if="showMessage" @close-message="showMessage = false" />
+    <button id="backToTopButton" @click="scrollToTop" v-show="showBackToTop">
+      <img src="@/assets/Pictures/back%20to%20top%20button.png" alt="Back to top" />
+    </button>
     <main>
       <router-view></router-view>
     </main>
@@ -70,6 +71,7 @@ export default {
       isFadingOut: false,
       preloaderText: "Mit KI die IT-Welt neu definieren".split(""),
       accentColor: '#10e956', // Default accent color
+      showBackToTop: false,
     };
   },
   methods: {
@@ -88,6 +90,16 @@ export default {
         // Sofort das `isMenuHidden` setzen, keine Verzögerung
         this.isMenuHidden = true;
       }
+    },
+    scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth', // Sanftes Scrollen
+      });
+    },
+    handleScroll() {
+      const scrollPosition = window.scrollY;
+      this.showBackToTop = scrollPosition > 600; // Zeige den Button nach 300px Scrollen
     },
 
     handleClickOutside(event) {
@@ -124,6 +136,11 @@ export default {
         this.showPreloader = false;
       }, 1500); // Fade-out duration
     }, 5000); // Total duration before fade-out
+
+    window.addEventListener('scroll', this.handleScroll);
+  },
+  beforeUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
   },
 };
 </script>
@@ -221,5 +238,45 @@ export default {
 body {
   background-color:var(--background-color);
   color: var(--text-color);
+}
+
+#backToTopButton {
+  opacity: 1 !important; /* Sichtbar machen */
+  visibility: visible !important; /* Sichtbar machen */
+}
+
+#backToTopButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px; /* Gleiche Höhe und Breite für einen runden Button */
+  height: 60px;
+  border-radius: 50%; /* Rund machen */
+  background-color: transparent; /* Hintergrund durchsichtig */
+  border: none;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Schatten für 3D-Effekt */
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+#backToTopButton img {
+  width: 100%; /* Bild passt sich an Button-Größe an */
+  height: 100%;
+  object-fit: cover; /* Bild füllen ohne Verzerrung */
+  border-radius: 50%; /* Bild rund machen */
+}
+
+#backToTopButton:hover {
+  transform: scale(1.1); /* Leichter Hover-Effekt */
+}
+
+#backToTopButton:active {
+  transform: scale(0.95); /* Klick-Effekt */
 }
 </style>
