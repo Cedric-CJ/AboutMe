@@ -182,7 +182,7 @@ list-style-type: none;
     height: 30px;
     border-radius: 50%;
     background: var(--timeline-background);
-    z-index: 1;
+    z-index: 0;
 }
 
 .timeline ul li div {
@@ -203,7 +203,7 @@ list-style-type: none;
 .timeline ul li:nth-child(odd) div,
 .timeline ul li:nth-child(even) div {
     left: 0; /* Beide Seiten gleich positionieren */
-    margin-left: 5px; /* Abstand zwischen der Zeitleiste und den Boxen */
+    margin-left: 5%; /* Abstand zwischen der Zeitleiste und den Boxen */
 }
 
 @media screen and (max-width: 600px) {
@@ -212,10 +212,15 @@ list-style-type: none;
         left: 5%; /* Zentriere das Kästchen */
         transform: none; /* Entferne eventuelle Transformationen */
     }
+    .timeline {
+        margin-left: -4vw;
+        z-index: 0;
+    }
 
-    .timeline ul li:nth-child(even) div,
-    .timeline ul li:nth-child(odd) div {
-        left: 5%;
+    .timeline ul li:nth-child(odd) div,
+    .timeline ul li:nth-child(even) div {
+        left: 0; /* Beide Seiten gleich positionieren */
+        margin-left: 5%; /* Abstand zwischen der Zeitleiste und den Boxen */
     }
 
     /* Anpassung der Pfeile */
@@ -320,7 +325,7 @@ time {
         right: 10px;
     }
     .timeline ul li div {
-        width: calc(100vw - 91px);
+        width: calc(95vw - 91px);
         padding: 10px;
     }
     .timeline ul li:nth-child(even) div,

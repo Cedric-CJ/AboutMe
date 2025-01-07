@@ -32,22 +32,55 @@
       </div>
       <h1>Meine Projekte</h1>
       <div class="projects-list">
-        <div class="project" v-for="project in projects" :key="project.name">
+        <div class="project" v-for="(project, index) in projects" :key="index">
+          <p class="project-name">
+            {{ project.name }}
+            <span class="info-icon" @click="openSidebar(project)" title="Mehr Informationen anzeigen">ℹ️</span>
+          </p>
           <div class="laptop-frame">
             <img src="@/assets/Pictures/Laptop.png" alt="Laptop" class="laptop-image" />
             <div class="laptop-screen">
               <iframe :src="project.link" class="live-iframe"></iframe>
             </div>
           </div>
-          <p class="project-name">{{ project.name }}</p>
-          <p class="project-description">{{ project.description }}</p>
         </div>
       </div>
+    <div
+        class="overlay" :class="{ active: isSidebarOpen }" @click="closeSidebar">
+    </div>
+    <div class="sidebar" :class="{ active: isSidebarOpen }">
+      <button class="close-button" @click="closeSidebar">×</button>
+      <div class="sidebar-content" v-if="selectedProject">
+        <h2>{{ selectedProject.name }}</h2>
+        <div class="sidebar-section">
+          <h3>Über</h3>
+          <p>{{ selectedProject.description }}</p>
+        </div>
+        <div class="sidebar-section">
+          <h3>Technologien</h3>
+          <div class="technologies">
+        <span v-for="tech in selectedProject.technologies" :key="tech" class="tech-badge">
+          {{ tech }}
+        </span>
+          </div>
+        </div>
+        <div class="sidebar-section">
+          <h3>Webseite</h3>
+          <a :href="selectedProject.link" target="_blank" class="project-link">Live Webseite</a>
+        </div>
+        <div class="sidebar-section">
+          <h3>GitHub</h3>
+          <a :href="selectedProject.github" target="_blank" class="project-link">GitHub Repository</a>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
+const isSidebarOpen = ref(false);
+const selectedProject = ref(null);
 
 const skills = ref([
   "JavaScript",
@@ -66,6 +99,7 @@ const skills = ref([
   "Flutter",
   "Render",
   "Dart",
+  "Typescript",
   ]);
 
 const generateStyle = () => {
@@ -120,14 +154,28 @@ const projects = ref([
   {
     name: "Virtual Pet",
     link: "https://virtual-pet-bcky.onrender.com/",
+    github: "https://github.com/Cedric-CJ/virtual-pet",
+    technologies: ["Vue", "JavaScript", "HTML", "CSS", "Docker", "Typescript"],
     description: "Ein Studienprojekt mit Funktionen zur Benutzerregistrierung, Anmeldung und Verwaltung eines virtuellen Haustiers, bei dem der Benutzer zwischen zwei Tieren wählen, ihnen Namen geben und sie füttern, pflegen oder mit ihnen spielen kann. Die Bedürfnisse der Tiere werden über Statusleisten angezeigt, und bei mangelnder Pflege kann das Tier sterben, sodass ein neues erstellt werden muss. Eine Bestenliste zeigt die Top-Tiere an.\n\n*Derzeit leider nicht funktionsfähig, da die Datenbank nicht mehr aktiv ist.*",
   },
   {
     name: "Metallbaumeister Webseite",
     link: "https://mz24.net/",
+    github: "https://github.com/Cedric-CJ/MZ24",
+    technologies: ["HTML", "CSS", "JavaScript", "Vue"],
     description: "Modernisierung der Webseite meines Vaters mit aktualisierten Datenschutz- und Impressumsseiten, einer dynamischeren Gestaltung und einer verbesserten Galerie mit Bild-Durchschaltung und Vorher-Nachher-Slider für einen modernen Look. Die Seite wurde so konzipiert, dass sie benutzerfreundlicher und optisch ansprechender ist, mit intuitiven Navigationselementen und verbesserter Ladezeit.",
   },
 ]);
+
+const openSidebar = (project) => {
+  selectedProject.value = project;
+  isSidebarOpen.value = true;
+};
+
+const closeSidebar = () => {
+  isSidebarOpen.value = false;
+  selectedProject.value = null;
+};
 
 const events = ref([
   { year: 2026, title: "Bachelor of Science - Wirtschaftsinformatik", description: "An der Hochschule für Technik und Wirtschaft Berlin. Studium von 2022–2026." },
@@ -170,6 +218,12 @@ html, body {
   height: 50vh; /* Nimmt den gesamten sichtbaren Bereich ein */
 }
 
+.overlay.active {
+  background: rgba(0, 0, 0, 0.6); /* Abdunkeln bei aktiver Sidebar */
+  opacity: 1;
+  visibility: visible;
+}
+
 .info {
   font-family: "Poppins", sans-serif; /* Wähle eine moderne Schriftart */
   color: var(--text-color);
@@ -185,53 +239,9 @@ html, body {
   overflow: hidden;
 }
 
-.my-skills {
-  margin-top: 50vh; /* Scrollbar setzt hier ein */
-}
-
-.container {
-  scroll-behavior: smooth; /* Sanftes Scrollen */
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
-
-.timeline {
-  margin-left: -50px;
-  position: relative;
-  z-index: 0;
-}
-
-.timeline ul li {
-  margin-left: -50px;
-}
-
-.projects-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 50px;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.project-description {
-  font-size: 1rem;
-  color: #ccc; /* Hellgraue Schriftfarbe */
-  text-align: center;
-  max-width: 90%;
-  margin: 10px auto;
-  line-height: 1.5;
-}
-
-.project {
-  text-align: center;
-}
-
 .laptop-frame {
   position: relative;
-  width: 100vw; /* Verwenden Sie vw, um die Breite relativ zur Fensterbreite zu setzen */
+  width: 90vw; /* Verwenden Sie vw, um die Breite relativ zur Fensterbreite zu setzen */
   height: calc(100vw * 0.66); /* Verhältnis des Laptop-Bildes: Breite zu Höhe, hier z. B. 16:10 */
   max-width: 150vh; /* Maximale Größe: passt sich an die Höhe des Bildschirms an */
   max-height: calc(150vh * 0.66); /* Verhindert Überschreiten des Bildschirms */
@@ -261,10 +271,135 @@ body {
   border: none;
 }
 
+.my-skills {
+  margin-top: 50vh; /* Scrollbar setzt hier ein */
+}
+
+.container {
+  scroll-behavior: smooth; /* Sanftes Scrollen */
+  position: relative;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.projects-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+  justify-content: center;
+  margin-top: 20px;
+  margin-bottom: 100px;
+}
+
+.project {
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.project:hover {
+  transform: scale(1.05);
+}
+
+.info-icon {
+  font-size: 1.2rem; /* Größe des Icons */
+  margin-left: 8px; /* Abstand zum Projektnamen */
+  cursor: pointer; /* Zeigt an, dass es anklickbar ist */
+  color: var(--primary-color); /* Farbe passend zum Design */
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -100vh;
+  width: 40vw;
+  height: 100%;
+  background: var(--background-color);
+  color: white;
+  box-shadow: -10px 0 20px rgba(0, 0, 0, 0.5);
+  padding: 2vh;
+  z-index: 1000;
+  overflow-y: auto;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+}
+
+.sidebar.active {
+  transform: translateX(-100vh);
+}
+
+.sidebar-content {
+  margin-top: 50px;
+}
+
+.sidebar h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.sidebar p {
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.sidebar-section {
+  margin-bottom: 20px;
+}
+
+.sidebar-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #f39c12; /* Akzentfarbe für Überschriften */
+}
+
+.technologies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tech-badge {
+  background: var(--card-background-color);
+  color: var(--text-color);
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+}
+
+.project-link {
+  display: inline-block;
+  padding: 10px 15px;
+  color: var(--text-color);
+  background-color: var(--primary-color);
+  text-decoration: none;
+  border-radius: 5px;
+  bottom: 10vh;
+}
+
+.project-link:hover {
+  background-color: var(--primary-color);
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
 h1 {
   font-size: 4rem;
   text-align: center;
-  color: #fff;
+  color: var(--text-color);
   position: relative;
   text-transform: uppercase;
   overflow: hidden;
@@ -279,7 +414,7 @@ h1::after {
   left: 0;
   width: 100%;
   height: 100%;
-  color: #fff;
+  color: var(--text-color);
   overflow: hidden;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
 }
