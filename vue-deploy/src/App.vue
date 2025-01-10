@@ -4,7 +4,7 @@
       <svg height="100%" width="100%" viewBox="0 0 857 151">
         <g>
           <text x="50%" y="50%" text-anchor="middle" :fill="accentColor" font-size="48" dy=".35em" class="preloader-text" :style="{ fontFamily: 'Roboto Slab, serif' }">
-            <tspan v-for="(letter, index) in preloaderText" :key="index" class="animated-text" :style="{ animationDelay: `${index * 0.1}s` }">
+            <tspan v-for="(letter, index) in dynamicPreloaderText" :key="index" class="animated-text" :style="{ animationDelay: `${index * 0.1}s` }">
               {{ letter }}
             </tspan>
           </text>
@@ -12,38 +12,59 @@
       </svg>
     </div>
     <header>
-      <button id="menuButton" @click.stop="toggleMenu">☰ Menü</button>
+      <div class="language-switcher">
+        <img v-if="currentLanguage === 'de'" src="@/assets/Pictures/flag-us.webp" alt="English" @click="switchLanguage('eng')"/>
+        <!-- ansonsten die deutsche Flagge -->
+        <img v-else-if="currentLanguage === 'eng'" src="@/assets/Pictures/flag-de.webp" alt="Deutsch" @click="switchLanguage('de')"/></div>
+      <button id="menuButton" @click.stop="toggleMenu">
+        {{ menuText.menuButton }}
+      </button>
       <nav :class="{ hidden: isMenuHidden, visible: !isMenuHidden }" id="navMenu" @click.stop>
         <div class="menu-links">
           <p>
-            <router-link to="/">Home</router-link>
+            <router-link :to="currentLanguage === 'de' ? '/de' : '/eng'">Home</router-link>
           </p>
           <p>
-            <router-link to="/contact">Contact</router-link>
+            <router-link :to="currentLanguage === 'de' ? '/de/contact' : '/eng/contact'">
+              {{ menuText.contact }}
+            </router-link>
           </p>
           <p>
-            <router-link to="/workInProgress">...</router-link>
+            <router-link :to="currentLanguage === 'de' ? '/de/workInProgress' : '/eng/workInProgress'">
+              {{ menuText.workInProgress }}
+            </router-link>
           </p>
           <div class="accent-selector">
-            <p>Akzentfarbe wählen:</p>
-            <button class="button-red" @click="setAccentColor('#FF3030')">Rot</button>
-            <button class="button-green" @click="setAccentColor('#228B22')">Grün</button>
-            <button class="button-blue" @click="setAccentColor('#1C1F26')">Deep Navy-Blau</button>
+            <p>{{ menuText.chooseAccent }}</p>
+            <button class="button-red" @click="setAccentColor('#FF3030')">{{ menuText.red }}</button>
+            <button class="button-green" @click="setAccentColor('#228B22')">{{ menuText.green }}</button>
+            <button class="button-blue" @click="setAccentColor('#1C1F26')">{{ menuText.blue }}</button>
             <label>
-              Benutzerdefiniert:
+              {{ menuText.custom }}
               <input type="color" @input="setAccentColor($event.target.value)" />
             </label>
           </div>
         </div>
         <div class="footer-links">
-          <router-link to="/Impressum" class="small-link highlight-link">Impressum</router-link> |
-          <router-link to="/PrivacyPolicy" class="small-link highlight-link">Datenschutz</router-link>
+          <router-link
+              :to="currentLanguage === 'de' ? '/de/impressum' : '/eng/impressum'"
+              class="small-link highlight-link"
+          >
+            {{ menuText.impressum }}
+          </router-link>
+          |
+          <router-link
+              :to="currentLanguage === 'de' ? '/de/PrivacyPolicy' : '/eng/PrivacyPolicy'"
+              class="small-link highlight-link"
+          >
+            {{ menuText.privacyPolicy }}
+          </router-link>
           <p>&copy; 2024 Cedric Arnhold</p>
         </div>
         <button id="closeMenuButton" @click.stop="toggleMenu">←</button>
       </nav>
     </header>
-    <InfoMessage v-if="showMessage" @close-message="showMessage = false" />
+    <component :is="currentInfoMessage" v-if="showMessage" @close-message="showMessage = false"/>
     <button id="backToTopButton" @click="scrollToTop" v-show="showBackToTop">
       <img src="@/assets/Pictures/back%20to%20top%20button.png" alt="Back to top" />
     </button>
@@ -56,12 +77,14 @@
 </template>
 
 <script>
-import InfoMessage from "@/components/DSGVO/InfoMessage.vue";
+import InfoMessageDe from "@/components/De/DSGVO/InfoMessageDe.vue";
+import InfoMessageEng from "@/components/Eng/DSGVO/InfoMessageEng.vue";
 
 export default {
   name: "App",
   components: {
-    InfoMessage,
+    InfoMessageDe,
+    InfoMessageEng,
   },
   data() {
     return {
@@ -69,12 +92,83 @@ export default {
       showMessage: true,
       showPreloader: true,
       isFadingOut: false,
-      preloaderText: "Mit KI die IT-Welt neu definieren".split(""),
       accentColor: '#10e956', // Default accent color
       showBackToTop: false,
     };
   },
+  computed: {
+    currentLanguage() {
+      // Wir prüfen, ob der Pfad mit /de oder /eng beginnt
+      const path = this.$route.path;
+      if (path.startsWith("/de")) {return "de";
+      } else if (path.startsWith("/eng")) {return "eng";
+      } return "de";
+      // Falls du eine Standard-Sprache hast, gib sie hier zurück:
+    },
+    currentInfoMessage() {
+      return this.currentLanguage === 'de' ? InfoMessageDe : InfoMessageEng;
+    },
+    menuText() {
+      // Ein "Dictionary" mit deutschen und englischen Übersetzungen
+      if (this.currentLanguage === 'de') {
+        return {
+          menuButton: '☰ Menü',
+          contact: 'Kontakt',
+          workInProgress: '...',
+          chooseAccent: 'Akzentfarbe wählen:',
+          red: 'Rot',
+          green: 'Grün',
+          blue: 'Deep Navy-Blau',
+          custom: 'Benutzerdefiniert:',
+          impressum: 'Impressum',
+          privacyPolicy: 'Datenschutz',
+        };
+      } else {
+        return {
+          menuButton: '☰ Menu',
+          contact: 'Contact',
+          workInProgress: '...',
+          chooseAccent: 'Choose accent color:',
+          red: 'Red',
+          green: 'Green',
+          blue: 'Deep Navy-Blue',
+          custom: 'Custom:',
+          impressum: 'Imprint',
+          privacyPolicy: 'Privacy Policy',
+        };
+      }
+    },
+    dynamicPreloaderText() {
+      if (this.currentLanguage === 'de') {
+        return "Mit KI die IT-Welt neu definieren".split("");
+      } else {
+        return "Redefining the IT world with AI".split("");
+      }
+    },
+  },
   methods: {
+    switchLanguage(lang) {
+      localStorage.setItem('preferredLanguage', lang);
+
+      // Aktueller Pfad, z.B. "/de/contact" oder "/eng/workInProgress"
+      const currentPath = this.$route.path;
+
+      let newPath;
+
+      if (lang === 'eng') {
+        // Ersetze am Anfang "/de" durch "/eng"
+        // Beispiel: "/de/contact" => "/eng/contact"
+        newPath = currentPath.replace(/^\/de/, '/eng');
+      } else {
+        // Ersetze am Anfang "/eng" durch "/de"
+        // Beispiel: "/eng/contact" => "/de/contact"
+        newPath = currentPath.replace(/^\/eng/, '/de');
+      }
+
+      // Nun navigieren wir zu newPath
+      this.$router.push(newPath);
+    },
+
     toggleMenu() {
       const navMenu = document.getElementById('navMenu');
 
@@ -144,8 +238,30 @@ export default {
   },
 };
 </script>
-
 <style>
+.language-switcher {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 1.5rem;
+  z-index: 9999;
+}
+
+.language-switcher img {
+  width: 10vw;
+  height: auto;
+  min-width: 40px;
+  max-width: 80px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.language-switcher img:hover {
+  transform: scale(1.1);
+  border-color: var(--primary-color);
+}
+
 .fullscreen {
   position: fixed;
   top: 0;
@@ -157,6 +273,7 @@ export default {
   justify-content: center;
   background-color: #121212;
   z-index: 1001;
+  will-change: opacity;
 }
 
 .fade-out {

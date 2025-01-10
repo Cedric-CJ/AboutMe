@@ -2,75 +2,101 @@
 //Timeline inspiriert von https://github.com/ftes/react-dual-timeline
 //Glich-Animation inspiriert von https://github.com/adenekan41/codewonders
 <template>
+  <div class="hexagon-background">
+    <div v-for="n in 200" :key="n" class="hexagon"></div>
+  </div>
   <div class="container">
     <section class="intro">
-      <h1 data-text="Hi, Ich bin Cedric">Hi, Ich bin Cedric</h1>
+      <h1 data-text="Hi, I'm Cedric">Hi, I'm Cedric</h1>
       <p class="info">
-        Diese Webseite habe ich als persönliches Hobby gestaltet, um meine Leidenschaft für Webentwicklung und Digitalisierung auszuleben. Sie dient gleichzeitig als Inspirationsquelle für Unternehmen oder Privatpersonen, die ihre eigene Online-Präsenz modernisieren oder neu aufbauen möchten.
+        I created this website as a personal hobby to explore my passion for web development and digitalization. At the same time, it serves as a source of inspiration for companies or individuals looking to modernize or build their own online presence.
         <br><br>
-        Wenn Sie Unterstützung bei der Gestaltung oder Optimierung Ihrer Webseite benötigen, können Sie sich gerne bei mir melden. Ich helfe Ihnen, Ihre Ideen umzusetzen und Ihre digitale Präsenz zu stärken.
+        If you need support in designing or optimizing your website, feel free to contact me. I can help bring your ideas to life and strengthen your digital presence.
       </p>
     </section>
-      <section class="my-skills">
-        <h2>Meine Fähigkeiten</h2>
-        <div class="skills-cloud">
-          <div v-for="(skill, index) in skills" :key="index" class="skill" :style="generateStyle()">
-            {{ skill }}
-          </div>
-        </div>
-      </section>
-      <h2>Mein Lebenslauf</h2>
-      <div class="timeline">
-        <ul>
-          <li v-for="event in events" :key="event.year">
-            <div>
-              <time>{{ event.year }}: {{event.title}}</time>
-              <p>{{ event.description }}</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <h1>Meine Projekte</h1>
-      <div class="projects-list">
-        <div class="project" v-for="(project, index) in projects" :key="index">
-          <p class="project-name">
-            {{ project.name }}
-            <span class="info-icon" @click="openSidebar(project)" title="Mehr Informationen anzeigen">ℹ️</span>
-          </p>
-          <div class="laptop-frame">
-            <img src="@/assets/Pictures/Laptop.png" alt="Laptop" class="laptop-image" />
-            <div class="laptop-screen">
-              <iframe :src="project.link" class="live-iframe"></iframe>
-            </div>
-          </div>
+
+    <section class="my-skills">
+      <h2>My Skills</h2>
+      <div class="skills-cloud">
+        <div
+            v-for="(skill, index) in skills"
+            :key="index"
+            class="skill"
+            :style="generateStyle()"
+        >
+          {{ skill }}
         </div>
       </div>
-    <div
-        class="overlay" :class="{ active: isSidebarOpen }" @click="closeSidebar">
+    </section>
+
+    <h2>My CV</h2>
+    <div class="timeline">
+      <ul>
+        <li v-for="event in events" :key="event.year">
+          <div>
+            <time>{{ event.year }}: {{ event.title }}</time>
+            <p>{{ event.description }}</p>
+          </div>
+        </li>
+      </ul>
     </div>
+
+    <h1>My Projects</h1>
+    <div class="projects-list">
+      <div class="project" v-for="(project, index) in projects" :key="index">
+        <p class="project-name">
+          {{ project.name }}
+          <span
+              class="info-icon"
+              @click="openSidebar(project)"
+              title="Show more information"
+          >ℹ️</span
+          >
+        </p>
+        <div class="laptop-frame">
+          <img
+              src="@/assets/Pictures/Laptop.png"
+              alt="Laptop"
+              class="laptop-image"
+          />
+          <div class="laptop-screen">
+            <iframe :src="project.link" class="live-iframe"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overlay" :class="{ active: isSidebarOpen }" @click="closeSidebar"></div>
     <div class="sidebar" :class="{ active: isSidebarOpen }">
       <button class="close-button" @click="closeSidebar">×</button>
       <div class="sidebar-content" v-if="selectedProject">
         <h2>{{ selectedProject.name }}</h2>
         <div class="sidebar-section">
-          <h3>Über</h3>
+          <h3>About</h3>
           <p>{{ selectedProject.description }}</p>
         </div>
         <div class="sidebar-section">
-          <h3>Technologien</h3>
+          <h3>Technologies</h3>
           <div class="technologies">
-        <span v-for="tech in selectedProject.technologies" :key="tech" class="tech-badge">
-          {{ tech }}
-        </span>
+            <span
+                v-for="tech in selectedProject.technologies"
+                :key="tech"
+                class="tech-badge"
+            >{{ tech }}</span
+            >
           </div>
         </div>
         <div class="sidebar-section">
-          <h3>Webseite</h3>
-          <a :href="selectedProject.link" target="_blank" class="project-link">Live Webseite</a>
+          <h3>Website</h3>
+          <a :href="selectedProject.link" target="_blank" class="project-link"
+          >Live Website</a
+          >
         </div>
         <div class="sidebar-section">
           <h3>GitHub</h3>
-          <a :href="selectedProject.github" target="_blank" class="project-link">GitHub Repository</a>
+          <a :href="selectedProject.github" target="_blank" class="project-link"
+          >GitHub Repository</a
+          >
         </div>
       </div>
     </div>
@@ -78,7 +104,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+
 const isSidebarOpen = ref(false);
 const selectedProject = ref(null);
 
@@ -100,55 +127,17 @@ const skills = ref([
   "Render",
   "Dart",
   "Typescript",
-  ]);
+]);
 
-const generateStyle = () => {
-  const safeZoneX = Math.random() * 70; // X-Position in % innerhalb eines sicheren Bereichs
-  const safeZoneY = Math.random() * 40 + 5; // Y-Position in % innerhalb eines sicheren Bereichs
-  const randomZ = Math.random() * 50 - 25; // Tiefe (-25px bis 25px)
-  const randomSize = Math.random() * 2 + 2; // Dynamische Schriftgröße (0.8 bis 2.3)
-  const randomColor = Math.random() > 0.5 ? 'var(--primary-color)' : 'var(--text-color)'; // Zufällige Farbe
-  const animationDuration = Math.random() * 12 + 5; // Animationsdauer (10 bis 30s)
-  const animationDelay = Math.random() * 5; // Verzögerung (0 bis 5s)
-
-  // Zufällige Bewegung (chaotischer Effekt)
-  const keyframesName = `float-${Math.random().toString(36).slice(2, 7)}`; // Verwende `slice` statt `substr`
-  const keyframes = `
-    @keyframes ${keyframesName} {
-      0% {
-        transform: translate3d(${safeZoneX}vw, ${safeZoneY}vh, ${randomZ}px) scale(${randomSize});
-        opacity: 0;
-      }
-      10% {
-        opacity: 1; /* Wörter erscheinen */
-      }
-      25% {
-        transform: translate3d(${safeZoneX + Math.random() * 5 - 2.5}vw, ${safeZoneY + Math.random() * 5 - 2.5}vh, ${randomZ + Math.random() * 10 - 5}px);
-      }
-      50% {
-        transform: translate3d(${safeZoneX - Math.random() * 5 + 2.5}vw, ${safeZoneY - Math.random() * 5 + 2.5}vh, ${randomZ - Math.random() * 10 + 5}px);
-      }
-      75% {
-        transform: translate3d(${safeZoneX + Math.random() * 2.5 - 1.25}vw, ${safeZoneY + Math.random() * 2.5 - 1.25}vh, ${randomZ + Math.random() * 5 - 2.5}px);
-      }
-      100% {
-        transform: translate3d(${safeZoneX}vw, ${safeZoneY}vh, ${randomZ}px);
-        opacity: 0; /* Wörter verschwinden */
-      }
-    }
-  `;
-
-  // Keyframes dem Dokument hinzufügen
-  const styleSheet = document.styleSheets[0] || document.head.appendChild(document.createElement('style')).sheet;
-  styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
-
+function generateStyle() {
+  const delay = Math.random() * 5;   // 0 - 5s
+  const duration = Math.random() * 5 + 5; // 5 - 10s
   return {
-    animation: `${keyframesName} ${animationDuration}s infinite ease-in-out ${animationDelay}s`,
-    color: randomColor,
-    opacity: 0, // Start als unsichtbar
-    zIndex: Math.round(randomZ), // Z-Index basierend auf Tiefe
+    animationDelay: `${delay}s`,
+    animationDuration: `${duration}s`,
+    opacity: 0,
   };
-};
+}
 
 const projects = ref([
   {
@@ -156,14 +145,16 @@ const projects = ref([
     link: "https://virtual-pet-bcky.onrender.com/",
     github: "https://github.com/Cedric-CJ/virtual-pet",
     technologies: ["Vue", "JavaScript", "HTML", "CSS", "Docker", "Typescript"],
-    description: "Ein Studienprojekt mit Funktionen zur Benutzerregistrierung, Anmeldung und Verwaltung eines virtuellen Haustiers, bei dem der Benutzer zwischen zwei Tieren wählen, ihnen Namen geben und sie füttern, pflegen oder mit ihnen spielen kann. Die Bedürfnisse der Tiere werden über Statusleisten angezeigt, und bei mangelnder Pflege kann das Tier sterben, sodass ein neues erstellt werden muss. Eine Bestenliste zeigt die Top-Tiere an.\n\n*Derzeit leider nicht funktionsfähig, da die Datenbank nicht mehr aktiv ist.*",
+    description:
+        "A study project featuring user registration, login, and management of a virtual pet, where the user can choose between two animals, name them, and feed, groom, or play with them. The animal's needs are displayed via status bars, and if care is neglected, the animal may die and a new one must be created. A leaderboard shows the top animals.\n\n*Currently not functional because the database is no longer active.*",
   },
   {
-    name: "Metallbaumeister Webseite",
+    name: "Metalworker Website",
     link: "https://mz24.net/",
     github: "https://github.com/Cedric-CJ/MZ24",
     technologies: ["HTML", "CSS", "JavaScript", "Vue"],
-    description: "Modernisierung der Webseite meines Vaters mit aktualisierten Datenschutz- und Impressumsseiten, einer dynamischeren Gestaltung und einer verbesserten Galerie mit Bild-Durchschaltung und Vorher-Nachher-Slider für einen modernen Look. Die Seite wurde so konzipiert, dass sie benutzerfreundlicher und optisch ansprechender ist, mit intuitiven Navigationselementen und verbesserter Ladezeit.",
+    description:
+        "Modernization of my father's website with updated data protection and imprint pages, a more dynamic design, and an improved gallery with image slideshow and before/after slider for a modern look. The page is designed to be more user-friendly and visually appealing, with intuitive navigation elements and improved loading times.",
   },
 ]);
 
@@ -178,12 +169,39 @@ const closeSidebar = () => {
 };
 
 const events = ref([
-  { year: 2026, title: "Bachelor of Science - Wirtschaftsinformatik", description: "An der Hochschule für Technik und Wirtschaft Berlin. Studium von 2022–2026." },
-  { year: 2024, title: "Praktikum im BMDV Abteilung z33", description: "4. Fachsemester 3,5 Monatiges Betriebspraktikum im Betrieb der Informationstechnik (IT-Betrieb)/Fach-Auftraggeberschnittstelle (F-AGS) BMDV"},
-  { year: 2022, title: "Werksstudent bei Kaufland", description: "Kaufland Deutschland. Seit Juni 2022 als Werksstudent tätig." },
-  { year: 2022, title: "Abitur", description: "Ernst-Haeckel-Schule. Abschluss mit 2,8er im Mathe-Geschichte Abitur." },
-  { year: 2018, title: "Praktikum Finanzamt Marzahn-Hellersdorf", description: "Praktikum beim Finanzamt Marzahn-Hellersdorf, mit Erfahrungen sowohl im Büro als auch bei Verhandlungen." },
-  { year: 2016, title: "Praktikum bei Dr. Albrecht & Plogmaker GbR", description: "Fünf freiwillige Praktika bei der Steuerkanzlei, wo ich tiefe Einblicke in die Steuerberatung erhielt." },
+  {
+    year: 2026,
+    title: "Bachelor of Science - Business Informatics",
+    description: "At the University of Applied Sciences Berlin (HTW). Studying from 2022–2026.",
+  },
+  {
+    year: 2024,
+    title: "Internship at BMDV Department z33",
+    description:
+        "4th semester, a 3.5-month business internship in the IT operations / specialized client interface (F-AGS) of the BMDV.",
+  },
+  {
+    year: 2022,
+    title: "Working Student at Kaufland",
+    description: "Kaufland Germany. Employed as a working student since June 2022.",
+  },
+  {
+    year: 2022,
+    title: "High School Diploma (Abitur)",
+    description:
+        "Ernst-Haeckel-Schule. Graduated with a 2.8 grade point average in a Math-History focus.",
+  },
+  {
+    year: 2018,
+    title: "Internship at Finanzamt Marzahn-Hellersdorf",
+    description: "Gained office experience as well as experience in negotiations.",
+  },
+  {
+    year: 2016,
+    title: "Internship at Dr. Albrecht & Plogmaker GbR",
+    description:
+        "Five voluntary internships at the tax consultancy, gaining deep insights into tax advisory processes.",
+  },
 ]);
 
 onMounted(() => {
@@ -207,9 +225,74 @@ onMounted(() => {
   for (const target of targets) {
     observer.observe(target);
   }
-})
+
+  const hexagonBackground = document.querySelector(".hexagon-background");
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY;
+    hexagonBackground.style.transform = `translateY(${-scrollPosition * 0.5}px)`; // Parallax effect
+  };
+
+  window.addEventListener("scroll", handleScroll);
+
+  onUnmounted(() => {
+    window.removeEventListener("scroll", handleScroll);
+  });
+});
 </script>
 <style>
+.hexagon-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 350%; /* Verlängert den Hintergrund für den Scroll-Effekt */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 5px;
+  z-index: -1; /* Hinter allen anderen Inhalten */
+  background: linear-gradient(120deg, #1a1a1a, #262626); /* Dunkler Verlauf */
+  overflow: hidden;
+  transform: translateY(0); /* Startposition */
+  will-change: transform; /* Optimiert die Leistung bei der Bewegung */
+}
+
+.hexagon {
+  position: relative;
+  width: 120px;
+  height: 69px; /* Höhe = Breite * sqrt(3) / 2 */
+  background: rgba(255, 255, 255, 0.1); /* Transparente Farbe für die Kacheln */
+  clip-path: polygon(
+      50% 0%,
+      100% 25%,
+      100% 75%,
+      50% 100%,
+      0% 75%,
+      0% 25%
+  );
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtile Schatten für Tiefe */
+  transition: transform 0.5s, background 0.5s; /* Weiche Übergänge */
+}
+
+.hexagon:hover {
+  transform: scale(1.1); /* Leichte Vergrößerung beim Hover */
+  background: rgba(255, 255, 255, 0.2); /* Hellerer Effekt beim Hover */
+}
+
+.hexagon:nth-child(even) {
+  transform: translateY(50%); /* Für das Schachbrettmuster */
+  animation: float 6s ease-in-out infinite; /* Animation für ein Schwebe-Effekt */
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(50%) translateX(0);
+  }
+  50% {
+    transform: translateY(50%) translateX(10px); /* Subtile Bewegung */
+  }
+}
+
 .timeline {
   overflow-x: hidden;
   position: relative;
