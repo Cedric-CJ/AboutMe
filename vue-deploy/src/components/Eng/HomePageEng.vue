@@ -129,15 +129,53 @@ const skills = ref([
   "Typescript",
 ]);
 
-function generateStyle() {
-  const delay = Math.random() * 5;   // 0 - 5s
-  const duration = Math.random() * 5 + 5; // 5 - 10s
+const generateStyle = () => {
+  const safeZoneX = Math.random() * 70; // X-Position in % innerhalb eines sicheren Bereichs
+  const safeZoneY = Math.random() * 40 + 5; // Y-Position in % innerhalb eines sicheren Bereichs
+  const randomZ = Math.random() * 50 - 25; // Tiefe (-25px bis 25px)
+  const randomSize = Math.random() * 2 + 2; // Dynamische Schriftgröße (0.8 bis 2.3)
+  const randomColor = Math.random() > 0.5 ? 'var(--primary-color)' : 'var(--text-color)'; // Zufällige Farbe
+  const animationDuration = Math.random() * 12 + 5; // Animationsdauer (10 bis 30s)
+  const animationDelay = Math.random() * 5; // Verzögerung (0 bis 5s)
+
+  // Zufällige Bewegung (chaotischer Effekt)
+  const keyframesName = `float-${Math.random().toString(36).slice(2, 7)}`; // Verwende `slice` statt `substr`
+  const keyframes = `
+    @keyframes ${keyframesName} {
+      0% {
+        transform: translate3d(${safeZoneX}vw, ${safeZoneY}vh, ${randomZ}px) scale(${randomSize});
+        opacity: 0;
+      }
+      10% {
+        opacity: 1; /* Wörter erscheinen */
+      }
+      25% {
+        transform: translate3d(${safeZoneX + Math.random() * 5 - 2.5}vw, ${safeZoneY + Math.random() * 5 - 2.5}vh, ${randomZ + Math.random() * 10 - 5}px);
+      }
+      50% {
+        transform: translate3d(${safeZoneX - Math.random() * 5 + 2.5}vw, ${safeZoneY - Math.random() * 5 + 2.5}vh, ${randomZ - Math.random() * 10 + 5}px);
+      }
+      75% {
+        transform: translate3d(${safeZoneX + Math.random() * 2.5 - 1.25}vw, ${safeZoneY + Math.random() * 2.5 - 1.25}vh, ${randomZ + Math.random() * 5 - 2.5}px);
+      }
+      100% {
+        transform: translate3d(${safeZoneX}vw, ${safeZoneY}vh, ${randomZ}px);
+        opacity: 0; /* Wörter verschwinden */
+      }
+    }
+  `;
+
+  // Keyframes dem Dokument hinzufügen
+  const styleSheet = document.styleSheets[0] || document.head.appendChild(document.createElement('style')).sheet;
+  styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+
   return {
-    animationDelay: `${delay}s`,
-    animationDuration: `${duration}s`,
-    opacity: 0,
+    animation: `${keyframesName} ${animationDuration}s infinite ease-in-out ${animationDelay}s`,
+    color: randomColor,
+    opacity: 0, // Start als unsichtbar
+    zIndex: Math.round(randomZ), // Z-Index basierend auf Tiefe
   };
-}
+};
 
 const projects = ref([
   {
