@@ -225,6 +225,10 @@ onMounted(() => {
 });
 </script>
 <style>
+html{
+  overflow-x: hidden;
+}
+
 .hexagon-background {
   position: fixed;
   top: 0;
@@ -389,7 +393,7 @@ body {
   color: white;
   box-shadow: -10px 0 20px rgba(0, 0, 0, 0.5);
   padding: 2vh;
-  z-index: 1000;
+  z-index: 99999;
   overflow-y: auto;
   transform: translateX(0);
   transition: transform 0.3s ease;
@@ -562,4 +566,8 @@ h1::after {
   opacity: 0; /* Start als unsichtbar */
   white-space: nowrap;
 }
+* {
+  outline: 1px solid rgba(255, 0, 0, 0.3);
+}
+
 </style>

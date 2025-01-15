@@ -247,44 +247,95 @@ body {
     color: var(--text-color);
 }
 
-#backToTopButton {
-    opacity: 1 !important;
-    visibility: visible !important;
+/* Cards Container */
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
 }
 
-#backToTopButton {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px; /* Gleiche Höhe und Breite für einen runden Button */
-    height: 60px;
-    border-radius: 50%; /* Rund machen */
-    background-color: transparent; /* Hintergrund durchsichtig */
-    border: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Schatten für 3D-Effekt */
-    cursor: pointer;
+/* Card Styling */
+.card {
+    width: 240px;
+    height: 180px;
+    background: var(--card-background-color);
+    border-radius: 0.5rem;
+    border: 2px solid rgba(0, 255, 241, 0.1); /* Subtle border */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    position: relative;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
 }
 
-#backToTopButton img {
-    width: 100%; /* Bild passt sich an Button-Größe an */
+/* Card hover effect */
+.card:hover {
+    transform: scale(0.97);
+    border: 2px solid var(--primary-color); /* Glowing border */
+}
+
+.card::before {
+    content: "";
     height: 100%;
-    object-fit: cover; /* Bild füllen ohne Verzerrung */
-    border-radius: 50%; /* Bild rund machen */
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+            circle at var(--xPos, 50%) var(--yPos, 50%),
+            var(--primary-color),
+            transparent 100%
+    );
+    transition: opacity 0.3s ease-in-out;
+    opacity: 0;
 }
 
-#backToTopButton:hover {
-    transform: scale(1.1); /* Leichter Hover-Effekt */
+/* Hover state for glow effect */
+.card:hover::before {
+    opacity: 1;
 }
 
-#backToTopButton:active {
-    transform: scale(0.95); /* Klick-Effekt */
+/* Card content - icon and text */
+.card-content {
+    background-color: transparent;
+    border-radius: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-content .icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 10px;
+}
+
+.card-content span {
+    font-size: 1.2rem;
+    color: var(--text-color);
+}
+
+@media (max-width:600px) {
+    .card {
+        width: 20vh;
+        height: 15vh;
+    }
+}
+
+@media (max-width:900px) {
+    .card {
+        width: 14vh;
+        height: 14vh;
+    }
 }
 
 /* TIMELINE

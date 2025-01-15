@@ -65,9 +65,6 @@
       </nav>
     </header>
     <component :is="currentInfoMessage" v-if="showMessage" @close-message="showMessage = false"/>
-    <button id="backToTopButton" @click="scrollToTop" v-show="showBackToTop">
-      <img src="@/assets/Pictures/back%20to%20top%20button.png" alt="Back to top" />
-    </button>
     <main>
       <router-view></router-view>
     </main>
@@ -185,16 +182,6 @@ export default {
         this.isMenuHidden = true;
       }
     },
-    scrollToTop() {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth', // Sanftes Scrollen
-      });
-    },
-    handleScroll() {
-      const scrollPosition = window.scrollY;
-      this.showBackToTop = scrollPosition > 600; // Zeige den Button nach 300px Scrollen
-    },
 
     handleClickOutside(event) {
       if (!this.$el.querySelector('#navMenu').contains(event.target) && !this.isMenuHidden) {
@@ -230,19 +217,14 @@ export default {
         this.showPreloader = false;
       }, 1500); // Fade-out duration
     }, 5000); // Total duration before fade-out
-
-    window.addEventListener('scroll', this.handleScroll);
-  },
-  beforeUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
   },
 };
 </script>
 <style>
 .language-switcher {
-  position: fixed;
-  top: 10px;
-  right: 10px;
+  position: fixed; /* fixed positioniert relativ zum Viewport */
+  top: calc(2% + 15px);   /* Berechnet den Abstand vom oberen Rand dynamisch */
+  right: calc(2% + 15px); /* Berechnet den Abstand vom rechten Rand dynamisch */
   display: flex;
   gap: 1.5rem;
   z-index: 9999;
@@ -274,126 +256,5 @@ export default {
   background-color: #121212;
   z-index: 1001;
   will-change: opacity;
-}
-
-.fade-out {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 1.5s ease, visibility 1.5s ease;
-}
-
-.preloader-text {
-  font-family: 'Roboto Slab', serif;
-}
-
-.animated-text {
-  display: inline-block;
-  opacity: 0;
-  animation: fade-in 0.5s ease forwards;
-}
-
-.accent-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-}
-
-.accent-selector .button-red {
-  cursor: pointer;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  color: #ffffff;
-  background-color: #FF3030;
-  font-size: 1rem;
-}
-
-.accent-selector .button-green {
-  cursor: pointer;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  color: #ffffff;
-  background-color: #228B22;
-  font-size: 1rem;
-}
-
-.accent-selector .button-blue {
-  cursor: pointer;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  color: #ffffff;
-  background-color: #1C1F26;
-  font-size: 1rem;
-}
-
-.accent-selector input {
-  margin-top: 5px;
-  cursor: pointer;
-}
-
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes glow {
-  0%, 100% {
-    text-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
-  }
-  50% {
-    text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 40px var(--primary-color);
-  }
-}
-
-body {
-  background-color:var(--background-color);
-  color: var(--text-color);
-}
-
-#backToTopButton {
-  opacity: 1 !important;
-  visibility: visible !important;
-}
-
-#backToTopButton {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px; /* Gleiche Höhe und Breite für einen runden Button */
-  height: 60px;
-  border-radius: 50%; /* Rund machen */
-  background-color: transparent; /* Hintergrund durchsichtig */
-  border: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Schatten für 3D-Effekt */
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-}
-
-#backToTopButton img {
-  width: 100%; /* Bild passt sich an Button-Größe an */
-  height: 100%;
-  object-fit: cover; /* Bild füllen ohne Verzerrung */
-  border-radius: 50%; /* Bild rund machen */
-}
-
-#backToTopButton:hover {
-  transform: scale(1.1); /* Leichter Hover-Effekt */
-}
-
-#backToTopButton:active {
-  transform: scale(0.95); /* Klick-Effekt */
 }
 </style>

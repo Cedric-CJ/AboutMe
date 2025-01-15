@@ -443,7 +443,7 @@ body {
   color: white;
   box-shadow: -10px 0 20px rgba(0, 0, 0, 0.5);
   padding: 2vh;
-  z-index: 1000;
+  z-index: 99999;
   overflow-y: auto;
   transform: translateX(0);
   transition: transform 0.3s ease;
