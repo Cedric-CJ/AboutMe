@@ -566,8 +566,4 @@ h1::after {
   opacity: 0; /* Start als unsichtbar */
   white-space: nowrap;
 }
-* {
-  outline: 1px solid rgba(255, 0, 0, 0.3);
-}
-
 </style>
