@@ -25,6 +25,9 @@
             <router-link :to="currentLanguage === 'de' ? '/de' : '/eng'">Home</router-link>
           </p>
           <p>
+            <router-link :to="currentLanguage === 'de' ? '/de/blog' : '/eng/blog'">Blog</router-link>
+          </p>
+          <p>
             <router-link :to="currentLanguage === 'de' ? '/de/contact' : '/eng/contact'">
               {{ menuText.contact }}
             </router-link>

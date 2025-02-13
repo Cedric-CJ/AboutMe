@@ -21,6 +21,9 @@ main {
     --primary-color: #228B22;
     --timeline-background: #f39c12;
     --card-background-color: #737373;
+    --text-color-blog: rgba(18, 18, 18, 0.8);
+    --blog-background-color: #9f9b9b;
+
 }
 
 /* Navigation Menu Styling */
@@ -147,11 +150,6 @@ footer a {
     transform: translateX(0);
     pointer-events: auto;
 }
-
-img {
-    width: 25vh;
-}
-
 
 .fullscreen {
     position: fixed;

@@ -1,0 +1,31 @@
+[
+  {
+    "title": "Hey Alle zusammen!",
+    "date": "Samstag, 15. Februar 2025",
+    "sections": [
+      {
+        "content": "Ich bin Cedric Arnhold, 21 Jahre alt, und studiere derzeit Wirtschaftsinformatik an der Hochschule für Technik und Wirtschaft in Berlin. Ich programmiere nebenbei ein paar Sachen, die mir in den Kopf kommen, so wie diese Webseite. Zurzeit bin ich in meinem Pflichtpraktikum im BMDV und habe dort in nur zwei Monaten meine ersten Erfahrungen im Bereich der Systemadministration und Serverinfrastruktur in Form eines intensiven Crashkurses gesammelt. Aktuell bekomme ich sehr viel Input sowohl vom BMDV als auch im Privaten, da ich neben dieser Webseite auch die Webseite meines Vaters betreibe und versuche, diese auf allen möglichen Geräten richtig darzustellen. Außerdem versuche ich, mein altes Hochschulprojekt VirtualPet wiederzubeleben und zu modernisieren. Jetzt bahnt sich schon das nächste Großprojekt an: ein privater Mail-, Web- und Cloud-Server für meinen Vater. Ich freue mich darauf, in Zukunft mehr über meine Projekte und Erfahrungen zu berichten.",
+        "image": "https://media.licdn.com/dms/image/v2/D4E03AQGGxTNdnTb8UQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1732881380890?e=1744848000&v=beta&t=x45ZNOSvaLB3RndqwuQTOLxekXdDW57lVTvjghjVURs",
+        "imagePosition": "left"
+      }
+    ],
+    "linkText": "Mein LinkedIn",
+    "linkUrl": "https://www.linkedin.com/in/cedric-arnhold-853a122a0/"
+  },
+  {
+    "title": "Unserer Deutschlandtour",
+    "date": "Dienstag, 01. Oktober 2024",
+    "sections": [
+      {
+        "content": "Unser Abenteuer begann an einem klaren Morgen in Berlin. Mit unserer Vespa Primavera 50 starteten wir zu einer fast zweimonatigen Tour durch Norddeutschland. Von Berlin über Swinemünde, Rügen, Lübeck, Kiel bis nach Flensburg und Ribe entdeckten wir malerische Küstenstädte und gemütliche Cafés. Ein Höhepunkt war der zweiwöchige Stopp bei meinen Großeltern in Brunsbüttel, wo wir neue Energie tankten.",
+        "image": "https://media.licdn.com/dms/image/v2/D4E2CAQEMuQFcMNUWOQ/comment-image-shrink_8192_480/B4EZT_nVqGHUAM-/0/1739455341241?e=1740063600&v=beta&t=DXyiG6IZs-7ZYNozPg3Gqh0tM59Ke-Pi7ZeO3ogozqE",
+        "imagePosition": "right"
+      },
+      {
+        "content": "Auf der Rückreise von Brunsbüttel nach Berlin traten unerwartete Herausforderungen auf. In Wolfsburg wurde ich krank und wir entgingen knapp einer gefährlichen Umleitung auf die Autobahn. Über Bremerhaven, Bremen, Celle und den atemberaubenden Harz führend, verbrachten wir schließlich eine Woche im Erzgebirge bei der Großmutter meiner Freundin. Ein plötzlicher Temperaturabfall und heftiger Regen zwangen uns, die Tour einige Tage früher zu beenden.",
+        "video": "https://dms.licdn.com/playlist/vid/v2/D4E05AQGPtKDgFN2ONw/mp4-640p-30fp-crf28/B4EZRZnyMEGYBc-/0/1736670422232?e=1740063600&v=beta&t=dmHV8kpHXNG5FkvVWQYPYkrmPLKy7bc298F28oST2P0",
+        "imagePosition": "left"
+      }
+    ]
+  }
+]

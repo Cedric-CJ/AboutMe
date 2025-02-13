@@ -277,6 +277,7 @@ onMounted(() => {
     window.removeEventListener("scroll", handleScroll);
   });
 });
+
 </script>
 <style>
 .hexagon-background {
@@ -337,7 +338,7 @@ onMounted(() => {
 }
 
 .intro {
-  height: 50vh; /* Nimmt den gesamten sichtbaren Bereich ein */
+  height: 50vh;
 }
 
 .overlay {

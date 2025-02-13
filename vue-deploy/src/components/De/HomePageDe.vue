@@ -333,15 +333,16 @@ html{
 
 .laptop-screen {
   position: absolute;
-  top: 10%; /* Adjust to fit the screen area of the laptop */
-  left: 15%; /* Adjust to fit the screen area of the laptop */
-  width: 70%; /* Adjust width to fit the screen area */
-  height: 65%; /* Adjust height to fit the screen area */
+  top: 8%; /* Adjust to fit the screen area of the laptop */
+  left: 14%; /* Adjust to fit the screen area of the laptop */
+  width: 72%; /* Adjust width to fit the screen area */
+  height: 70%; /* Adjust height to fit the screen area */
   background: var(--background-color); /* Fallback background color */
   overflow: hidden;
 }
 
 .live-iframe {
+  position: relative;
   width: 100%;
   height: 100%;
   border: none;

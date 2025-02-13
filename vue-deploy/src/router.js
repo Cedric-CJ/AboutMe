@@ -13,6 +13,8 @@ import TestPageDe from '@/components/De/TestPageDe.vue';
 import TestPageEng from '@/components/Eng/TestPageEng.vue';
 import InfoMessageDe from "@/components/De/DSGVO/InfoMessageDe.vue";
 import InfoMessageEng from "@/components/Eng/DSGVO/InfoMessageEng.vue";
+import BlogPageDe from "@/components/De/BlogPageDe.vue";
+import BlogPageEng from "@/components/Eng/BlogPageEng.vue";
 
 const routes = [
     // Sprachauswahlseite
@@ -29,7 +31,8 @@ const routes = [
     { path: '/de/contact', name: 'ContactDe', component: ContactMeDe },
     { path: '/de/test', name: 'TestPageDe', component: TestPageDe },
     { path: '/de/infoMessage', name: 'InfoMessageDe', component: InfoMessageDe },
-    // Englische Routen
+    { path: '/de/blog', name: 'BlogPageDe', component: BlogPageDe },
+// Englische Routen
     { path: '/eng', name: 'HomeEng', component: HomePageEng },
     { path: '/eng/impressum', name: 'ImpressumEng', component: ImpressumPageEng },
     { path: '/eng/PrivacyPolicy', name: 'PrivacyPolicyEng', component: PrivacyPolicyEng },
@@ -37,6 +40,7 @@ const routes = [
     { path: '/eng/contact', name: 'ContactEng', component: ContactMeEng },
     { path: '/eng/test', name: 'TestPageEng', component: TestPageEng },
     { path: '/eng/infoMessage', name: 'InfoMessageEng', component: InfoMessageEng},
+    { path: "/eng/blog", name: "BlogPageEng", component: BlogPageEng },
     // Fallback für ungültige Routen
     { path: '/:notFound(.*)', redirect: '/' },
 ];
