@@ -59,7 +59,6 @@ export default {
             return response.blob();
           })
           .then(blob => {
-            // Erstelle eine lokale URL für das Video-Blob
             section.videoObjectUrl = URL.createObjectURL(blob);
           })
           .catch(error => {
@@ -72,7 +71,6 @@ export default {
         .then(response => response.json())
         .then(data => {
           this.blogs = data;
-          // Für alle Blogposts, die ein Video haben, holen wir das Video per GET-Anfrage
           this.blogs.forEach(blog => {
             blog.sections.forEach(section => {
               if (section.video) {
@@ -131,8 +129,9 @@ export default {
   color: var(--text-color-blog);
 }
 img {
-  height: calc(10rem + 5vw);
-  width: auto;
+  height: auto;
+  width: 100%;
+  max-width: 200px;
 }
 .blog-video {
   width: 100%;
@@ -144,7 +143,7 @@ img {
   margin: 1rem 0;
   color: var(--text-color-blog);
   text-align: justify;
-  font-size: calc(0.8rem + 0.5vw);
+  font-size: calc(0.9rem + 0.5vw);
   hyphens: auto;
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
@@ -163,7 +162,6 @@ img {
 }
 .blog-section::after {
   content: "";
-  display: block;
   clear: both;
 }
 .blog-urls a {
@@ -180,7 +178,7 @@ img {
   color: var(--text-color);
 }
 .intro {
-  height: 10vh;
+  height: 5vh;
   position: relative;
 }
 h1::before,

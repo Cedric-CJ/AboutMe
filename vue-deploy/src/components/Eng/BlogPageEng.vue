@@ -8,8 +8,8 @@
       <p class="blog-date">{{ blog.date }}</p>
       <div class="blog-content-wrapper">
         <div v-for="(section, sIndex) in blog.sections" :key="sIndex" class="blog-section">
-          <template v-if="isVideo(section.image)">
-            <video controls class="blog-video">
+          <template v-if="section.video">
+            <video controls :class="[ getImageClass(section.imagePosition), 'blog-video' ]">
               <source :src="section.videoObjectUrl || section.video" type="video/mp4" />
               Your browser does not support video tags.
             </video>
@@ -51,10 +51,6 @@ export default {
           return "float-top-left";
       }
     },
-    // Prüft, ob der Link auf ein MP4-Video verweist (auch wenn Parameter angehängt sind)
-    isVideo(url) {
-      return url && (url.toLowerCase().includes('.mp4') || url.toLowerCase().includes('vid'));
-    },
     fetchVideo(section) {
       if (!section.video) return;
       fetch(section.video)
@@ -63,7 +59,6 @@ export default {
             return response.blob();
           })
           .then(blob => {
-            // Erstelle eine lokale URL für das Video-Blob
             section.videoObjectUrl = URL.createObjectURL(blob);
           })
           .catch(error => {
@@ -76,7 +71,6 @@ export default {
         .then(response => response.json())
         .then(data => {
           this.blogs = data;
-          // Für alle Blogposts, die ein Video haben, holen wir das Video per GET-Anfrage
           this.blogs.forEach(blog => {
             blog.sections.forEach(section => {
               if (section.video) {
@@ -124,7 +118,7 @@ export default {
   margin-top: 2rem;
 }
 .blog-entry.left:first-of-type {
-  margin-top: 2vh;
+  margin-top: 15vh;
 }
 .blog-title {
   margin-top: 0;
@@ -135,8 +129,9 @@ export default {
   color: var(--text-color-blog);
 }
 img {
-  height: calc(10rem + 5vw);
-  width: auto;
+  height: auto;
+  width: 100%;
+  max-width: 200px;
 }
 .blog-video {
   width: 100%;
@@ -148,7 +143,7 @@ img {
   margin: 1rem 0;
   color: var(--text-color-blog);
   text-align: justify;
-  font-size: calc(0.8rem + 0.5vw);
+  font-size: calc(0.9rem + 0.5vw);
   hyphens: auto;
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
@@ -167,7 +162,6 @@ img {
 }
 .blog-section::after {
   content: "";
-  display: block;
   clear: both;
 }
 .blog-urls a {
@@ -184,7 +178,7 @@ img {
   color: var(--text-color);
 }
 .intro {
-  height: 10vh;
+  height: 5vh;
   position: relative;
 }
 h1::before,

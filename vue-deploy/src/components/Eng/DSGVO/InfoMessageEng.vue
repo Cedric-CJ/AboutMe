@@ -1,5 +1,5 @@
 <template>
-  <div class="info-message">
+  <div v-if="!isClosed" class="info-message">
     <div>
       <p>
         This site does not use cookies, therefore no cookie manager is required.
@@ -46,8 +46,14 @@ export default {
   name: 'InfoMessageEng',
   data() {
     return {
-      showMore: false
+      showMore: false,
+      isClosed: false,
     };
+  },
+  created() {
+    if (localStorage.getItem('infoMessageClosed') === 'true') {
+      this.isClosed = true;
+    }
   },
   methods: {
     confirmRedirect() {
@@ -60,6 +66,8 @@ export default {
       }
     },
     closeMessage() {
+      localStorage.setItem('infoMessageClosed', 'true');
+      this.isClosed = true;
       this.$emit('close-message');
     }
   },
