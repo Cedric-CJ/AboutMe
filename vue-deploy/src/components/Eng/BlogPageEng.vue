@@ -2,6 +2,12 @@
   <section class="intro">
     <h1 data-text="My Blog">My Blog</h1>
   </section>
+  <div v-if="isMediaError" class="adblock-warning">
+    <p>
+      Not all media could be loaded. This may be because an AdBlocker is blocking the media.
+      Please deactivate the AdBlocker, only the media will be loaded - no advertising -
+    </p>
+  </div>
   <div class="blog-container">
     <div v-for="(blog, index) in blogs" :key="index" :class="['blog-entry', index % 2 === 0 ? 'left' : 'right']">
       <h2 class="blog-title">{{ blog.title }}</h2>
@@ -33,7 +39,8 @@ export default {
   name: "BlogPageEng",
   data() {
     return {
-      blogs: []
+      blogs: [],
+      isMediaError: false
     };
   },
   methods: {
@@ -62,8 +69,12 @@ export default {
             section.videoObjectUrl = URL.createObjectURL(blob);
           })
           .catch(error => {
-            console.error("Error by loading Videos:", error);
+            console.error("Error by loading video:", error);
+            this.handleMediaError();
           });
+    },
+    handleMediaError() {
+      this.isMediaError = true;
     }
   },
   mounted() {
@@ -84,6 +95,21 @@ export default {
 };
 </script>
 <style scoped>
+.adblock-warning {
+  position: fixed;
+  top: 85vh;
+  left: 10vw;
+  right: 10vw;
+  background-color: #ffdddd;
+  color: #a00;
+  padding: 1rem;
+  margin: 0;
+  border: 1px solid #a00;
+  border-radius: 5px;
+  z-index: 1;
+  text-align: center;
+  font-size: 0.8rem;
+}
 .blog-entry {
   --r: 1em;
   --t: 1em;

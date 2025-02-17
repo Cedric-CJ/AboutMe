@@ -1,7 +1,13 @@
 <template>
-  <section class="intro">
+    <section class="intro">
     <h1 data-text="Mein Blog">Mein Blog</h1>
   </section>
+  <div v-if="isMediaError" class="adblock-warning">
+    <p>
+      Es konnten nicht alle Medien geladen werden. Dies kann daran liegen, dass ein AdBlocker die Medien blockiert.
+      Bitte deaktiviere den AdBlocker, es werden nur die Medien geladen - keine Werbung -
+    </p>
+  </div>
   <div class="blog-container">
     <div v-for="(blog, index) in blogs" :key="index" :class="['blog-entry', index % 2 === 0 ? 'left' : 'right']">
       <h2 class="blog-title">{{ blog.title }}</h2>
@@ -33,7 +39,8 @@ export default {
   name: "BlogPageDe",
   data() {
     return {
-      blogs: []
+      blogs: [],
+      isMediaError: false
     };
   },
   methods: {
@@ -54,36 +61,54 @@ export default {
     fetchVideo(section) {
       if (!section.video) return;
       fetch(section.video)
-          .then(response => {
+          .then((response) => {
             if (!response.ok) throw new Error("Video konnte nicht geladen werden");
             return response.blob();
           })
-          .then(blob => {
+          .then((blob) => {
             section.videoObjectUrl = URL.createObjectURL(blob);
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Fehler beim Laden des Videos:", error);
+            this.handleMediaError();
           });
+    },
+    handleMediaError() {
+      this.isMediaError = true;
     }
-  },
-  mounted() {
+  },  mounted() {
     fetch("./BlogsDe.json")
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           this.blogs = data;
-          this.blogs.forEach(blog => {
-            blog.sections.forEach(section => {
+          this.blogs.forEach((blog) => {
+            blog.sections.forEach((section) => {
               if (section.video) {
                 this.fetchVideo(section);
               }
             });
           });
         })
-        .catch(error => console.error("Fehler beim Laden der Blogs:", error));
+        .catch((error) => console.error("Fehler beim Laden der Blogs:", error));
   }
 };
 </script>
 <style scoped>
+.adblock-warning {
+  position: fixed;
+  top: 85vh;
+  left: 10vw;
+  right: 10vw;
+  background-color: #ffdddd;
+  color: #a00;
+  padding: 1rem;
+  margin: 0;
+  border: 1px solid #a00;
+  border-radius: 5px 5px 5px 5px;
+  z-index: 1;
+  text-align: center;
+  font-size: 0.8rem;
+}
 .blog-entry {
   --r: 1em;
   --t: 1em;
