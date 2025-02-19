@@ -16,10 +16,10 @@
         <img v-if="currentLanguage === 'de'" src="@/assets/Pictures/flag-us.webp" alt="English" @click="switchLanguage('eng')"/>
         <!-- ansonsten die deutsche Flagge -->
         <img v-else-if="currentLanguage === 'eng'" src="@/assets/Pictures/flag-de.webp" alt="Deutsch" @click="switchLanguage('de')"/></div>
-      <button id="menuButton" @click.stop="toggleMenu">
+      <button id="menuButton" @click.stop="toggleMenu" :class="{ transparent: isBlogPage }">
         {{ menuText.menuButton }}
       </button>
-      <nav :class="{ hidden: isMenuHidden, visible: !isMenuHidden }" id="navMenu" @click.stop>
+      <nav :class="[ { blogMenu: isBlogPage }, { hidden: isMenuHidden, visible: !isMenuHidden } ]" id="navMenu" @click.stop>
         <div class="menu-links">
           <p>
             <router-link :to="currentLanguage === 'de' ? '/de' : '/eng'">Home</router-link>
@@ -145,6 +145,10 @@ export default {
         return "Redefining the IT world with AI".split("");
       }
     },
+    isBlogPage() {
+      const path = this.$route.path;
+      return path === '/de/blog' || path === '/eng/blog';
+    }
   },
   methods: {
     switchLanguage(lang) {
@@ -224,10 +228,16 @@ export default {
 };
 </script>
 <style>
+#menuButton.transparent {
+  background: black;
+}
+#navMenu.blogMenu {
+  background: black;
+}
 .language-switcher {
-  position: fixed; /* fixed positioniert relativ zum Viewport */
-  top: calc(2% + 15px);   /* Berechnet den Abstand vom oberen Rand dynamisch */
-  right: calc(2% + 15px); /* Berechnet den Abstand vom rechten Rand dynamisch */
+  position: fixed;
+  top: 0;
+  right: 20px;
   display: flex;
   gap: 1.5rem;
   z-index: 9999;
