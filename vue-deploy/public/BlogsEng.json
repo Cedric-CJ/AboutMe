@@ -8,7 +8,9 @@
         "image": "./Blog/Me.jpg",
         "imagePosition": "left"
       }
-    ]
+    ],
+    "linkText": "Mein LinkedIn",
+    "linkUrl": "https://www.linkedin.com/in/cedric-arnhold-853a122a0/"
   },
   {
     "title": "Our Germany Tour",
