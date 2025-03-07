@@ -181,11 +181,11 @@ const closeSidebar = () => {
 };
 
 const events = ref([
-  { year: 2026, title: "Bachelor of Science - Wirtschaftsinformatik", description: "An der Hochschule für Technik und Wirtschaft Berlin. Studium von 2022–2026." },
-  { year: 2024, title: "Praktikum im BMDV Abteilung z33", description: "4. Fachsemester 3,5 Monatiges Betriebspraktikum im Betrieb der Informationstechnik (IT-Betrieb)/Fach-Auftraggeberschnittstelle (F-AGS) BMDV"},
-  { year: 2022, title: "Werksstudent bei Kaufland", description: "Kaufland Deutschland. Seit Juni 2022 als Werksstudent tätig." },
-  { year: 2022, title: "Abitur", description: "Ernst-Haeckel-Schule. Abschluss mit 2,8er im Mathe-Geschichte Abitur." },
-  { year: 2018, title: "Praktikum Finanzamt Marzahn-Hellersdorf", description: "Praktikum beim Finanzamt Marzahn-Hellersdorf, mit Erfahrungen sowohl im Büro als auch bei Verhandlungen." },
+  { year: 2026, title: "Bachelor of Science - Wirtschaftsinformatik", description: "An der Hochschule für Technik und Wirtschaft Berlin werde ich voraussichtlich 2026 mein Bachelorstudium abschließen." },
+  { year: 2024, title: "Praktikum im Bundesministerium für Digitales und Verkehr Abteilung Z33", description: "Im 4. Fachsemester absolvierte ich von Dezember 2024 bis März 2025 ein 3,5-monatiges Fachpraktikum im Bereich Informationstechnik, bei dem der Schwerpunkt auf dem Betrieb von Servern und IT-Infrastruktur im BMDV lag."},
+  { year: 2022, title: "Werksstudent bei Kaufland", description: "Kaufland Deutschland. Von Juni 2022 bis August 2024 als Werksstudent tätig." },
+  { year: 2022, title: "Abitur", description: "An der Ernst-Haeckel-Schule Berlin. Abschluss mit 2,8er im Mathe-Geschichte Abitur." },
+  { year: 2018, title: "Praktikum Finanzamt Marzahn-Hellersdorf", description: "Praktikum beim Finanzamt Marzahn-Hellersdorf, mit Erfahrungen sowohl in Bürotätigkeiten als auch bei Verhandlungen." },
   { year: 2016, title: "Praktikum bei Dr. Albrecht & Plogmaker GbR", description: "Fünf freiwillige Praktika bei der Steuerkanzlei, wo ich tiefe Einblicke in die Steuerberatung erhielt." },
 ]);
 
