@@ -48,9 +48,9 @@
           </div>
         </div>
       </div>
-    <div
-        class="overlay" :class="{ active: isSidebarOpen }" @click="closeSidebar">
     </div>
+    <!-- Glass Overlay mit Blur Effekt -->
+    <div class="glass-overlay" :class="{ active: isSidebarOpen }" @click="closeSidebar"></div>
     <div class="sidebar" :class="{ active: isSidebarOpen }">
       <button class="close-button" @click="closeSidebar">×</button>
       <div class="sidebar-content" v-if="selectedProject">
@@ -77,11 +77,13 @@
         </div>
       </div>
     </div>
-  </div>
+
+
 </template>
 
 <script setup>
-import {ref, onMounted, onUnmounted} from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
+
 const isSidebarOpen = ref(false);
 const selectedProject = ref(null);
 
@@ -140,16 +142,13 @@ const generateStyle = () => {
       }
     }
   `;
-
-  // Keyframes dem Dokument hinzufügen
   const styleSheet = document.styleSheets[0] || document.head.appendChild(document.createElement('style')).sheet;
   styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
-
   return {
     animation: `${keyframesName} ${animationDuration}s infinite ease-in-out ${animationDelay}s`,
     color: randomColor,
-    opacity: 0, // Start als unsichtbar
-    zIndex: Math.round(randomZ), // Z-Index basierend auf Tiefe
+    opacity: 0,
+    zIndex: Math.round(randomZ),
   };
 };
 
@@ -158,7 +157,7 @@ const projects = ref([
     name: "Virtuelles Haustier",
     link: "https://virtual-pet-bcky.onrender.com/",
     github: "https://github.com/Cedric-CJ/virtual-pet",
-    technologies: ["Vue", "JavaScript", "HTML", "CSS", "Docker", "Typescript"],
+    technologies: ["Vue", "JavaScript", "HTML", "CSS", "Docker", "Typescript", "SQL-DB", "React", "Post-,Rest-Schnittstelle"],
     description: "Ein Studienprojekt mit Funktionen zur Benutzerregistrierung, Anmeldung und Verwaltung eines virtuellen Haustiers, bei dem der Benutzer zwischen zwei Tieren wählen, ihnen Namen geben und sie füttern, pflegen oder mit ihnen spielen kann. Die Bedürfnisse der Tiere werden über Statusleisten angezeigt, und bei mangelnder Pflege kann das Tier sterben, sodass ein neues erstellt werden muss. Eine Bestenliste zeigt die Top-Tiere an.\n\n*Derzeit leider nicht funktionsfähig, da die Datenbank nicht mehr aktiv ist.*",
   },
   {
@@ -180,20 +179,18 @@ const closeSidebar = () => {
   selectedProject.value = null;
 };
 
-const events = ref([
-  { year: 2026, title: "Bachelor of Science - Wirtschaftsinformatik", description: "An der Hochschule für Technik und Wirtschaft Berlin werde ich voraussichtlich 2026 mein Bachelorstudium abschließen." },
-  { year: 2024, title: "Praktikum im Bundesministerium für Digitales und Verkehr Abteilung Z33", description: "Im 4. Fachsemester absolvierte ich von Dezember 2024 bis März 2025 ein 3,5-monatiges Fachpraktikum im Bereich Informationstechnik, bei dem der Schwerpunkt auf dem Betrieb von Servern und IT-Infrastruktur im BMDV lag."},
-  { year: 2022, title: "Werksstudent bei Kaufland", description: "Kaufland Deutschland. Von Juni 2022 bis August 2024 als Werksstudent tätig." },
-  { year: 2022, title: "Abitur", description: "An der Ernst-Haeckel-Schule Berlin. Abschluss mit 2,8er im Mathe-Geschichte Abitur." },
-  { year: 2018, title: "Praktikum Finanzamt Marzahn-Hellersdorf", description: "Praktikum beim Finanzamt Marzahn-Hellersdorf, mit Erfahrungen sowohl in Bürotätigkeiten als auch bei Verhandlungen." },
-  { year: 2016, title: "Praktikum bei Dr. Albrecht & Plogmaker GbR", description: "Fünf freiwillige Praktika bei der Steuerkanzlei, wo ich tiefe Einblicke in die Steuerberatung erhielt." },
-]);
+// Globaler Click-Outside-Handler für das Sidebar (angelehnt an die handleClickOutside-Vorlage)
+const handleClickOutside = (event) => {
+  const sidebarEl = document.querySelector(".sidebar");
+  if (isSidebarOpen.value && sidebarEl && !sidebarEl.contains(event.target)) {
+    closeSidebar();
+  }
+};
 
 onMounted(() => {
   const targets = document.querySelectorAll(".timeline ul li");
   const threshold = 0.5;
   const ANIMATED_CLASS = "in-view";
-
   function callback(entries, observer) {
     entries.forEach((entry) => {
       const elem = entry.target;
@@ -205,27 +202,34 @@ onMounted(() => {
       }
     });
   }
-
   const observer = new IntersectionObserver(callback, { threshold });
-  for (const target of targets) {
-    observer.observe(target);
-  }
+  targets.forEach(target => observer.observe(target));
+  
   const hexagonBackground = document.querySelector('.hexagon-background');
-
   const handleScroll = () => {
     const scrollPosition = window.scrollY;
-    hexagonBackground.style.transform = `translateY(${-scrollPosition * 0.5}px)`; // Parallax-Effekt
+    hexagonBackground.style.transform = `translateY(${-scrollPosition * 0.5}px)`;
   };
-
   window.addEventListener('scroll', handleScroll);
-
+  
   onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll);
-  })
+    document.removeEventListener("click", handleClickOutside);
+  });
 });
+  
+const events = ref([
+  { year: 2026, title: "Bachelor of Science - Wirtschaftsinformatik", description: "An der Hochschule für Technik und Wirtschaft Berlin werde ich voraussichtlich 2026 mein Bachelorstudium abschließen." },
+  { year: 2024, title: "Praktikum im Bundesministerium für Digitales und Verkehr Abteilung Z33", description: "Im 4. Fachsemester absolvierte ich von Dezember 2024 bis März 2025 ein 3,5-monatiges Fachpraktikum im Bereich Informationstechnik, bei dem der Schwerpunkt auf dem Betrieb von Servern und IT-Infrastruktur im BMDV lag."},
+  { year: 2022, title: "Werksstudent bei Kaufland", description: "Kaufland Deutschland. Von Juni 2022 bis August 2024 als Werksstudent tätig." },
+  { year: 2022, title: "Abitur", description: "An der Ernst-Haeckel-Schule Berlin. Abschluss mit 2,8er im Mathe-Geschichte Abitur." },
+  { year: 2018, title: "Praktikum Finanzamt Marzahn-Hellersdorf", description: "Praktikum beim Finanzamt Marzahn-Hellersdorf, mit Erfahrungen sowohl in Bürotätigkeiten als auch bei Verhandlungen." },
+  { year: 2016, title: "Praktikum bei Dr. Albrecht & Plogmaker GbR", description: "Fünf freiwillige Praktika bei der Steuerkanzlei, wo ich tiefe Einblicke in die Steuerberatung erhielt." },
+]);
 </script>
+
 <style>
-html{
+html {
   overflow-x: hidden;
 }
 
@@ -234,51 +238,40 @@ html{
   top: 0;
   left: 0;
   width: 100%;
-  height: 350%; /* Verlängert den Hintergrund für den Scroll-Effekt */
+  height: 350%;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 5px;
-  z-index: -1; /* Hinter allen anderen Inhalten */
-  background: linear-gradient(120deg, #1a1a1a, #262626); /* Dunkler Verlauf */
+  z-index: -1;
+  background: linear-gradient(120deg, #1a1a1a, #262626);
   overflow: hidden;
-  transform: translateY(0); /* Startposition */
-  will-change: transform; /* Optimiert die Leistung bei der Bewegung */
+  transform: translateY(0);
+  will-change: transform;
 }
 
 .hexagon {
   position: relative;
   width: 120px;
-  height: 69px; /* Höhe = Breite * sqrt(3) / 2 */
-  background: rgba(255, 255, 255, 0.1); /* Transparente Farbe für die Kacheln */
-  clip-path: polygon(
-      50% 0%,
-      100% 25%,
-      100% 75%,
-      50% 100%,
-      0% 75%,
-      0% 25%
-  );
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Subtile Schatten für Tiefe */
-  transition: transform 0.5s, background 0.5s; /* Weiche Übergänge */
+  height: 69px;
+  background: rgba(255, 255, 255, 0.1);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.5s, background 0.5s;
 }
 
 .hexagon:hover {
-  transform: scale(1.1); /* Leichte Vergrößerung beim Hover */
-  background: rgba(255, 255, 255, 0.2); /* Hellerer Effekt beim Hover */
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .hexagon:nth-child(even) {
-  transform: translateY(50%); /* Für das Schachbrettmuster */
-  animation: float 6s ease-in-out infinite; /* Animation für ein Schwebe-Effekt */
+  transform: translateY(50%);
+  animation: float 6s ease-in-out infinite;
 }
 
 @keyframes float {
-  0%, 100% {
-    transform: translateY(50%) translateX(0);
-  }
-  50% {
-    transform: translateY(50%) translateX(10px); /* Subtile Bewegung */
-  }
+  0%, 100% { transform: translateY(50%) translateX(0); }
+  50% { transform: translateY(50%) translateX(10px); }
 }
 
 .timeline {
@@ -287,22 +280,12 @@ html{
 }
 
 .intro {
-  height: 50vh; /* Nimmt den gesamten sichtbaren Bereich ein */
-}
-
-.overlay {
-  pointer-events: none;
-}
-
-.overlay.active {
-  background: rgba(0, 0, 0, 0.6); /* Abdunkeln bei aktiver Sidebar */
-  opacity: 1;
-  visibility: visible;
+  height: 50vh;
 }
 
 .info {
-  font-family: "Poppins", sans-serif; /* Wähle eine moderne Schriftart */
-  color: var(--text-color);
+  font-family: "Poppins", sans-serif;
+  color: var(--special-text-color);
   text-align: justify;
   text-align-last: center;
   background: linear-gradient(120deg, var(--primary-color), #f39c12);
@@ -317,10 +300,10 @@ html{
 
 .laptop-frame {
   position: relative;
-  width: 90vw; /* Verwenden Sie vw, um die Breite relativ zur Fensterbreite zu setzen */
-  height: calc(100vw * 0.66); /* Verhältnis des Laptop-Bildes: Breite zu Höhe, hier z. B. 16:10 */
-  max-width: 150vh; /* Maximale Größe: passt sich an die Höhe des Bildschirms an */
-  max-height: calc(150vh * 0.66); /* Verhindert Überschreiten des Bildschirms */
+  width: 90vw;
+  height: calc(100vw * 0.66);
+  max-width: 150vh;
+  max-height: calc(150vh * 0.66);
   margin: auto;
 }
 
@@ -333,11 +316,11 @@ html{
 
 .laptop-screen {
   position: absolute;
-  top: 8%; /* Adjust to fit the screen area of the laptop */
-  left: 14%; /* Adjust to fit the screen area of the laptop */
-  width: 72%; /* Adjust width to fit the screen area */
-  height: 70%; /* Adjust height to fit the screen area */
-  background: var(--background-color); /* Fallback background color */
+  top: 8%;
+  left: 14%;
+  width: 72%;
+  height: 70%;
+  background: var(--background-color);
   overflow: hidden;
 }
 
@@ -349,7 +332,7 @@ html{
 }
 
 .my-skills {
-  margin-top: 50vh; /* Scrollbar setzt hier ein */
+  margin-top: 50vh;
 }
 
 body {
@@ -377,10 +360,10 @@ body {
 }
 
 .info-icon {
-  font-size: 1.2rem; /* Größe des Icons */
-  margin-left: 8px; /* Abstand zum Projektnamen */
-  cursor: pointer; /* Zeigt an, dass es anklickbar ist */
-  color: var(--primary-color); /* Farbe passend zum Design */
+  font-size: 1.2rem;
+  margin-left: 8px;
+  cursor: pointer;
+  color: var(--primary-color);
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
@@ -425,7 +408,7 @@ body {
 .sidebar-section h3 {
   font-size: 1.5rem;
   margin-bottom: 10px;
-  color: #f39c12; /* Akzentfarbe für Überschriften */
+  color: #f39c12;
 }
 
 .technologies {
@@ -479,7 +462,7 @@ h1 {
 
 h1::before,
 h1::after {
-  content: attr(data-text); /* Dupliziert den Text */
+  content: attr(data-text);
   position: absolute;
   top: 0;
   left: 0;
@@ -552,19 +535,38 @@ h1::after {
 
 .skills-cloud {
   position: relative;
-  width: 100vw; /* Vollbildbreite */
-  height: 50vh; /* Halbe Bildschirmhöhe */
-  perspective: 1000px; /* 3D-Effekt */
+  width: 100vw;
+  height: 50vh;
+  perspective: 1000px;
   overflow: hidden;
 }
 
 .skill {
   position: absolute;
-  font-size: calc(1.5vw + 2vh); /* Dynamische Schriftgröße */
+  font-size: calc(1.5vw + 2vh);
   font-weight: bold;
   font-family: Arial, sans-serif;
-  animation: none; /* Animation wird per JS hinzugefügt */
-  opacity: 0; /* Start als unsichtbar */
+  animation: none;
+  opacity: 0;
   white-space: nowrap;
+}
+
+/* Glass Overlay mit Blur Effekt */
+.glass-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 90;
+}
+.glass-overlay.active {
+  opacity: 1;
+  visibility: visible;
 }
 </style>

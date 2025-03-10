@@ -19,6 +19,7 @@ main {
     --background-color: #2E2E2E;
     --text-color: #ffffff;
     --primary-color: #228B22;
+    --special-text-color: #ffffff;
     --timeline-background: #f39c12;
     --card-background-color: #737373;
     --text-color-blog: rgba(18, 18, 18, 0.8);
@@ -33,17 +34,6 @@ header {
     position: relative;
 }
 
-#menuButton {
-    background: var(--primary-color);
-    border: none;
-    color: var(--text-color);
-    cursor: pointer;
-    font-size: 1.5rem;
-    border-radius: 5px;
-    padding: 15px;
-    box-sizing: border-box;
-}
-
 #navMenu {
     display: flex;
     flex-direction: column;
@@ -55,24 +45,10 @@ header {
     border-radius: 5px;
     padding-top: 50px;
     z-index: 1;
-    height: 95vh;
-    width: 250px;
     opacity: 0;
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
-
-#navMenu.visible {
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
-}
-
-#navMenu.hidden {
-    opacity: 0;
-    transform: translateX(-100%);
-    pointer-events: none;
 }
 
 #navMenu a {
@@ -90,6 +66,9 @@ header {
     font-size: 1rem;
     margin-top: auto;
     margin-bottom: 10px;
+}
+.info p, .timeline time, .timeline p, .sidebar-section a {
+    color: var(--special-text-color);
 }
 
 footer {
@@ -109,7 +88,7 @@ footer a {
 #navMenu .footer-links {
     position: absolute;
     text-align: center;
-    bottom: 10px;
+    bottom: 50px;
     width: 100%;
     left: 1vh;
 }
@@ -118,18 +97,6 @@ footer a {
     position: relative;
     text-align: center;
     top: 50px;
-}
-
-#closeMenuButton {
-    position: fixed;
-    left: 10px;
-    top: 10px;
-    padding: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-color);
-    font-size: 2rem;
 }
 
 #menuButton {

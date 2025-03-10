@@ -13,13 +13,33 @@
     </div>
     <header>
       <div class="language-switcher">
-        <img v-if="currentLanguage === 'de'" src="@/assets/Pictures/flag-us.webp" alt="English" @click="switchLanguage('eng')"/>
-        <!-- ansonsten die deutsche Flagge -->
-        <img v-else-if="currentLanguage === 'eng'" src="@/assets/Pictures/flag-de.webp" alt="Deutsch" @click="switchLanguage('de')"/></div>
-      <button id="menuButton" @click.stop="toggleMenu" :class="{ transparent: isBlogPage }">
-        {{ menuText.menuButton }}
-      </button>
-      <nav :class="[ { blogMenu: isBlogPage }, { hidden: isMenuHidden, visible: !isMenuHidden } ]" id="navMenu" @click.stop>
+        <img
+          v-if="currentLanguage === 'de'"
+          src="@/assets/Pictures/flag-us.webp"
+          alt="English"
+          @click="switchLanguage('eng')"
+        />
+        <img
+          v-else-if="currentLanguage === 'eng'"
+          src="@/assets/Pictures/flag-de.webp"
+          alt="Deutsch"
+          @click="switchLanguage('de')"
+        />
+      </div>
+      <!-- Hamburger Button – immer sichtbar -->
+      <label class="menubutton" @click.stop>
+        <input type="checkbox" v-model="isMenuOpen" />
+        <svg viewBox="0 0 32 32">
+          <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+          <path class="line" d="M7 16 27 16"></path>
+        </svg>
+      </label>
+      <!-- Slide-in Navigation -->
+      <nav
+        :class="[ { blogMenu: isBlogPage }, { hidden: !isMenuOpen, visible: isMenuOpen } ]"
+        id="navMenu"
+        @click.stop
+      >
         <div class="menu-links">
           <p>
             <router-link :to="currentLanguage === 'de' ? '/de' : '/eng'">Home</router-link>
@@ -64,15 +84,15 @@
           </router-link>
           <p>&copy; 2024 Cedric Arnhold</p>
         </div>
-        <button id="closeMenuButton" @click.stop="toggleMenu">←</button>
       </nav>
     </header>
     <component :is="currentInfoMessage" v-if="showMessage" @close-message="showMessage = false"/>
     <main>
       <router-view></router-view>
     </main>
-    <footer>
-    </footer>
+    <footer></footer>
+    <!-- Glass Overlay -->
+    <div class="glass-overlay" :class="{ active: isMenuOpen }" @click="isMenuOpen = false"></div>
   </div>
 </template>
 
@@ -88,17 +108,17 @@ export default {
   },
   data() {
     return {
-      isMenuHidden: true,
+      isMenuOpen: false,
       showMessage: true,
       showPreloader: true,
       isFadingOut: false,
-      accentColor: '#10e956', // Default accent color
+      accentColor: "#10e956",
       showBackToTop: false,
+      performanceMode: true
     };
   },
   computed: {
     currentLanguage() {
-      // Wir prüfen, ob der Pfad mit /de oder /eng beginnt
       const path = this.$route.path;
       if (path.startsWith("/de")) {return "de";
       } else if (path.startsWith("/eng")) {return "eng";
@@ -112,7 +132,6 @@ export default {
       // Ein "Dictionary" mit deutschen und englischen Übersetzungen
       if (this.currentLanguage === 'de') {
         return {
-          menuButton: '☰ Menü',
           contact: 'Kontakt',
           workInProgress: '...',
           chooseAccent: 'Akzentfarbe wählen:',
@@ -125,7 +144,6 @@ export default {
         };
       } else {
         return {
-          menuButton: '☰ Menu',
           contact: 'Contact',
           workInProgress: '...',
           chooseAccent: 'Choose accent color:',
@@ -156,50 +174,45 @@ export default {
 
       // Aktueller Pfad, z.B. "/de/contact" oder "/eng/workInProgress"
       const currentPath = this.$route.path;
-
-      let newPath;
-
-      if (lang === 'eng') {
-        // Ersetze am Anfang "/de" durch "/eng"
-        // Beispiel: "/de/contact" => "/eng/contact"
-        newPath = currentPath.replace(/^\/de/, '/eng');
-      } else {
-        // Ersetze am Anfang "/eng" durch "/de"
-        // Beispiel: "/eng/contact" => "/de/contact"
-        newPath = currentPath.replace(/^\/eng/, '/de');
-      }
-
-      // Nun navigieren wir zu newPath
+      const newPath =
+        lang === "eng"
+          ? currentPath.replace(/^\/de/, "/eng")
+          : currentPath.replace(/^\/eng/, "/de");
       this.$router.push(newPath);
     },
-
-    toggleMenu() {
-      const navMenu = document.getElementById('navMenu');
-
-      if (this.isMenuHidden) {
-        // Menü einblenden
-        this.isMenuHidden = false;
-        navMenu.classList.remove('hidden');
-        navMenu.classList.add('visible');
-      } else {
-        // Menü ausblenden
-        navMenu.classList.remove('visible');
-        navMenu.classList.add('hidden');
-        // Sofort das `isMenuHidden` setzen, keine Verzögerung
-        this.isMenuHidden = true;
+    handleClickOutside(event) {
+      if (
+        this.isMenuOpen &&
+        !this.$el.querySelector("#navMenu").contains(event.target)
+      ) {
+        this.isMenuOpen = false;
       }
     },
-
-    handleClickOutside(event) {
-      if (!this.$el.querySelector('#navMenu').contains(event.target) && !this.isMenuHidden) {
-        this.toggleMenu();
+    // Berechnet den Kontrast basierend auf der YIQ-Formel
+    getContrastYIQ(hexcolor) {
+      let color = hexcolor.replace("#", "");
+      if (color.length === 3) {
+        color = color.split("").map((c) => c + c).join("");
       }
+      const r = parseInt(color.substr(0, 2), 16);
+      const g = parseInt(color.substr(2, 2), 16);
+      const b = parseInt(color.substr(4, 2), 16);
+      const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+      return yiq >= 128 ? "#000000" : "#ffffff";
     },
     setAccentColor(color) {
       this.accentColor = color;
-      document.documentElement.style.setProperty('--primary-color', color);
-      document.documentElement.style.setProperty('--timeline-background', color);
+      const contrastColor = this.getContrastYIQ(color);
+      document.documentElement.style.setProperty("--primary-color", color);
+      document.documentElement.style.setProperty("--special-text-color", contrastColor);
+      document.documentElement.style.setProperty("--timeline-background", color);
     },
+  },
+  // Performance Mode global bereitstellen
+  provide() {
+    return {
+      performanceMode: this.performanceMode
+    };
   },
   mounted() {
     setTimeout(() => {
@@ -209,38 +222,120 @@ export default {
         text.style.transition = "opacity 0.3s ease";
         setTimeout(() => {
           text.style.opacity = "1";
-        }, i * 100); // Staggered animation
+        }, i * 100);
       });
-    }, 500); // Animation delay
-
+    }, 500);
     setTimeout(() => {
       const preloaderText = document.querySelector(".preloader-text");
       preloaderText.style.animation = "glow 1.5s 2 alternate";
-    }, ("Mit KI die IT-Welt neu definieren".length * 100) + 500); // Glow starts after text is fully visible
-
+    }, "Mit KI die IT-Welt neu definieren".length * 100 + 500);
     setTimeout(() => {
       this.isFadingOut = true;
       setTimeout(() => {
         this.showPreloader = false;
-      }, 1500); // Fade-out duration
-    }, 5000); // Total duration before fade-out
+      }, 1500);
+    }, 5000);
   },
 };
 </script>
 <style>
-#menuButton.transparent {
-  background: black;
+/* Header, Language-Switcher, Preloader etc. bleiben unverändert */
+
+#navMenu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40vw;
+  max-width: 400px;
+  height: 100%;
+  background: var(--background-color);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+  z-index: 290;
+  overflow-y: auto; /* Damit das Menü scrollbar ist */
 }
-#navMenu.blogMenu {
-  background: black;
+
+.switch-wrapper {
+  display: inline-block;
+  position: relative;
 }
+
+/* Header (inklusive Menü und Sprachwechsel) – bleibt über dem Overlay */
+header {
+  position: relative;
+  z-index: 300;
+}
+
+/* Modernisierte Menü-Styles (Slide-in Navigation, Hamburger Button) */
+.menubutton {
+  cursor: pointer;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 110;
+}
+
+.menubutton input {
+  display: none;
+}
+
+.menubutton svg {
+  height: 3em;
+  transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line {
+  fill: none;
+  stroke: var(--primary-color);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
+  stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line-top-bottom {
+  stroke-dasharray: 12 63;
+}
+
+.menubutton input:checked + svg {
+  transform: rotate(-45deg);
+}
+
+.menubutton input:checked + svg .line-top-bottom {
+  stroke-dasharray: 20 300;
+  stroke-dashoffset: -32.42;
+}
+
+/* Glass Overlay – soll nur den Hintergrund blurren, nicht Header oder Menü */
+.glass-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 100;
+}
+
+.glass-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Weitere Styles (Language-Switcher, Fullscreen Preloader) */
 .language-switcher {
   position: fixed;
   top: 0;
   right: 20px;
   display: flex;
   gap: 1.5rem;
-  z-index: 9999;
+  z-index: 1000;
 }
 
 .language-switcher img {
