@@ -15,6 +15,7 @@ import InfoMessageDe from "@/components/De/DSGVO/InfoMessageDe.vue";
 import InfoMessageEng from "@/components/Eng/DSGVO/InfoMessageEng.vue";
 import BlogPageDe from "@/components/De/BlogPageDe.vue";
 import BlogPageEng from "@/components/Eng/BlogPageEng.vue";
+import GallerieDe from "@/components/De/GallerieDe.vue";
 
 const routes = [
     // Sprachauswahlseite
@@ -25,6 +26,7 @@ const routes = [
 
     // Deutsche Routen
     { path: '/de', name: 'HomeDe', component: HomePageDe },
+    { path: '/de/gallerie', name: 'GallerieDe', component: GallerieDe },
     { path: '/de/impressum', name: 'ImpressumDe', component: ImpressumPageDe },
     { path: '/de/PrivacyPolicy', name: 'DatenschutzDe', component: PrivacyPolicyDe },
     { path: '/de/workInProgress', name: 'WorkInProgressDe', component: WorkInProgressPageDe },
