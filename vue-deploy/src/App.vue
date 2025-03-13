@@ -247,6 +247,7 @@ export default {
   left: 0;
   width: 40vw;
   max-width: 400px;
+  min-width: 200px;
   height: 100%;
   background: var(--background-color);
   transform: translateX(-100%);
@@ -254,11 +255,6 @@ export default {
   opacity: 0;
   z-index: 290;
   overflow-y: auto; /* Damit das Menü scrollbar ist */
-}
-
-.switch-wrapper {
-  display: inline-block;
-  position: relative;
 }
 
 /* Header (inklusive Menü und Sprachwechsel) – bleibt über dem Overlay */

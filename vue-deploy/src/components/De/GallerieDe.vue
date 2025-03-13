@@ -1,6 +1,13 @@
 <template>
   <div class="gallery-showcase">
-    <div class="gallery-overview">
+    <!-- Veil-artige Polarlichter im Hintergrund -->
+    <NorthernLights />
+
+    <header class="gallery-header">
+      <h1>Beispiel-Galerien</h1>
+    </header>
+
+    <div class="gallery-overview" v-if="!selectedGallery">
       <div
           v-for="gallery in galleryData"
           :key="gallery.id"
@@ -18,20 +25,29 @@
       </div>
     </div>
 
-    <!-- Loading Spinner wird hier eingebunden -->
+    <!-- Loading Spinner -->
     <LoadingSpinner v-if="isLoading" />
 
-    <!-- Fullscreen Overlay für die ausgewählte Galerie -->
+    <!-- Vollbild Overlay für die ausgewählte Galerie -->
     <div v-if="selectedGallery" id="fullscreen-gallery" class="fullscreen-overlay">
       <button
           @click="handleClose"
           class="close-button"
           aria-label="Close gallery"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             class="close-icon" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 text-gray-800 transition-transform duration-200"
+            :class="{ 'rotate-animation': animateCross }"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+          <path d="M18 6L6 18"></path>
+          <path d="M6 6l12 12"></path>
         </svg>
       </button>
       <div class="fullscreen-content">
@@ -48,6 +64,7 @@ import CardGallery from '../Gallery/CardGallery.vue'
 import GridGallery from '../Gallery/GridGallery.vue'
 import SlideGallery from '../Gallery/SlideGallery.vue'
 import LoadingSpinner from '../Gallery/LoadingSpinner.vue'
+import NorthernLights from '@/components/northern-lights.vue'
 
 const galleryData = [
   {
@@ -82,6 +99,7 @@ const galleryData = [
 
 const selectedGallery = ref(null)
 const isLoading = ref(false)
+const animateCross = ref(false)
 
 const handleGalleryClick = (type) => {
   isLoading.value = true
@@ -92,13 +110,15 @@ const handleGalleryClick = (type) => {
 }
 
 const handleClose = () => {
+  animateCross.value = true
   const overlay = document.getElementById('fullscreen-gallery')
   if (overlay) {
-    overlay.classList.add('fade-out')
+    overlay.classList.add('fade-out2')
   }
   setTimeout(() => {
     selectedGallery.value = null
-  }, 500)
+    animateCross.value = false
+  }, 300)
 }
 
 const currentGalleryComponent = computed(() => {
@@ -119,57 +139,81 @@ const currentGalleryComponent = computed(() => {
 
 <style scoped>
 .gallery-showcase {
+  position: relative;
   min-height: 100vh;
-  background-color: #fff;
+  background-color: transparent;
 }
+
+.gallery-header {
+  text-align: center;
+  padding: 2rem;
+  color: var(--special-text-color);
+  position: relative;
+  z-index: 10;
+}
+
+.gallery-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .gallery-overview {
   max-width: 1280px;
-  margin: 0 auto;
+  margin: 5vh auto 2rem;
   padding: 2rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
+  position: relative;
+  z-index: 10;
 }
+
 .gallery-preview {
   overflow: hidden;
   border-radius: 1rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.3s;
   cursor: pointer;
 }
+
 .gallery-preview:hover {
-  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
+
 .preview-image {
   position: relative;
   height: 16rem;
   width: 100%;
 }
+
 .preview-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s;
 }
+
 .preview-image img:hover {
   transform: scale(1.1);
 }
+
 .preview-tag {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: rgba(255,255,255,0.8);
+  background: var(--card-background-color);
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
   border-radius: 9999px;
 }
+
 .preview-info {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0,0,0,0.6);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--text-color);
   padding: 1rem;
   text-align: center;
 }
@@ -178,39 +222,57 @@ const currentGalleryComponent = computed(() => {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background-color: #fff;
-  animation: fade-in 0.5s ease-out forwards;
+  background-color: var(--background-color);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
   overflow: auto;
 }
+
+.fade-out2 {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 .close-button {
   position: absolute;
-  top: 1.5rem;
+  top: 15vh;
   right: 1.5rem;
-  background: #fff;
+  background: var(--blog-background-color);
   border: none;
   border-radius: 50%;
-  padding: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s;
+  z-index: 60;
 }
+
 .close-button:hover {
   transform: scale(1.1) rotate(90deg);
 }
+
 .fullscreen-content {
   padding: 4rem 1rem 6rem;
   max-width: 1536px;
   margin: 0 auto;
+  position: relative;
+  z-index: 50;
 }
 
-/* Fade-out Animation */
-.fade-out {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 1.5s ease, visibility 1.5s ease;
+@keyframes rotateCross {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(90deg);
+  }
 }
 
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.rotate-animation {
+  animation: rotateCross 0.2s forwards;
 }
 </style>

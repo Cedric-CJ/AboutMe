@@ -24,7 +24,7 @@ main {
     --card-background-color: #737373;
     --text-color-blog: rgba(18, 18, 18, 0.8);
     --blog-background-color: #9f9b9b;
-
+    --water-color: rgba(0,70,150,0.6);
 }
 
 /* Navigation Menu Styling */
@@ -89,8 +89,10 @@ footer a {
     position: absolute;
     text-align: center;
     bottom: 50px;
-    width: 100%;
-    left: 1vh;
+    width: 95%;
+    left: 0.5vh;
+    right: 0.5vh;
+
 }
 
 .menu-links {
