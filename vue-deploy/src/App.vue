@@ -45,6 +45,9 @@
             <router-link :to="currentLanguage === 'de' ? '/de' : '/eng'">Home</router-link>
           </p>
           <p>
+            <router-link :to="currentLanguage === 'de' ? '/de/gallery' : '/eng/gallery'">Gallery</router-link>
+          </p>
+          <p>
             <router-link :to="currentLanguage === 'de' ? '/de/blog' : '/eng/blog'">Blog</router-link>
           </p>
           <p>
@@ -304,26 +307,6 @@ header {
   stroke-dashoffset: -32.42;
 }
 
-/* Glass Overlay – soll nur den Hintergrund blurren, nicht Header oder Menü */
-.glass-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(8px);
-  background-color: rgba(0, 0, 0, 0.2);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease;
-  z-index: 100;
-}
-
-.glass-overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-
 /* Weitere Styles (Language-Switcher, Fullscreen Preloader) */
 .language-switcher {
   position: fixed;
@@ -331,7 +314,7 @@ header {
   right: 20px;
   display: flex;
   gap: 1.5rem;
-  z-index: 1000;
+  z-index: 400;
 }
 
 .language-switcher img {
@@ -357,7 +340,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #121212;
+  background-color: var(--background-color);
   z-index: 1001;
   will-change: opacity;
 }

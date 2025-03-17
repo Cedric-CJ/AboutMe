@@ -1,6 +1,6 @@
 ### Erstellt von Cedric – besuche mein [GitHub](https://cedric-cj.github.io/AboutMe/)
 <template>
-  <div class="container">
+  <div class="PrivacyPolicy">
     <header></header>
     <main>
       <h1>Privacy Policy</h1>
@@ -129,7 +129,6 @@
     <footer></footer>
   </div>
 </template>
-
 <script>
 export default {
   name: 'PrivacyPolicyEng',

@@ -1,6 +1,6 @@
 Inspiration: https://codepen.io/bbx/pen/Jxoqdg
 <template>
-  <div class="container">
+  <div class="CardGallery">
     <div class="card" v-for="card in cards" :key="card.caption">
       <div class="card__image">Hier kommt noch ein Bild</div>
       <div class="card__head">{{ card.caption }}</div>
@@ -26,17 +26,7 @@ export default {
 </script>
 
 <style>
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: #000;
-  font-family: sans-serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.container {
+.CardGallery {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,14 +35,14 @@ body {
   transform: skew(5deg);
 }
 
-.container .card {
+.CardGallery .card {
   flex: 1;
   transition: all 1s ease-in-out;
   height: 75vmin;
   position: relative;
 }
 
-.container .card .card__head {
+.CardGallery .card .card__head {
   color: black;
   background: rgba(255, 30, 173, 0.75);
   padding: 0.5em;
@@ -68,15 +58,15 @@ body {
   white-space: nowrap;
 }
 
-.container .card:hover {
+.CardGallery .card:hover {
   flex-grow: 10;
 }
 
-.container .card:hover .card__image {
+.CardGallery .card:hover .card__image {
   filter: grayscale(0);
 }
 
-.container .card:hover .card__head {
+.CardGallery .card:hover .card__head {
   text-align: center;
   top: calc(100% - 2em);
   color: white;
@@ -85,7 +75,7 @@ body {
   transform: rotate(0deg) skew(-5deg);
 }
 
-.container .card .card__image {
+.CardGallery .card .card__image {
   width: 100%;
   height: 100%;
   transition: all 1s ease-in-out;
@@ -96,7 +86,7 @@ body {
   background: #ccc;
 }
 
-.container .card:not(:nth-child(5)) {
+.CardGallery .card:not(:nth-child(5)) {
   margin-right: 1em;
 }
 </style>

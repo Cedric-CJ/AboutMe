@@ -1,6 +1,6 @@
 Inspiration: https://codepen.io/knyttneve/pen/YgZbLO
 <template>
-  <div class="container">
+  <div class="BoxGallery">
     <div class="box" v-for="(item, index) in boxes" :key="index">
       <!-- Statt eines Bildes verwenden wir hier einen Placeholder -->
       <div class="placeholder">Hier kommt noch ein Bild</div>
@@ -26,7 +26,7 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.BoxGallery {
   display: flex;
   width: 100%;
   padding: 4% 2%;

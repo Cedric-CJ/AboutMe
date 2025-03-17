@@ -1,3 +1,4 @@
+<!-- Created by Cedric, visit my [GitHub](https://cedric-cj.github.io/AboutMe/) -->
 <template>
   <div class="contact-page">
     <h1 class="page-title">Contact</h1>
@@ -69,22 +70,5 @@ export default {
   },
 };
 </script>
-<style>
-.contact-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 85vh;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  padding: 10px;
-}
-
-.page-title {
-  margin-top: -5vh;
-  font-size: 3rem;
-  margin-bottom: 40px;
-  color: var(--text-color);
-}
+<style scoped>
 </style>

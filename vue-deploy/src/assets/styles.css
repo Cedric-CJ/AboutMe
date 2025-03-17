@@ -16,7 +16,7 @@ main {
 }
 
 :root {
-    --background-color: #2E2E2E;
+    --background-color: Black;
     --text-color: #ffffff;
     --primary-color: #228B22;
     --special-text-color: #ffffff;
@@ -119,6 +119,23 @@ footer a {
     transform: translateX(0);
     pointer-events: auto;
 }
+.glass-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 100;
+}
+.glass-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
 
 .fullscreen {
     position: fixed;
@@ -207,11 +224,6 @@ footer a {
     50% {
         text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 40px var(--primary-color);
     }
-}
-
-body {
-    background-color:var(--background-color);
-    color: var(--text-color);
 }
 
 /* Cards Container */

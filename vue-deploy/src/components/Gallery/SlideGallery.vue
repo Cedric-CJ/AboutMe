@@ -1,6 +1,6 @@
 Inspiration: https://codepen.io/seanfree/pen/BLrNzx
 <template>
-  <div id="container">
+  <div id="SlideGallery">
     <div
         v-for="(item, index) in info"
         :key="index"
@@ -13,7 +13,7 @@ Inspiration: https://codepen.io/seanfree/pen/BLrNzx
       </div>
       <div class="overlay"></div>
       <div class="content">
-        <h1 class="title" :data-title="item.city">{{ item.city }}</h1>
+        <h2 class="title" :data-title="item.city">{{ item.city }}</h2>
         <div class="emblem">
           <span>Hier Bsp. Bild</span>
         </div>
@@ -87,27 +87,12 @@ function onClose(index) {
 </script>
 
 <style scoped>
-html, body {
-  height: 100vh;
-  width: 100vw;
-  box-sizing: border-box;
-}
-
-body {
-  background: #1f1f1f;
-  font-family: "Open Sans Condensed", sans-serif;
-}
-
-h1, h2, h3, h4 {
-  font-family: "Abril Fatface", serif;
-}
-
-#container {
-  position: relative;
+#SlideGallery {
+  justify-content: center;
   display: flex;
   align-items: center;
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
 }
 
 .slide {

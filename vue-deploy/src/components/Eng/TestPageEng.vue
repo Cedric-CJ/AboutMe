@@ -1,3 +1,4 @@
+### Erstellt von Cedric visit my [GitHub](https://cedric-cj.github.io/AboutMe/)
 <template>
   <div class="fun-page">
     <div class="scene flex">
@@ -5,7 +6,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { gsap } from "gsap";
 
@@ -179,31 +179,5 @@ export default {
   },
 };
 </script>
-
 <style scoped>
-.fun-page {
-  position: relative;
-  overflow: hidden;
-  width: 100vw;
-  height: 100vh;
-  background-color: var(--background-color);
-}
-
-.scene {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.scene__animation {
-  width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
-  position: absolute;
-}
 </style>

@@ -1,19 +1,12 @@
+### Erstellt von Cedric visit my [GitHub](https://cedric-cj.github.io/AboutMe/)
 <template>
   <div class="gallery-showcase">
-    <!-- Veil-artige Polarlichter im Hintergrund -->
-    <NorthernLights />
-
+    <NorthernLights/>
     <header class="gallery-header">
       <h1>Beispiel-Galerien</h1>
     </header>
-
     <div class="gallery-overview" v-if="!selectedGallery">
-      <div
-          v-for="gallery in galleryData"
-          :key="gallery.id"
-          class="gallery-preview"
-          @click="handleGalleryClick(gallery.type)"
-      >
+      <div v-for="gallery in galleryData" :key="gallery.id" class="gallery-preview" @click="handleGalleryClick(gallery.type)">
         <div class="preview-image">
           <img :src="gallery.thumbnail" :alt="gallery.title" loading="lazy" />
           <div class="preview-tag">{{ gallery.type }}</div>
@@ -24,28 +17,10 @@
         </div>
       </div>
     </div>
-
-    <!-- Loading Spinner -->
     <LoadingSpinner v-if="isLoading" />
-
-    <!-- Vollbild Overlay für die ausgewählte Galerie -->
     <div v-if="selectedGallery" id="fullscreen-gallery" class="fullscreen-overlay">
-      <button
-          @click="handleClose"
-          class="close-button"
-          aria-label="Close gallery"
-      >
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-6 h-6 text-gray-800 transition-transform duration-200"
-            :class="{ 'rotate-animation': animateCross }"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-        >
+      <button @click="handleClose" class="close-button" aria-label="Close gallery">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-800 transition-transform duration-200" :class="{ 'rotate-animation': animateCross }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 6L6 18"></path>
           <path d="M6 6l12 12"></path>
         </svg>
@@ -56,7 +31,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, computed } from 'vue'
 import BoxGallery from '../Gallery/BoxGallery.vue'
@@ -136,14 +110,12 @@ const currentGalleryComponent = computed(() => {
   }
 })
 </script>
-
 <style scoped>
 .gallery-showcase {
   position: relative;
   min-height: 100vh;
   background-color: transparent;
 }
-
 .gallery-header {
   text-align: center;
   padding: 2rem;
@@ -151,23 +123,35 @@ const currentGalleryComponent = computed(() => {
   position: relative;
   z-index: 10;
 }
-
 .gallery-header h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
 }
-
 .gallery-overview {
+  width: 100%;
   max-width: 1280px;
-  margin: 5vh auto 2rem;
-  padding: 2rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(1,minmax(0,1fr));
   gap: 2rem;
   position: relative;
   z-index: 10;
 }
-
+@media (min-width: 768px) {
+  .gallery-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .gallery-showcase{
+    padding-top: 0;
+  }
+}
+@media (min-width: 1024px) {
+  .gallery-overview {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .gallery-showcase{
+    padding-top: 0;
+  }
+}
 .gallery-preview {
   overflow: hidden;
   border-radius: 1rem;
@@ -175,28 +159,23 @@ const currentGalleryComponent = computed(() => {
   transition: all 0.3s;
   cursor: pointer;
 }
-
 .gallery-preview:hover {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
-
 .preview-image {
   position: relative;
   height: 16rem;
   width: 100%;
 }
-
 .preview-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.5s;
 }
-
 .preview-image img:hover {
   transform: scale(1.1);
 }
-
 .preview-tag {
   position: absolute;
   top: 0.5rem;
@@ -206,7 +185,6 @@ const currentGalleryComponent = computed(() => {
   font-size: 0.75rem;
   border-radius: 9999px;
 }
-
 .preview-info {
   position: absolute;
   bottom: 0;
@@ -217,27 +195,25 @@ const currentGalleryComponent = computed(() => {
   padding: 1rem;
   text-align: center;
 }
-
 .fullscreen-overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
-  background-color: transparent;
+  z-index: 500;
+  background-color: var(--background-color);
   opacity: 1;
   visibility: visible;
   transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
   overflow: auto;
 }
-
 .fade-out2 {
   opacity: 0 !important;
   visibility: hidden !important;
 }
-
 .close-button {
   position: absolute;
-  top: 15vh;
-  right: 1.5rem;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
   background: var(--blog-background-color);
   border: none;
   border-radius: 50%;
@@ -250,19 +226,15 @@ const currentGalleryComponent = computed(() => {
   transition: transform 0.3s;
   z-index: 60;
 }
-
 .close-button:hover {
   transform: scale(1.1) rotate(90deg);
 }
-
 .fullscreen-content {
-  padding: 4rem 1rem 6rem;
-  max-width: 1536px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 50;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
 @keyframes rotateCross {
   from {
     transform: rotate(0deg);
@@ -271,7 +243,6 @@ const currentGalleryComponent = computed(() => {
     transform: rotate(90deg);
   }
 }
-
 .rotate-animation {
   animation: rotateCross 0.2s forwards;
 }

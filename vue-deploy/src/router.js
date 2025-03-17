@@ -15,7 +15,8 @@ import InfoMessageDe from "@/components/De/DSGVO/InfoMessageDe.vue";
 import InfoMessageEng from "@/components/Eng/DSGVO/InfoMessageEng.vue";
 import BlogPageDe from "@/components/De/BlogPageDe.vue";
 import BlogPageEng from "@/components/Eng/BlogPageEng.vue";
-import GallerieDe from "@/components/De/GallerieDe.vue";
+import GalleryDe from "@/components/De/GalleryDe.vue";
+import GalleryEng from "@/components/Eng/GalleryEng.vue";
 
 const routes = [
     // Sprachauswahlseite
@@ -26,7 +27,7 @@ const routes = [
 
     // Deutsche Routen
     { path: '/de', name: 'HomeDe', component: HomePageDe },
-    { path: '/de/gallerie', name: 'GallerieDe', component: GallerieDe },
+    { path: '/de/gallery', name: 'GalleryDe', component: GalleryDe },
     { path: '/de/impressum', name: 'ImpressumDe', component: ImpressumPageDe },
     { path: '/de/PrivacyPolicy', name: 'DatenschutzDe', component: PrivacyPolicyDe },
     { path: '/de/workInProgress', name: 'WorkInProgressDe', component: WorkInProgressPageDe },
@@ -36,6 +37,7 @@ const routes = [
     { path: '/de/blog', name: 'BlogPageDe', component: BlogPageDe },
 // Englische Routen
     { path: '/eng', name: 'HomeEng', component: HomePageEng },
+    { path: '/eng/gallery', name: 'GalleryEng', component: GalleryEng },
     { path: '/eng/impressum', name: 'ImpressumEng', component: ImpressumPageEng },
     { path: '/eng/PrivacyPolicy', name: 'PrivacyPolicyEng', component: PrivacyPolicyEng },
     { path: '/eng/workInProgress', name: 'WorkInProgressEng', component: WorkInProgressPageEng },

@@ -1,3 +1,4 @@
+### Erstellt von Cedric visit my [GitHub](https://cedric-cj.github.io/AboutMe/)
 <template>
   <div class="typewriter-wrapper">
     <div class="typewriter">
@@ -5,7 +6,6 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
   data() {
@@ -49,8 +49,7 @@ export default {
   },
 };
 </script>
-
-<style>
+<style scoped>
 .typewriter-wrapper {
   padding-top: 100px; /* Fester Abstand vom oberen Rand */
   transition: padding-top 0.3s ease; /* Weiche Animation, wenn das Padding geändert wird */
