@@ -1,208 +1,480 @@
+Inspiration: https://codepen.io/seanfree/pen/BLrNzx
 <template>
-  <div class="slide-gallery">
-    <div class="header text-center">
-      <span class="badge">Slide Expansion</span>
-      <h1>City Slide Gallery</h1>
-      <p>
-        Click to expand. Features beautiful city perspectives with detailed information.
-      </p>
-    </div>
-    <div class="slides-container">
-      <div
-          v-for="(slide, index) in slides"
-          :key="index"
-          :class="[
-          'slide-item',
-          activeSlide === index ? 'active-slide' : '',
-          activeSlide !== null && activeSlide !== index ? 'shrink-slide' : '',
-          lastViewedSlide === index ? 'last-viewed-slide' : ''
-        ]"
-          @click="handleSlideClick(index)"
-      >
-        <div class="slide-bg" :style="{ backgroundImage: `url(${slide.image})` }"></div>
-        <div class="slide-gradient"></div>
-        <div class="slide-content">
-          <h3>{{ slide.city }}</h3>
-          <div v-if="activeSlide === index">
-            <div class="slide-emblem" :style="{ backgroundImage: `url(${slide.emblem})` }"></div>
-            <ul>
-              <li>Country: {{ slide.country }}</li>
-              <li>Founded: {{ slide.founded }}</li>
-              <li>Population: {{ slide.population }}</li>
-            </ul>
-          </div>
-          <button v-if="activeSlide === index" @click.stop="handleClose" aria-label="Close gallery">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="close-icon">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
+  <div id="container">
+    <div
+        v-for="(item, index) in info"
+        :key="index"
+        class="slide"
+        :class="slideStates[index]"
+        @click="onSlideClick(index)"
+    >
+      <div class="image">
+        <span>Hier Bsp. Bild</span>
       </div>
+      <div class="overlay"></div>
+      <div class="content">
+        <h1 class="title" :data-title="item.city">{{ item.city }}</h1>
+        <div class="emblem">
+          <span>Hier Bsp. Bild</span>
+        </div>
+        <ul class="city-info">
+          <li class="country">Country: {{ item.country }}</li>
+          <li class="founded">Founded: {{ item.founded }}</li>
+          <li class="population">Population: {{ item.population }}</li>
+        </ul>
+      </div>
+      <!-- Close-Button (stoppt das Click-Event) -->
+      <div class="btn-close" @click.stop="onClose(index)"></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
 
-const slides = [
+const info = [
   {
     city: 'Venice',
     country: 'Italy',
     population: '260,060',
     founded: '697',
-    image: 'https://images.unsplash.com/photo-1514539079130-25950c84af65?w=800',
-    emblem: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Emblem_of_Italy.svg/240px-Emblem_of_Italy.svg.png'
+    image: 'Hier Bsp. Bild',
+    emblem: 'Hier Bsp. Bild'
   },
   {
     city: 'Paris',
     country: 'France',
     population: '2.2 Million',
     founded: '~250BC',
-    image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800',
-    emblem: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Coat_of_arms_of_the_French_Republic.svg/240px-Coat_of_arms_of_the_French_Republic.svg.png'
+    image: 'Hier Bsp. Bild',
+    emblem: 'Hier Bsp. Bild'
   },
   {
     city: 'Salzburg',
     country: 'Austria',
     population: '145,871',
     founded: '1622',
-    image: 'https://images.unsplash.com/photo-1516550893885-7b7791d01bd9?w=800',
-    emblem: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Austria_Bundesadler.svg/240px-Austria_Bundesadler.svg.png'
+    image: 'Hier Bsp. Bild',
+    emblem: 'Hier Bsp. Bild'
   },
   {
     city: 'Prague',
     country: 'Czech Republic',
     population: '1.2 Million',
     founded: '870',
-    image: 'https://images.unsplash.com/photo-1519677100203-a0e668c92439?w=800',
-    emblem: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Coat_of_arms_of_the_Czech_Republic.svg/240px-Coat_of_arms_of_the_Czech_Republic.svg.png'
+    image: 'Hier Bsp. Bild',
+    emblem: 'Hier Bsp. Bild'
   }
-]
+];
 
-const activeSlide = ref(null)
-const lastViewedSlide = ref(null)
+const slideStates = ref(info.map(() => 'anim-in'));
 
-const handleSlideClick = (index) => {
-  if (activeSlide.value === null && lastViewedSlide.value === null) {
-    activeSlide.value = index
+function onSlideClick(index) {
+  if (slideStates.value[index] !== 'active' && !slideStates.value.some(s => s === 'active')) {
+    slideStates.value[index] = 'active';
+    slideStates.value = slideStates.value.map((state, i) =>
+        i !== index ? 'anim-out' : state
+    );
   }
 }
 
-const handleClose = () => {
-  lastViewedSlide.value = activeSlide.value
-  activeSlide.value = null
-  setTimeout(() => {
-    lastViewedSlide.value = null
-  }, 1000)
+function onClose(index) {
+  slideStates.value[index] = 'last-viewed';
+  slideStates.value = slideStates.value.map((state, i) =>
+      i !== index ? 'anim-in' : state
+  );
 }
 </script>
 
 <style scoped>
-.slide-gallery {
-  animation: fade-in 0.5s ease-out forwards;
+html, body {
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
 }
-.header {
-  margin-bottom: 2.5rem;
+
+body {
+  background: #1f1f1f;
+  font-family: "Open Sans Condensed", sans-serif;
 }
-.header .badge {
-  background-color: #ffebcd; /* Example: amber-100 */
-  color: #d97706; /* amber-800 */
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: 1rem;
+
+h1, h2, h3, h4 {
+  font-family: "Abril Fatface", serif;
 }
-.header h1 {
-  font-size: 2.25rem;
-  font-weight: bold;
-  color: #1f2937;
-  margin-bottom: 0.5rem;
-}
-.header p {
-  font-size: 1.125rem;
-  color: #6b7280;
-  max-width: 42rem;
-  margin: 0 auto;
-}
-.slides-container {
-  display: flex;
-  height: 600px;
-  width: 100%;
-  max-width: 112rem;
-  margin: 0 auto;
-}
-.slide-item {
-  flex: 1;
+
+#container {
   position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.slide {
+  position: relative;
+  flex: 1;
+  height: 100%;
   overflow: hidden;
-  transition: all 1s;
   cursor: pointer;
+  transition: all 1s;
 }
-.active-slide {
-  flex-grow: 3;
+
+/* .last-viewed */
+.slide.last-viewed .btn-close:after {
+  transition-delay: 0s;
 }
-.shrink-slide {
-  flex-grow: 0.2;
+.slide.last-viewed .btn-close:before {
+  transition-delay: 0.1s;
+}
+.slide.last-viewed .content .city-info {
+  transition-delay: 0s;
+}
+.slide.last-viewed .content .city-info li:nth-of-type(1) {
+  transition-delay: 0.2s;
+}
+.slide.last-viewed .content .city-info li:nth-of-type(2) {
+  transition-delay: 0.4s;
+}
+.slide.last-viewed .content .city-info li:nth-of-type(3) {
+  transition-delay: 0.6s;
+}
+.slide.last-viewed .content .emblem {
+  transition: all 0.5s;
+  transition-delay: 0s;
+}
+
+/* .last-viewed und .active */
+.slide.last-viewed .image,
+.slide.active .image {
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* .active */
+.slide.active {
   cursor: default;
 }
-.last-viewed-slide {
-  flex: 1;
+
+.slide.active .overlay {
+  width: 25%;
+  background-size: 100% 100%;
+  transition: all 1.25s;
+  transition-delay: 1.75s;
 }
-.slide-bg {
+
+.slide.active .content {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.slide.active .content .title {
+  width: 25%;
+  opacity: 1;
+  transform: translateY(30px);
+  transition: all 1s;
+  transition-delay: 1.25s;
+}
+
+.slide.active .content .title:after {
+  height: 100%;
+  color: white;
+  overflow: initial;
+}
+
+.slide.active .content .title:before {
+  transform: scaleX(1);
+  transition-delay: 2s;
+}
+
+.slide.active .content .city-info li {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.slide.active .content .emblem {
+  opacity: 0.8;
+  transform: translateY(100px);
+}
+
+.slide.active .btn-close {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.slide.active .btn-close:before,
+.slide.active .btn-close:after {
+  opacity: 1;
+}
+
+.slide.active .btn-close:after {
+  transform: rotate(45deg) translateX(0);
+}
+
+.slide.active .btn-close:before {
+  transform: rotate(-45deg) translateX(0);
+}
+
+/* .anim-in */
+.slide.anim-in {
+  transition-delay: 0.5s;
+}
+
+.slide.anim-in .image {
+  top: -20%;
+  left: -140%;
+  height: 140%;
+  width: 140%;
+  animation: img-anim-in 1.2s forwards;
+}
+
+/* .anim-out */
+.slide.anim-out {
+  flex: 0;
+  cursor: default;
+  transition-delay: 0.5s;
+}
+
+.slide.anim-out .image {
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  animation: img-anim-out 1.2s forwards;
+}
+
+/* explizite Animation-Delays für jedes Slide (nth-of-type 1 bis 4) */
+.slide:nth-of-type(1).anim-in .image {
+  animation-delay: 0.2s;
+}
+.slide:nth-of-type(2).anim-in .image {
+  animation-delay: 0.4s;
+}
+.slide:nth-of-type(3).anim-in .image {
+  animation-delay: 0.6s;
+}
+.slide:nth-of-type(4).anim-in .image {
+  animation-delay: 0.8s;
+}
+.slide:nth-of-type(1).anim-out .image {
+  animation-delay: 0.2s;
+}
+.slide:nth-of-type(2).anim-out .image {
+  animation-delay: 0.4s;
+}
+.slide:nth-of-type(3).anim-out .image {
+  animation-delay: 0.6s;
+}
+.slide:nth-of-type(4).anim-out .image {
+  animation-delay: 0.8s;
+}
+
+.image {
+  position: absolute;
+  background: #ccc;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
   background-size: cover;
   background-position: center;
-  transition: transform 0.7s;
+  pointer-events: none;
+  transition: all 1s;
 }
-.group:hover .slide-bg {
-  transform: scale(1.1);
-}
-.slide-gradient {
+
+.overlay {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-  opacity: 0.7;
-  transition: opacity 0.3s;
-}
-.slide-content {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 1.5rem;
-  color: #ffffff;
-}
-.slide-content h3 {
-  font-size: 1.875rem;
-  font-weight: bold;
-  opacity: 0;
-  transform: translateY(-2.5rem);
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-image: linear-gradient(rgba(20,20,20,0.7), rgba(20,20,20,0));
+  background-position: 0 0;
+  background-size: 100% 200%;
+  opacity: 1;
+  pointer-events: none;
   transition: all 0.5s;
 }
-.slide-item:hover .slide-content h3 {
-  opacity: 1;
-  transform: translateY(0);
-}
-.slide-emblem {
+
+.content {
   position: absolute;
-  top: 6rem;
-  left: 1.5rem;
-  width: 5rem;
-  height: 5rem;
-  background-size: contain;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+}
+
+.content .title {
+  position: absolute;
+  top: -10px;
+  height: 65px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 3em;
+  text-align: center;
+  text-shadow: 0 2px 2px #2f2f2f;
+  color: #3f3f3f;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.5s;
+}
+
+.content .title:after {
+  position: absolute;
+  top: 0;
+  height: 0;
+  width: 100%;
+  display: block;
+  content: attr(data-title);
+  overflow: hidden;
+  color: #fff59d;
+  transition: all 0.85s;
+}
+
+.content .title:before {
+  position: absolute;
+  bottom: 15px;
+  display: block;
+  content: "";
+  height: 2px;
+  width: 85%;
+  background: white;
+  box-shadow: 0 2px 6px #2f2f2f;
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 1.25s;
+}
+
+.content .emblem {
+  position: absolute;
+  height: 200px;
+  width: 25%;
+  background: #ddd;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(120px);
+  transition: all 1s;
+  transition-delay: 1.75s;
+  background-position: center;
   background-repeat: no-repeat;
-  transition: all 0.7s 0.5s;
+  background-size: contain;
 }
-.close-icon {
-  color: #000;
+
+.content .city-info {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  padding: 30px 30px 30px 120px;
+  font-size: 1.25em;
+  color: white;
+  text-shadow: 0 1px 4px #0f0f0f;
+  background-image: linear-gradient(90deg, rgba(20,20,20,0), rgba(20,20,20,0.7));
+  opacity: 0;
+  transition: all 1s;
+  transition-delay: 2s;
 }
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+
+.content .city-info li {
+  position: relative;
+  margin-bottom: 5px;
+  text-align: justify;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.75s;
+}
+
+.btn-close {
+  position: absolute;
+  z-index: 100;
+  top: 20px;
+  right: 20px;
+  height: 24px;
+  width: 24px;
+  pointer-events: none;
+}
+
+.btn-close:before,
+.btn-close:after {
+  position: absolute;
+  top: 12px;
+  display: block;
+  content: "";
+  width: 100%;
+  height: 4px;
+  background-color: white;
+  opacity: 0;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+
+.btn-close:after {
+  transform: rotate(45deg) translateX(-12px);
+  transition-delay: 3s;
+}
+
+.btn-close:before {
+  transform: rotate(-45deg) translateX(12px);
+  transition-delay: 3.2s;
+}
+
+.slide:hover:not(.active):not(.anim-out) .image {
+  transform: scale(1.1);
+}
+
+.slide:hover:not(.active):not(.anim-out) .overlay {
+  opacity: 0.6;
+}
+
+.slide:hover:not(.active):not(.anim-out) .content .title {
+  opacity: 1;
+  transform: translateY(30px);
+}
+
+.slide:hover:not(.active):not(.anim-out) .content .title:after {
+  height: 100%;
+}
+
+#codepen-link {
+  position: absolute;
+  right: 15px;
+  bottom: 15px;
+  height: 40px;
+  width: 40px;
+  z-index: 10;
+  border-radius: 50%;
+  background-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/544318/logo.jpg");
+  background-position: center;
+  background-size: cover;
+  opacity: 0.7;
+  transition: all 0.25s;
+}
+
+#codepen-link:hover {
+  opacity: 1;
+  box-shadow: 0 2px 6px #0f0f0f;
+}
+
+@keyframes img-anim-in {
+  to {
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+}
+
+@keyframes img-anim-out {
+  to {
+    left: -100%;
+  }
 }
 </style>

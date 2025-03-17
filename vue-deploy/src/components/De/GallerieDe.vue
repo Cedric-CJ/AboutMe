@@ -222,7 +222,7 @@ const currentGalleryComponent = computed(() => {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background-color: var(--background-color);
+  background-color: transparent;
   opacity: 1;
   visibility: visible;
   transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
