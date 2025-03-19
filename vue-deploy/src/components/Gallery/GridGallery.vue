@@ -1,23 +1,31 @@
-Inspiration: https://codepen.io/pieter-biesemans/pen/xQOgxx
 <template>
   <div class="gallery">
-    <div class="message">
-      Interactive! Tap a picture to enlarge, tap again to close
-    </div>
     <div class="GridGallery">
-      <!-- Erzeugt 9 Elemente (1 bis 9) -->
-      <template v-for="x in 9" :key="x">
-        <input :id="'item' + x" type="checkbox" />
-        <label :for="'item' + x" :class="'item' + x">
-          Picture in cuming
+      <template v-for="(img, index) in images" :key="index">
+        <input :id="'item' + index" type="checkbox" />
+        <label :for="'item' + index" :class="'item' + (index + 1)" :style="{ backgroundImage: 'url(' + img + ')' }">
         </label>
       </template>
     </div>
   </div>
 </template>
 <script>
+import esel from '@/assets/Pictures/Gallery/9er/Esel.jpg'
+import katze from '@/assets/Pictures/Gallery/9er/Katze1.jpg'
+import katze2 from '@/assets/Pictures/Gallery/9er/Katze2.jpg'
+import katze3 from '@/assets/Pictures/Gallery/9er/Katze3.jpg'
+import katze4 from '@/assets/Pictures/Gallery/9er/Katze4.jpg'
+import katze5 from '@/assets/Pictures/Gallery/9er/Katze5.jpg'
+import katze6 from '@/assets/Pictures/Gallery/9er/Katze6.jpg'
+import katze7 from '@/assets/Pictures/Gallery/9er/Katze7.jpg'
+import storch from '@/assets/Pictures/Gallery/9er/Storch.jpg'
 export default {
-  name: 'ResponsiveGallery'
+  name: 'ResponsiveGallery',
+  data() {
+    return {
+      images: [esel, katze, katze2, katze3, katze4, katze5, katze6, katze7, storch]
+    }
+  }
 }
 </script>
 <style scoped>
@@ -30,20 +38,12 @@ export default {
   font-size: 1vmin;
   color: var(--text-color);
 }
-.message {
-  position: absolute;
-  top: 1vw;
-  width: 100%;
-  text-align: center;
-  font-size: 2.5em;
-  line-height: 2em;
-}
 .GridGallery {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 99em;
-  height: 99em;
+  width: 90em;
+  height: 90em;
   transform: translate(-50%, -50%);
 }
 .GridGallery [class*="item"] {
@@ -59,6 +59,10 @@ export default {
   justify-content: center;
   text-align: center;
   padding: 10px;
+  box-sizing: border-box;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .GridGallery [class*="item"]:hover {
   border: 1px solid var(--primary-color);

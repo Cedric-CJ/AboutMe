@@ -1,30 +1,47 @@
-Inspiration: https://codepen.io/bbx/pen/Jxoqdg
 <template>
   <div class="CardGallery">
-    <div class="card" v-for="card in cards" :key="card.caption">
-      <div class="card__image">Hier kommt noch ein Bild</div>
+    <div class="card" v-for="card in localizedCards" :key="card.caption">
+      <div class="card__image">
+        <img :src="card.image" :alt="card.caption" />
+      </div>
       <div class="card__head">{{ card.caption }}</div>
     </div>
   </div>
 </template>
 
 <script>
+import alanya from '@/assets/Pictures/Gallery/5er/Alanya1.jpg'
+import berge from '@/assets/Pictures/Gallery/5er/Berge.jpg'
+import himmel from '@/assets/Pictures/Gallery/5er/Himmel.jpg'
+import himmel2 from '@/assets/Pictures/Gallery/5er/Himmel2.jpg'
+import wasserfall from '@/assets/Pictures/Gallery/5er/Wasserfall.jpg'
+
 export default {
   name: 'AccordionGallery',
   data() {
     return {
       cards: [
-        { caption: 'Plotting Cat' },
-        { caption: 'Angry Cat' },
-        { caption: 'Curious Cat' },
-        { caption: 'Prowling Cat' },
-        { caption: 'Sleepy Cat' }
+        { captionDE: 'Alanya', captionEN: 'Alanya', image: alanya },
+        { captionDE: 'Berge', captionEN: 'Mountains', image: berge },
+        { captionDE: 'Himmel', captionEN: 'Sky', image: himmel },
+        { captionDE: 'Wolkiger Himmel', captionEN: 'Cloudy Sky', image: himmel2 },
+        { captionDE: 'Wasserfall', captionEN: 'Waterfall', image: wasserfall }
       ]
+    }
+  },
+  computed: {
+    language() {
+      return window.location.hash.includes('/eng/') ? 'en' : 'de'
+    },
+    localizedCards() {
+      return this.cards.map(card => ({
+        ...card,
+        caption: this.language === 'en' ? card.captionEN : card.captionDE
+      }))
     }
   }
 }
 </script>
-
 <style>
 .CardGallery {
   display: flex;
@@ -34,14 +51,12 @@ export default {
   overflow: hidden;
   transform: skew(5deg);
 }
-
 .CardGallery .card {
   flex: 1;
   transition: all 1s ease-in-out;
   height: 75vmin;
   position: relative;
 }
-
 .CardGallery .card .card__head {
   color: black;
   background: rgba(255, 30, 173, 0.75);
@@ -57,15 +72,12 @@ export default {
   font-size: 1em;
   white-space: nowrap;
 }
-
 .CardGallery .card:hover {
   flex-grow: 10;
 }
-
 .CardGallery .card:hover .card__image {
   filter: grayscale(0);
 }
-
 .CardGallery .card:hover .card__head {
   text-align: center;
   top: calc(100% - 2em);
@@ -74,7 +86,6 @@ export default {
   font-size: 2em;
   transform: rotate(0deg) skew(-5deg);
 }
-
 .CardGallery .card .card__image {
   width: 100%;
   height: 100%;
@@ -85,8 +96,12 @@ export default {
   align-items: center;
   background: #ccc;
 }
-
 .CardGallery .card:not(:nth-child(5)) {
   margin-right: 1em;
+}
+.CardGallery .card .card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>

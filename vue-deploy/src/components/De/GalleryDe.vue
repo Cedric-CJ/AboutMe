@@ -1,25 +1,45 @@
 ### Erstellt von Cedric visit my [GitHub](https://cedric-cj.github.io/AboutMe/)
 <template>
   <div class="gallery-showcase">
-    <NorthernLights/>
+    <NorthernLights />
     <header class="gallery-header">
       <h1>Beispiel-Galerien</h1>
     </header>
-    <div class="gallery-overview" v-if="!selectedGallery">
-      <div v-for="gallery in galleryData" :key="gallery.id" class="gallery-preview" @click="handleGalleryClick(gallery.type)">
-        <div class="preview-image">
-          <img :src="gallery.thumbnail" :alt="gallery.title" loading="lazy" />
-          <div class="preview-tag">{{ gallery.type }}</div>
-          <div class="preview-info">
-            <h3>{{ gallery.title }}</h3>
-            <p>{{ gallery.description }}</p>
+    <div v-if="!selectedGallery">
+      <section>
+        <h2>Animiert</h2>
+        <div class="gallery-overview">
+          <div v-for="gallery in animatedGalleries" :key="gallery.id" class="gallery-preview" @click="handleGalleryClick(gallery.type)">
+            <div class="preview-image">
+              <img :src="gallery.thumbnail" :alt="gallery.title" loading="lazy" />
+              <div class="preview-tag">{{ gallery.type }}</div>
+              <div class="preview-info">
+                <h3>{{ gallery.title }}</h3>
+                <p>{{ gallery.description }}</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
+      <section>
+        <h2>Statisch (kommt)</h2>
+        <div class="gallery-overview">
+          <div v-for="gallery in staticGalleries" :key="gallery.id" class="gallery-preview" @click="handleGalleryClick(gallery.type)">
+            <div class="preview-image">
+              <img :src="gallery.thumbnail" :alt="gallery.title" loading="lazy" />
+              <div class="preview-tag">{{ gallery.type }}</div>
+              <div class="preview-info">
+                <h3>{{ gallery.title }}</h3>
+                <p>{{ gallery.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
     <LoadingSpinner v-if="isLoading" />
     <div v-if="selectedGallery" id="fullscreen-gallery" class="fullscreen-overlay">
-      <button @click="handleClose" class="close-button" aria-label="Close gallery">
+      <button @click="handleClose" class="close-button" aria-label="Galerie schließen">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-800 transition-transform duration-200" :class="{ 'rotate-animation': animateCross }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 6L6 18"></path>
           <path d="M6 6l12 12"></path>
@@ -40,41 +60,59 @@ import SlideGallery from '../Gallery/SlideGallery.vue'
 import LoadingSpinner from '../Gallery/LoadingSpinner.vue'
 import NorthernLights from '@/components/northern-lights.vue'
 
+import schlossImage from '@/assets/Pictures/Gallery/4er/Schloss_Fürstlich_Drehna.jpg'
+import wasserfall from '@/assets/Pictures/Gallery/5er/Wasserfall.jpg'
+import katze from '@/assets/Pictures/Gallery/9er/Katze7.jpg'
+import ribe from '@/assets/Pictures/Gallery/4er2/Ribe.jpg'
+import tokyostore from '@/assets/Pictures/Gallery/4er/Tokyostore.jpg'
+
 const galleryData = [
   {
     id: 'slide',
-    title: 'City Slide Gallery',
-    description: 'Beautiful city slides with information panels',
-    type: 'slide',
-    thumbnail: 'https://images.unsplash.com/photo-1514539079130-25950c84af65?w=500&auto=format&fit=crop'
+    title: 'Schiebegalerie Stadt',
+    description: 'Wunderschöne Stadtszenen mit Informationspanelen',
+    type: 'Schiebend',
+    category: 'Animiert',
+    thumbnail: schlossImage
   },
   {
     id: 'card',
-    title: 'Card Gallery',
-    description: 'Skewed cat cards with stylish hover effects',
-    type: 'card',
-    thumbnail: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Neugierige-Katze.JPG/640px-Neugierige-Katze.JPG'
+    title: 'Karten-Galerie',
+    description: 'Schräge Katzenkarten mit stilvollen Hover-Effekten',
+    type: 'Karten',
+    category: 'Animiert',
+    thumbnail: wasserfall
   },
   {
     id: 'grid',
-    title: 'Grid Gallery',
-    description: 'Interactive 3x3 grid with expand/collapse function',
-    type: 'grid',
-    thumbnail: 'https://picsum.photos/750/750?image=502'
+    title: 'Raster-Galerie',
+    description: 'Interaktives 3x3-Raster mit Expand/Collapse-Funktion',
+    type: 'Raster',
+    category: 'Animiert',
+    thumbnail: katze
   },
   {
     id: 'box',
-    title: 'Box Gallery',
-    description: 'Flexible boxes with zoom effect on hover',
-    type: 'box',
-    thumbnail: 'https://source.unsplash.com/1000x800?w=500'
+    title: 'Box-Galerie',
+    description: 'Flexible Boxen mit Zoom-Effekt beim Hover',
+    type: 'Box',
+    category: 'Animiert',
+    thumbnail: ribe
+  },
+  {
+    id: 'static-1',
+    title: 'Statische Galerie 1',
+    description: 'Eine Galerie mit statischem Layout ohne Animationen',
+    type: 'Statisch',
+    category: 'Statisch',
+    thumbnail: tokyostore
   }
 ]
-
+const animatedGalleries = computed(() => galleryData.filter(gallery => gallery.category === 'Animiert'))
+const staticGalleries = computed(() => galleryData.filter(gallery => gallery.category === 'Statisch'))
 const selectedGallery = ref(null)
 const isLoading = ref(false)
 const animateCross = ref(false)
-
 const handleGalleryClick = (type) => {
   isLoading.value = true
   setTimeout(() => {
@@ -82,7 +120,6 @@ const handleGalleryClick = (type) => {
     isLoading.value = false
   }, 1500)
 }
-
 const handleClose = () => {
   animateCross.value = true
   const overlay = document.getElementById('fullscreen-gallery')
@@ -94,16 +131,15 @@ const handleClose = () => {
     animateCross.value = false
   }, 300)
 }
-
 const currentGalleryComponent = computed(() => {
   switch (selectedGallery.value) {
-    case 'slide':
+    case 'Schiebend':
       return SlideGallery
-    case 'card':
+    case 'Karten':
       return CardGallery
-    case 'grid':
+    case 'Raster':
       return GridGallery
-    case 'box':
+    case 'Box':
       return BoxGallery
     default:
       return null
@@ -131,7 +167,7 @@ const currentGalleryComponent = computed(() => {
   width: 100%;
   max-width: 1280px;
   display: grid;
-  grid-template-columns: repeat(1,minmax(0,1fr));
+  grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: 2rem;
   position: relative;
   z-index: 10;
@@ -140,7 +176,7 @@ const currentGalleryComponent = computed(() => {
   .gallery-overview {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .gallery-showcase{
+  .gallery-showcase {
     padding-top: 0;
   }
 }
@@ -148,7 +184,7 @@ const currentGalleryComponent = computed(() => {
   .gallery-overview {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .gallery-showcase{
+  .gallery-showcase {
     padding-top: 0;
   }
 }
@@ -222,26 +258,16 @@ const currentGalleryComponent = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
   z-index: 60;
 }
 .close-button:hover {
-  transform: scale(1.1) rotate(90deg);
+  transform: translateX(-50%) scale(1.1);
 }
 .fullscreen-content {
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-@keyframes rotateCross {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(90deg);
-  }
 }
 .rotate-animation {
   animation: rotateCross 0.2s forwards;

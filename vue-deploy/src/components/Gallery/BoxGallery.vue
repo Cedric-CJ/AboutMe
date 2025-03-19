@@ -1,30 +1,44 @@
-Inspiration: https://codepen.io/knyttneve/pen/YgZbLO
 <template>
   <div class="BoxGallery">
-    <div class="box" v-for="(item, index) in boxes" :key="index">
-      <!-- Statt eines Bildes verwenden wir hier einen Placeholder -->
-      <div class="placeholder">Hier kommt noch ein Bild</div>
-      <span>{{ item.label }}</span>
+    <div class="box" v-for="(box, index) in localizedBoxes" :key="index">
+      <div class="placeholder">
+        <img :src="box.image" :alt="box.label" />
+      </div>
+      <span>{{ box.label }}</span>
     </div>
   </div>
 </template>
-
 <script>
+import bär from '@/assets/Pictures/Gallery/4er2/BerlinerBär.jpg'
+import huhn from '@/assets/Pictures/Gallery/4er2/Huhn.jpg'
+import ribe from '@/assets/Pictures/Gallery/4er2/Ribe.jpg'
+import steg from '@/assets/Pictures/Gallery/4er2/Steg.jpg'
+
 export default {
   name: "ImageHoverEffect",
   data() {
     return {
       boxes: [
-        { label: "CSS" },
-        { label: "Image" },
-        { label: "Hover" },
-        { label: "Effect" }
+        { labelDE: "Berliner Bär", labelEN: "Berlin Bear", image: bär },
+        { labelDE: "Huhn", labelEN: "Chicken", image: huhn },
+        { labelDE: "Ribe Wikinger Dorf", labelEN: "Ribe Viking Village", image: ribe },
+        { labelDE: "Steg mit Boote", labelEN: "Pier with Boats", image: steg }
       ]
     };
+  },
+  computed: {
+    language() {
+      return window.location.hash.includes('/eng/') ? 'en' : 'de'
+    },
+    localizedBoxes() {
+      return this.boxes.map(box => ({
+        ...box,
+        label: this.language === 'en' ? box.labelEN : box.labelDE
+      }));
+    }
   }
 };
 </script>
-
 <style scoped>
 .BoxGallery {
   display: flex;
@@ -33,43 +47,43 @@ export default {
   box-sizing: border-box;
   height: 100vh;
 }
-
 .box {
   flex: 1;
+  position: relative;
   overflow: hidden;
-  transition: 0.5s;
+  transition: 0.5s ease;
   margin: 0 2%;
   box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
-  line-height: 0;
 }
-
-/* Placeholder ersetzt das Bild und übernimmt ähnliche Maße und Übergänge */
 .placeholder {
-  width: 200%;
+  width: 100%;
   height: calc(100% - 10vh);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #e0e0e0;
-  color: #333;
-  font-size: 2vh;
-  transition: 0.5s;
+  transition: 0.5s ease;
 }
-
+.placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 .box > span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   font-size: 3.8vh;
-  display: block;
   text-align: center;
-  height: 10vh;
-  line-height: 2.6;
+  color: var(--text-color);
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 1);
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.5em 0;
+  box-sizing: border-box;
+  z-index: 2;
+  transition: 0.5s ease;
 }
-
 .box:hover {
   flex: 1 1 50%;
 }
-
-.box:hover > .placeholder {
-  width: 100%;
+.box:hover .placeholder {
   height: 100%;
 }
 </style>

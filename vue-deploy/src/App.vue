@@ -42,18 +42,16 @@
       >
         <div class="menu-links">
           <p>
-            <router-link :to="currentLanguage === 'de' ? '/de' : '/eng'">Home</router-link>
+            <router-link :to="currentLanguage === 'de' ? '/de' : '/eng'">{{ menuText.about }}</router-link>
           </p>
           <p>
-            <router-link :to="currentLanguage === 'de' ? '/de/gallery' : '/eng/gallery'">Gallery</router-link>
+            <router-link :to="currentLanguage === 'de' ? '/de/gallery' : '/eng/gallery'">{{ menuText.gallery }}</router-link>
           </p>
           <p>
             <router-link :to="currentLanguage === 'de' ? '/de/blog' : '/eng/blog'">Blog</router-link>
           </p>
           <p>
-            <router-link :to="currentLanguage === 'de' ? '/de/contact' : '/eng/contact'">
-              {{ menuText.contact }}
-            </router-link>
+            <router-link :to="currentLanguage === 'de' ? '/de/contact' : '/eng/contact'">{{ menuText.contact }}</router-link>
           </p>
           <p>
             <router-link :to="currentLanguage === 'de' ? '/de/workInProgress' : '/eng/workInProgress'">
@@ -135,6 +133,8 @@ export default {
       // Ein "Dictionary" mit deutschen und englischen Übersetzungen
       if (this.currentLanguage === 'de') {
         return {
+          about: "Über mich",
+          gallery: "Gallerie",
           contact: 'Kontakt',
           workInProgress: '...',
           chooseAccent: 'Akzentfarbe wählen:',
@@ -147,6 +147,8 @@ export default {
         };
       } else {
         return {
+          about: "About Me",
+          gallery: "Gallery",
           contact: 'Contact',
           workInProgress: '...',
           chooseAccent: 'Choose accent color:',

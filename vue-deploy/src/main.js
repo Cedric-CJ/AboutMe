@@ -15,8 +15,10 @@ if (preferredLanguage) {
         ? 'http://localhost:8080/AboutMe/#/'
         : 'https://cedric-cj.github.io/AboutMe/#/';
 
+    const currentHash = window.location.hash;
+
     // Nur weiterleiten, wenn die aktuelle URL nicht schon die richtige Sprache enthält
-    if (!window.location.hash.startsWith(`#${languageRoute}`)) {
+    if (!currentHash || currentHash === '#' || currentHash === `#${languageRoute}`) {
         window.location.href = `${baseURL}${languageRoute}`;
     }
 }
