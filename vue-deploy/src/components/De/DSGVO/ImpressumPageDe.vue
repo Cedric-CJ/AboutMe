@@ -1,8 +1,8 @@
 ### Erstellt von Cedric visit my [GitHub](https://cedric-cj.github.io/AboutMe/)
 <template>
-  <div class="container">
+  <div class="Impressum">
     <header></header>
-    <main>
+    <main-Impressum>
       <h1>Kontakt</h1>
       <div class="kontakt-section">
         <p>Cedric Jon Arnhold<br>
@@ -51,17 +51,25 @@
         <h2>Erstellung</h2>
         <p>Diese Webseite wurde selbst von Cedric Jon Arnhold erstellt. Da er noch Student ist und über begrenzte Erfahrung verfügt, können möglicherweise Fehler auftreten, einschließlich rechtlicher.</p>
       </div>
-    </main>
+    </main-Impressum>
     <footer>
     </footer>
   </div>
 </template>
-
 <script>
 export default {
   name: 'ImpressumPage'
 };
 </script>
-
 <style>
+a:link,
+a:visited {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+a:hover,
+a:active {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
 </style>

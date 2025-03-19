@@ -1,3 +1,4 @@
+### Erstellt von Cedric visit my [GitHub](https://cedric-cj.github.io/AboutMe/)
 <template>
   <div id="large-header">
     <canvas id="demo-canvas"></canvas>
@@ -54,7 +55,6 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
   name: "BlogPageDe",
@@ -379,7 +379,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 #large-header {
   position: fixed;

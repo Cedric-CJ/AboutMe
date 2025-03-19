@@ -1,3 +1,4 @@
+<!-- Created by Cedric, visit my [GitHub](https://cedric-cj.github.io/AboutMe/) -->
 <template>
   <div id="large-header">
     <canvas id="demo-canvas"></canvas>
@@ -54,7 +55,6 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
   name: "BlogPageEng",
@@ -382,7 +382,6 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 #large-header {
   position: fixed;
@@ -420,8 +419,7 @@ export default {
   --t: 1em;
   border-inline: var(--t) solid #0000;
   border-radius: calc(var(--r) + var(--t))/var(--r);
-  mask: radial-gradient(100% 100% at var(--_p) 0, #0000 99%, #000 102%)
-  var(--_p) 100%/var(--t) var(--t) no-repeat,
+  mask: radial-gradient(100% 100% at var(--_p) 0, #0000 99%, #000 102%) var(--_p) 100%/var(--t) var(--t) no-repeat,
   linear-gradient(#000 0 0) padding-box;
   width: 100%;
   max-width: 60%;

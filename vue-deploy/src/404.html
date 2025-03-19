@@ -7,8 +7,9 @@
         // Diese Funktion sorgt dafür, dass alle Unterseiten korrekt zur index.html geleitet werden
         // und Vue.js die Routensteuerung übernimmt.
         document.addEventListener("DOMContentLoaded", function() {
-            const redirectUrl = window.location.href.split("/AboutMe/")[0] + "/AboutMe/";
-            window.location.replace(redirectUrl);
+            const baseUrl = window.location.href.split("/AboutMe/")[0] + "/AboutMe/";
+            const hash = window.location.hash;
+            window.location.replace(baseUrl + hash);
         });
     </script>
     <title>

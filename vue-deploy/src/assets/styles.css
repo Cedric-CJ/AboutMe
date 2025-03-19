@@ -16,7 +16,7 @@ main {
 }
 
 :root {
-    --background-color: #2E2E2E;
+    --background-color: Black;
     --text-color: #ffffff;
     --primary-color: #228B22;
     --special-text-color: #ffffff;
@@ -24,7 +24,7 @@ main {
     --card-background-color: #737373;
     --text-color-blog: rgba(18, 18, 18, 0.8);
     --blog-background-color: #9f9b9b;
-
+    --water-color: rgba(0,70,150,0.6);
 }
 
 /* Navigation Menu Styling */
@@ -89,8 +89,10 @@ footer a {
     position: absolute;
     text-align: center;
     bottom: 50px;
-    width: 100%;
-    left: 1vh;
+    width: 95%;
+    left: 0.5vh;
+    right: 0.5vh;
+
 }
 
 .menu-links {
@@ -116,6 +118,23 @@ footer a {
     opacity: 1;
     transform: translateX(0);
     pointer-events: auto;
+}
+.glass-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 100;
+}
+.glass-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 .fullscreen {
@@ -205,11 +224,6 @@ footer a {
     50% {
         text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color), 0 0 40px var(--primary-color);
     }
-}
-
-body {
-    background-color:var(--background-color);
-    color: var(--text-color);
 }
 
 /* Cards Container */

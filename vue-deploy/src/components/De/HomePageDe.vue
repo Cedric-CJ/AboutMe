@@ -80,7 +80,6 @@
 
 
 </template>
-
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 
@@ -227,7 +226,6 @@ const events = ref([
   { year: 2016, title: "Praktikum bei Dr. Albrecht & Plogmaker GbR", description: "Fünf freiwillige Praktika bei der Steuerkanzlei, wo ich tiefe Einblicke in die Steuerberatung erhielt." },
 ]);
 </script>
-
 <style>
 html {
   overflow-x: hidden;
@@ -243,7 +241,7 @@ html {
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 5px;
   z-index: -1;
-  background: linear-gradient(120deg, #1a1a1a, #262626);
+  background: var(--background-color);
   overflow: hidden;
   transform: translateY(0);
   will-change: transform;
@@ -333,11 +331,6 @@ html {
 
 .my-skills {
   margin-top: 50vh;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
 }
 
 .projects-list {
@@ -549,24 +542,5 @@ h1::after {
   animation: none;
   opacity: 0;
   white-space: nowrap;
-}
-
-/* Glass Overlay mit Blur Effekt */
-.glass-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  backdrop-filter: blur(8px);
-  background-color: rgba(0, 0, 0, 0.2);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease;
-  z-index: 90;
-}
-.glass-overlay.active {
-  opacity: 1;
-  visibility: visible;
 }
 </style>

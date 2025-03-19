@@ -2,7 +2,7 @@
 <template>
   <div class="container">
     <header></header>
-    <main>
+    <main-Impressum>
       <h1>Contact</h1>
       <div class="kontakt-section">
         <p>
@@ -110,7 +110,7 @@
           including legal ones.
         </p>
       </div>
-    </main>
+    </main-Impressum>
     <footer></footer>
   </div>
 </template>
