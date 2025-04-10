@@ -202,20 +202,27 @@ function preloadImages(urls) {
 const handleGalleryClick = (type) => {
   const galleryItem = galleryData.find(item => item.type === type);
   let galleryImageUrls = galleryItem && galleryItem.images ? galleryItem.images : [];
-  // Optional: Thumbnail hinzufügen, falls nicht bereits enthalten
+  // Optional: Füge das Thumbnail hinzu, falls es noch nicht drin ist
   if (galleryItem && galleryItem.thumbnail && !galleryImageUrls.includes(galleryItem.thumbnail)) {
     galleryImageUrls.unshift(galleryItem.thumbnail);
   }
 
   isLoading.value = true;
-  preloadImages(galleryImageUrls).then(() => {
-    selectedGallery.value = type;
-    isLoading.value = false;
-  }).catch((error) => {
-    console.error("Fehler beim Vorladen der Bilder:", error);
-    selectedGallery.value = type;
-    isLoading.value = false;
-  });
+
+  const delayPromise = new Promise(resolve => setTimeout(resolve, 1500));
+
+  // Warte sowohl auf das Vorladen der Bilder als auch auf den Delay
+  Promise.all([ preloadImages(galleryImageUrls), delayPromise ])
+      .then(() => {
+        selectedGallery.value = type;
+        isLoading.value = false;
+      })
+      .catch((error) => {
+        console.error("Fehler beim Vorladen der Bilder:", error);
+        // Im Fehlerfall trotzdem die Galerie anzeigen
+        selectedGallery.value = type;
+        isLoading.value = false;
+      });
 }
 
 const handleClose = () => {
