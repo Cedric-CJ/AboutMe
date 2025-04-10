@@ -149,7 +149,7 @@ export default {
       if (this.currentLanguage === 'de') {
         return {
           about: "Über mich",
-          gallery: "Gallerie",
+          gallery: "Galerie",
           contact: 'Kontakt',
           workInProgress: '...',
           chooseAccent: 'Akzentfarbe wählen:',
