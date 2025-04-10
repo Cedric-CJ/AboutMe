@@ -227,6 +227,10 @@ footer a {
 }
 
 /* Cards Container */
+a:hover{
+    text-decoration: none;
+}
+
 .cards {
     display: flex;
     flex-wrap: wrap;
