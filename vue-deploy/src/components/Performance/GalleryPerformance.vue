@@ -58,11 +58,48 @@ import CardGallery from '../Gallery/CardGallery.vue'
 import GridGallery from '../Gallery/GridGallery.vue'
 import SlideGallery from '../Gallery/SlideGallery.vue'
 import LoadingSpinner from '../Gallery/LoadingSpinner.vue'
+
+// Thumbnail-Imports (für galleryData)
 import schlossImage from '@/assets/Pictures/Gallery/4er/Schloss_Fürstlich_Drehna.jpg'
-import wasserfall from '@/assets/Pictures/Gallery/5er/Wasserfall.jpg'
-import katze from '@/assets/Pictures/Gallery/9er/Katze7.jpg'
-import ribe from '@/assets/Pictures/Gallery/4er2/Ribe.jpg'
+import wasserfallThumb from '@/assets/Pictures/Gallery/5er/Wasserfall.jpg'
+import katzeThumb from '@/assets/Pictures/Gallery/9er/Katze7.jpg'
+import ribeThumb from '@/assets/Pictures/Gallery/4er2/Ribe.jpg'
 import tokyostore from '@/assets/Pictures/Gallery/4er/Tokyostore.jpg'
+
+// Für SlideGallery („Schiebend“)
+import slideAlanya from '@/assets/Pictures/Gallery/4er/Alanya.jpg';
+import slideSchloss from '@/assets/Pictures/Gallery/4er/Schloss_Fürstlich_Drehna.jpg';
+import slideSide from '@/assets/Pictures/Gallery/4er/Side.jpg';
+import slideTokyo from '@/assets/Pictures/Gallery/4er/Tokyostore.jpg';
+import slideTurkey from '@/assets/Pictures/Gallery/4er/turkey.svg';
+import slideTokyoFlag from '@/assets/Pictures/Gallery/4er/tokyo.svg';
+import slideDeutschland from '@/assets/Pictures/Gallery/4er/deutschland.svg';
+
+// Für CardGallery („Karten“)
+import cardAlanya from '@/assets/Pictures/Gallery/5er/Alanya1.jpg';
+import cardBerge from '@/assets/Pictures/Gallery/5er/Berge.jpg';
+import cardHimmel from '@/assets/Pictures/Gallery/5er/Himmel.jpg';
+import cardHimmel2 from '@/assets/Pictures/Gallery/5er/Himmel2.jpg';
+import cardWasserfall from '@/assets/Pictures/Gallery/5er/Wasserfall.jpg';
+
+// Für GridGallery („Raster“)
+import gridEsel from '@/assets/Pictures/Gallery/9er/Esel.jpg';
+import gridKatze1 from '@/assets/Pictures/Gallery/9er/Katze1.jpg';
+import gridKatze2 from '@/assets/Pictures/Gallery/9er/Katze2.jpg';
+import gridKatze3 from '@/assets/Pictures/Gallery/9er/Katze3.jpg';
+import gridKatze4 from '@/assets/Pictures/Gallery/9er/Katze4.jpg';
+import gridKatze5 from '@/assets/Pictures/Gallery/9er/Katze5.jpg';
+import gridKatze6 from '@/assets/Pictures/Gallery/9er/Katze6.jpg';
+import gridKatze7 from '@/assets/Pictures/Gallery/9er/Katze7.jpg';
+import gridStorch from '@/assets/Pictures/Gallery/9er/Storch.jpg';
+
+// Für BoxGallery („Box“)
+import boxBär from '@/assets/Pictures/Gallery/4er2/BerlinerBär.jpg';
+import boxHuhn from '@/assets/Pictures/Gallery/4er2/Huhn.jpg';
+import boxRibe from '@/assets/Pictures/Gallery/4er2/Ribe.jpg';
+import boxSteg from '@/assets/Pictures/Gallery/4er2/Steg.jpg';
+
+// Definiere die Galerie-Daten
 const galleryData = [
   {
     id: 'slide',
@@ -70,7 +107,16 @@ const galleryData = [
     description: 'Wunderschöne Stadtszenen mit Informationspanelen',
     type: 'Schiebend',
     category: 'Animiert',
-    thumbnail: schlossImage
+    thumbnail: schlossImage,
+    images: [
+      slideAlanya,
+      slideSchloss,
+      slideSide,
+      slideTokyo,
+      slideTurkey,
+      slideTokyoFlag,
+      slideDeutschland
+    ]
   },
   {
     id: 'card',
@@ -78,7 +124,14 @@ const galleryData = [
     description: 'Schräge Katzenkarten mit stilvollen Hover‑Effekten',
     type: 'Karten',
     category: 'Animiert',
-    thumbnail: wasserfall
+    thumbnail: wasserfallThumb,
+    images: [
+      cardAlanya,
+      cardBerge,
+      cardHimmel,
+      cardHimmel2,
+      cardWasserfall
+    ]
   },
   {
     id: 'grid',
@@ -86,7 +139,18 @@ const galleryData = [
     description: 'Interaktives 3x3‑Raster mit Expand/Collapse‑Funktion',
     type: 'Raster',
     category: 'Animiert',
-    thumbnail: katze
+    thumbnail: katzeThumb,
+    images: [
+      gridEsel,
+      gridKatze1,
+      gridKatze2,
+      gridKatze3,
+      gridKatze4,
+      gridKatze5,
+      gridKatze6,
+      gridKatze7,
+      gridStorch
+    ]
   },
   {
     id: 'box',
@@ -94,7 +158,13 @@ const galleryData = [
     description: 'Flexible Boxen mit Zoom‑Effekt beim Hover',
     type: 'Box',
     category: 'Animiert',
-    thumbnail: ribe
+    thumbnail: ribeThumb,
+    images: [
+      boxBär,
+      boxHuhn,
+      boxRibe,
+      boxSteg
+    ]
   },
   {
     id: 'static-1',
@@ -102,55 +172,93 @@ const galleryData = [
     description: 'Eine Galerie mit statischem Layout ohne Animationen',
     type: 'Statisch',
     category: 'Statisch',
-    thumbnail: tokyostore
+    thumbnail: tokyostore,
+    images: []  // Für statische Galerien werden hier keine zusätzlichen Bilder benötigt
   }
-]
+];
+
+// Filter für die Kategorien
 const animatedGalleries = computed(() => galleryData.filter(gallery => gallery.category === 'Animiert'))
 const staticGalleries = computed(() => galleryData.filter(gallery => gallery.category === 'Statisch'))
+
 const selectedGallery = ref(null)
 const isLoading = ref(false)
 const animateCross = ref(false)
-const handleGalleryClick = (type) => {
-  isLoading.value = true
-  setTimeout(() => {
-    selectedGallery.value = type
-    isLoading.value = false
-  }, 1500)
+
+// Preload-Funktion: Entfernt doppelte URLs, bevor die Bilder vorgeladen werden
+function preloadImages(urls) {
+  const uniqueUrls = Array.from(new Set(urls));
+  return Promise.all(
+      uniqueUrls.map(url => new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;
+        img.onerror = reject;
+      }))
+  );
 }
+
+// Beim Klick auf eine Galerie: Finde den Eintrag und lade die dazugehörigen Bilder vor
+const handleGalleryClick = (type) => {
+  const galleryItem = galleryData.find(item => item.type === type);
+  let galleryImageUrls = galleryItem && galleryItem.images ? galleryItem.images : [];
+  // Optional: Thumbnail hinzufügen, falls nicht bereits enthalten
+  if (galleryItem && galleryItem.thumbnail && !galleryImageUrls.includes(galleryItem.thumbnail)) {
+    galleryImageUrls.unshift(galleryItem.thumbnail);
+  }
+
+  isLoading.value = true;
+  preloadImages(galleryImageUrls).then(() => {
+    selectedGallery.value = type;
+    isLoading.value = false;
+  }).catch((error) => {
+    console.error("Fehler beim Vorladen der Bilder:", error);
+    selectedGallery.value = type;
+    isLoading.value = false;
+  });
+}
+
 const handleClose = () => {
-  animateCross.value = true
-  const overlay = document.getElementById('fullscreen-gallery')
+  animateCross.value = true;
+  const overlay = document.getElementById('fullscreen-gallery');
   if (overlay) {
-    overlay.classList.add('fade-out2')
+    overlay.classList.add('fade-out2');
   }
   setTimeout(() => {
-    selectedGallery.value = null
-    animateCross.value = false
-  }, 300)
+    selectedGallery.value = null;
+    animateCross.value = false;
+  }, 300);
 }
+
 const currentGalleryComponent = computed(() => {
   switch (selectedGallery.value) {
     case 'Schiebend':
-      return SlideGallery
+      return SlideGallery;
     case 'Karten':
-      return CardGallery
+      return CardGallery;
     case 'Raster':
-      return GridGallery
+      return GridGallery;
     case 'Box':
-      return BoxGallery
+      return BoxGallery;
     default:
-      return null
+      return null;
   }
 })
+
+// Sprachunterstützung (über localStorage)
 const currentLang = computed(() => localStorage.getItem("preferredLanguage") === "eng" ? "en" : "de")
 const headerText = computed(() =>
-    currentLang.value === "en" ? "Example Galleries" : "Beispiel-Galerien")
+    currentLang.value === "en" ? "Example Galleries" : "Beispiel-Galerien"
+)
 const subHeaderText = computed(() =>
-    currentLang.value === "en" ? "⭐ Best desktop experience ⭐" : "⭐ Beste Erfahrung im Desktopmodus ⭐")
+    currentLang.value === "en" ? "⭐ Best desktop experience ⭐" : "⭐ Beste Erfahrung im Desktopmodus ⭐"
+)
 const animatedSectionTitle = computed(() =>
-    currentLang.value === "en" ? "Animated" : "Animiert")
+    currentLang.value === "en" ? "Animated" : "Animiert"
+)
 const staticSectionTitle = computed(() =>
-    currentLang.value === "en" ? "Static (coming)" : "Statisch (kommt)")
+    currentLang.value === "en" ? "Static (coming)" : "Statisch (kommt)"
+)
 </script>
 <style scoped>
 .gallery-showcase {
