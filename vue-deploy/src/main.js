@@ -3,25 +3,35 @@ import App from './App.vue';
 import router from './router';
 import './assets/styles.css';
 
-// Prüfen, ob der Nutzer bereits eine bevorzugte Sprache ausgewählt hat
-const preferredLanguage = localStorage.getItem('preferredLanguage');
+const baseURL = window.location.origin.includes('localhost')
+    ? 'http://localhost:8080/AboutMe/#/'
+    : 'https://cedric-cj.github.io/AboutMe/#/';
 
-if (preferredLanguage) {
-    const languageRoute = preferredLanguage === 'de' ? '/de' : '/eng';
+const normalizeHash = (hash) => hash.replace(/\/$/, '');
+const currentHash = normalizeHash(window.location.hash);
 
-    // Falls du lokal entwickelst, kann der Pfad anders aussehen.
-    // Hier die bisherige Logik belassen oder anpassen:
-    const baseURL = window.location.origin.includes('localhost')
-        ? 'http://localhost:8080/AboutMe/#/'
-        : 'https://cedric-cj.github.io/AboutMe/#/';
+const performanceMode = localStorage.getItem('performanceMode');
 
-    const currentHash = window.location.hash;
-
-    // Nur weiterleiten, wenn die aktuelle URL nicht schon die richtige Sprache enthält
-    if (!currentHash || currentHash === '#' || currentHash === `#${languageRoute}`) {
-        window.location.href = `${baseURL}${languageRoute}`;
+if (performanceMode !== null) {
+    if (performanceMode === "false") {
+        // Performance OFF → Falls der Hash nicht mit '#/de' oder '#/eng' beginnt,
+        // leite zur bevorzugten Sprachseite weiter.
+        if (!currentHash.startsWith('#/de') && !currentHash.startsWith('#/eng')) {
+            const preferredLanguage = localStorage.getItem('preferredLanguage') || 'de';
+            window.location.href = `${baseURL}${preferredLanguage}`;
+        }
+    } else {
+        // Performance ON → Nur umleiten, wenn der Hash nicht mit '#/performance' beginnt
+        if (!currentHash.startsWith('#/performance')) {
+            window.location.href = `${baseURL}performance`;
+        }
+    }
+} else {
+    // Falls Performance-Modus nicht gesetzt: Standardmäßig aktivieren
+    localStorage.setItem('performanceMode', "true");
+    if (!currentHash.startsWith('#/performance')) {
+        window.location.href = `${baseURL}performance`;
     }
 }
 
-// App initialisieren
 createApp(App).use(router).mount('#app');

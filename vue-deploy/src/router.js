@@ -17,14 +17,25 @@ import BlogPageDe from "@/components/De/BlogPageDe.vue";
 import BlogPageEng from "@/components/Eng/BlogPageEng.vue";
 import GalleryDe from "@/components/De/GalleryDe.vue";
 import GalleryEng from "@/components/Eng/GalleryEng.vue";
+import GalleryPerformance from "@/components/Performance/GalleryPerformance.vue";
+import HomePagePerformance from "@/components/Performance/HomePagePerformance.vue";
+import ContactMePerformance from "@/components/Performance/ContactMePerformance.vue";
+import BlogPagePerformance from "@/components/Performance/BlogPagePerformance.vue";
 
 const routes = [
-    // Sprachauswahlseite
     {
         path: '/',
-        redirect: '/de',
+        beforeEnter: (to, from, next) => {
+            const performanceMode = localStorage.getItem('performanceMode');
+            if (performanceMode === "false") {
+                // Hole die bevorzugte Sprache, Standard ist 'de'
+                const preferredLanguage = localStorage.getItem('preferredLanguage') || 'de';
+                next(`/${preferredLanguage}`);
+            } else {
+                next('/performance');
+            }
+        }
     },
-
     // Deutsche Routen
     { path: '/de', name: 'HomeDe', component: HomePageDe },
     { path: '/de/gallery', name: 'GalleryDe', component: GalleryDe },
@@ -35,7 +46,7 @@ const routes = [
     { path: '/de/test', name: 'TestPageDe', component: TestPageDe },
     { path: '/de/infoMessage', name: 'InfoMessageDe', component: InfoMessageDe },
     { path: '/de/blog', name: 'BlogPageDe', component: BlogPageDe },
-// Englische Routen
+    // Englische Routen
     { path: '/eng', name: 'HomeEng', component: HomePageEng },
     { path: '/eng/gallery', name: 'GalleryEng', component: GalleryEng },
     { path: '/eng/impressum', name: 'ImpressumEng', component: ImpressumPageEng },
@@ -45,6 +56,11 @@ const routes = [
     { path: '/eng/test', name: 'TestPageEng', component: TestPageEng },
     { path: '/eng/infoMessage', name: 'InfoMessageEng', component: InfoMessageEng},
     { path: "/eng/blog", name: "BlogPageEng", component: BlogPageEng },
+    //Performance Routen
+    { path: '/performance', name: 'HomePerformance', component: HomePagePerformance },
+    { path: '/performance/gallery', name: 'GalleryPerformance', component: GalleryPerformance },
+    { path: '/performance/contact', name: 'ContactPerformance', component: ContactMePerformance },
+    { path: '/performance/blog', name: 'BlogPerformance', component: BlogPagePerformance },
     // Fallback für ungültige Routen
     { path: '/:notFound(.*)', redirect: '/' },
 ];

@@ -1,3 +1,4 @@
+<!-- Created by Cedric, visit my [GitHub](https://cedric-cj.github.io/AboutMe/) -->
 <template>
   <div id="app" @click="handleClickOutside">
     <div v-if="showPreloader" class="preloader fullscreen" :class="{ 'fade-out': isFadingOut }">
@@ -42,31 +43,25 @@
       >
         <div class="menu-links">
           <p>
-            <router-link :to="currentLanguage === 'de' ? '/de' : '/eng'">{{ menuText.about }}</router-link>
+            <router-link :to="baseAboutPath">{{ menuText.about }}</router-link>
           </p>
           <p>
-            <router-link :to="currentLanguage === 'de' ? '/de/gallery' : '/eng/gallery'">{{ menuText.gallery }}</router-link>
+            <router-link :to="baseGalleryPath">{{ menuText.gallery }}</router-link>
           </p>
           <p>
-            <router-link :to="currentLanguage === 'de' ? '/de/blog' : '/eng/blog'">Blog</router-link>
+            <router-link :to="baseBlogPath">Blog</router-link>
           </p>
           <p>
-            <router-link :to="currentLanguage === 'de' ? '/de/contact' : '/eng/contact'">{{ menuText.contact }}</router-link>
+            <router-link :to="baseContactPath">{{ menuText.contact }}</router-link>
           </p>
-          <p>
-            <router-link :to="currentLanguage === 'de' ? '/de/workInProgress' : '/eng/workInProgress'">
-              {{ menuText.workInProgress }}
-            </router-link>
+          <p v-if="!performanceMode">
+            <router-link :to="baseWorkInProgressPath">{{ menuText.workInProgress }}</router-link>
           </p>
           <div class="accent-selector">
             <p>{{ menuText.chooseAccent }}</p>
             <button class="button-red" @click="setAccentColor('#FF3030')">{{ menuText.red }}</button>
             <button class="button-green" @click="setAccentColor('#228B22')">{{ menuText.green }}</button>
-            <button class="button-blue" @click="setAccentColor('#1C1F26')">{{ menuText.blue }}</button>
-            <label>
-              {{ menuText.custom }}
-              <input type="color" @input="setAccentColor($event.target.value)" />
-            </label>
+            <button class="button-blue" @click="setAccentColor('#0042ff')">{{ menuText.blue }}</button>
           </div>
         </div>
         <div class="footer-links">
@@ -85,6 +80,19 @@
           </router-link>
           <p>&copy; 2024 Cedric Arnhold</p>
         </div>
+        <div class="performance-toggle">
+          <div class="rocker-wrapper">
+            <label class="rocker">
+              <input type="checkbox" v-model="performanceMode" @change="togglePerformance">
+              <span class="switch-left">On</span>
+              <span class="switch-right">Off</span>
+            </label>
+            <span class="toggle-info">?</span>
+            <div class="tooltip">
+              Das ist der Performance button und sorgt auf ältere Geräte für eine verbesserte Erfahrung meiner Seite
+            </div>
+          </div>
+        </div>
       </nav>
     </header>
     <component :is="currentInfoMessage" v-if="showMessage" @close-message="showMessage = false"/>
@@ -92,11 +100,9 @@
       <router-view></router-view>
     </main>
     <footer></footer>
-    <!-- Glass Overlay -->
     <div class="glass-overlay" :class="{ active: isMenuOpen }" @click="isMenuOpen = false"></div>
   </div>
 </template>
-
 <script>
 import InfoMessageDe from "@/components/De/DSGVO/InfoMessageDe.vue";
 import InfoMessageEng from "@/components/Eng/DSGVO/InfoMessageEng.vue";
@@ -118,30 +124,38 @@ export default {
       performanceMode: true
     };
   },
+  created() {
+    // Lade den gespeicherten Zustand (falls vorhanden)
+    const storedPerformance = localStorage.getItem('performanceMode');
+    if (storedPerformance !== null) {
+      this.performanceMode = JSON.parse(storedPerformance);
+    }
+  },
   computed: {
     currentLanguage() {
       const path = this.$route.path;
-      if (path.startsWith("/de")) {return "de";
-      } else if (path.startsWith("/eng")) {return "eng";
-      } return "de";
-      // Falls du eine Standard-Sprache hast, gib sie hier zurück:
+      if (path.startsWith("/de")) {
+        return "de";
+      } else if (path.startsWith("/eng")) {
+        return "eng";
+      }
+      // Bei Performance-Seiten oder anderen Routen: Bevorzugte Sprache nutzen
+      return localStorage.getItem("preferredLanguage") || "de";
     },
     currentInfoMessage() {
       return this.currentLanguage === 'de' ? InfoMessageDe : InfoMessageEng;
     },
     menuText() {
-      // Ein "Dictionary" mit deutschen und englischen Übersetzungen
       if (this.currentLanguage === 'de') {
         return {
           about: "Über mich",
-          gallery: "Gallerie",
+          gallery: "Galerie",
           contact: 'Kontakt',
           workInProgress: '...',
           chooseAccent: 'Akzentfarbe wählen:',
           red: 'Rot',
           green: 'Grün',
-          blue: 'Deep Navy-Blau',
-          custom: 'Benutzerdefiniert:',
+          blue: 'Blau',
           impressum: 'Impressum',
           privacyPolicy: 'Datenschutz',
         };
@@ -154,8 +168,7 @@ export default {
           chooseAccent: 'Choose accent color:',
           red: 'Red',
           green: 'Green',
-          blue: 'Deep Navy-Blue',
-          custom: 'Custom:',
+          blue: 'Blue',
           impressum: 'Imprint',
           privacyPolicy: 'Privacy Policy',
         };
@@ -171,29 +184,45 @@ export default {
     isBlogPage() {
       const path = this.$route.path;
       return path === '/de/blog' || path === '/eng/blog';
+    },
+    // Computed Properties für die Basis-Routen:
+    baseAboutPath() {
+      // Wenn Performance aktiv, benutze Performance-Startseite, ansonsten immer /de
+      return this.performanceMode ? '/performance' : '/de';
+    },
+    baseGalleryPath() {
+      return this.performanceMode ? '/performance/gallery' : '/de/gallery';
+    },
+    baseContactPath() {
+      return this.performanceMode ? '/performance/contact' : '/de/contact';
+    },
+    baseBlogPath() {
+      return this.performanceMode ? '/performance/blog' : '/de/blog';
+    },
+    baseWorkInProgressPath() {
+      return '/de/workInProgress';
     }
   },
   methods: {
     switchLanguage(lang) {
       localStorage.setItem('preferredLanguage', lang);
-
-      // Aktueller Pfad, z.B. "/de/contact" oder "/eng/workInProgress"
       const currentPath = this.$route.path;
-      const newPath =
-        lang === "eng"
-          ? currentPath.replace(/^\/de/, "/eng")
-          : currentPath.replace(/^\/eng/, "/de");
-      this.$router.push(newPath);
+      if (!currentPath.startsWith('/performance')) {
+        const newPath =
+            lang === "eng"
+                ? currentPath.replace(/^\/de/, "/eng")
+                : currentPath.replace(/^\/eng/, "/de");
+        this.$router.push(newPath);
+      } else {
+        location.reload();
+      }
     },
     handleClickOutside(event) {
-      if (
-        this.isMenuOpen &&
-        !this.$el.querySelector("#navMenu").contains(event.target)
-      ) {
+      if (this.isMenuOpen &&
+          !this.$el.querySelector("#navMenu").contains(event.target)) {
         this.isMenuOpen = false;
       }
     },
-    // Berechnet den Kontrast basierend auf der YIQ-Formel
     getContrastYIQ(hexcolor) {
       let color = hexcolor.replace("#", "");
       if (color.length === 3) {
@@ -212,8 +241,33 @@ export default {
       document.documentElement.style.setProperty("--special-text-color", contrastColor);
       document.documentElement.style.setProperty("--timeline-background", color);
     },
+    togglePerformance() {
+      localStorage.setItem('performanceMode', JSON.stringify(this.performanceMode));
+      const currentPath = this.$route.path;
+      if (this.performanceMode) {
+        // Performance ON: Wenn aktueller Pfad NICHT bereits /performance ist,
+        // ersetze den Sprachprefix (/de oder /eng) durch "/performance" und behalte den Rest bei.
+        if (!currentPath.startsWith('/performance')) {
+          const restOfPath = currentPath.replace(/^\/(de|eng)/, '');
+          this.$router.push(`/performance${restOfPath}`);
+        } else {
+          // Bereits in Performance – einfach bleiben
+          this.$router.push(currentPath);
+        }
+      } else {
+        // Performance OFF: Wenn aktueller Pfad mit /performance beginnt,
+        // entferne diesen Teil und füge den entsprechenden Sprachprefix ein.
+        if (currentPath.startsWith('/performance')) {
+          const restOfPath = currentPath.replace('/performance', '');
+          const langPrefix = this.currentLanguage === 'eng' ? '/eng' : '/de';
+          this.$router.push(`${langPrefix}${restOfPath}`);
+        } else {
+          // Falls bereits in einer Sprachroute, navigiere zur Startseite der entsprechenden Sprache.
+          this.$router.push(this.currentLanguage === 'eng' ? '/eng' : '/de');
+        }
+      }
+    }
   },
-  // Performance Mode global bereitstellen
   provide() {
     return {
       performanceMode: this.performanceMode
@@ -240,12 +294,10 @@ export default {
         this.showPreloader = false;
       }, 1500);
     }, 5000);
-  },
+  }
 };
 </script>
-<style>
-/* Header, Language-Switcher, Preloader etc. bleiben unverändert */
-
+<style scoped>
 #navMenu {
   position: fixed;
   top: 0;
@@ -259,33 +311,30 @@ export default {
   transition: transform 0.5s ease, opacity 0.5s ease;
   opacity: 0;
   z-index: 290;
-  overflow-y: auto; /* Damit das Menü scrollbar ist */
 }
-
-/* Header (inklusive Menü und Sprachwechsel) – bleibt über dem Overlay */
+#navMenu.visible {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
 header {
   position: relative;
   z-index: 300;
 }
-
-/* Modernisierte Menü-Styles (Slide-in Navigation, Hamburger Button) */
 .menubutton {
   cursor: pointer;
   position: fixed;
   top: 20px;
   left: 20px;
-  z-index: 110;
+  z-index: 300;
 }
-
 .menubutton input {
   display: none;
 }
-
 .menubutton svg {
   height: 3em;
   transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .line {
   fill: none;
   stroke: var(--primary-color);
@@ -295,30 +344,24 @@ header {
   transition: stroke-dasharray 600ms cubic-bezier(0.4, 0, 0.2, 1),
   stroke-dashoffset 600ms cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .line-top-bottom {
   stroke-dasharray: 12 63;
 }
-
 .menubutton input:checked + svg {
   transform: rotate(-45deg);
 }
-
 .menubutton input:checked + svg .line-top-bottom {
   stroke-dasharray: 20 300;
   stroke-dashoffset: -32.42;
 }
-
-/* Weitere Styles (Language-Switcher, Fullscreen Preloader) */
 .language-switcher {
   position: fixed;
-  top: 0;
+  top: 20px;
   right: 20px;
   display: flex;
   gap: 1.5rem;
   z-index: 400;
 }
-
 .language-switcher img {
   width: 10vw;
   height: auto;
@@ -327,12 +370,10 @@ header {
   cursor: pointer;
   transition: transform 0.2s;
 }
-
 .language-switcher img:hover {
   transform: scale(1.1);
   border-color: var(--primary-color);
 }
-
 .fullscreen {
   position: fixed;
   top: 0;
@@ -345,5 +386,122 @@ header {
   background-color: var(--background-color);
   z-index: 1001;
   will-change: opacity;
+}
+.performance-toggle {
+  margin-top: 3rem;
+  padding: 1rem;
+  text-align: center;
+}
+.rocker-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.rocker {
+  display: inline-block;
+  position: relative;
+  width: 7em;
+  height: 3em;
+  background-color: #eee;
+  border-radius: 1.5em;
+  overflow: hidden;
+  font-size: 1em;
+  text-transform: uppercase;
+  font-weight: bold;
+  cursor: pointer;
+}
+.rocker input {
+  display: none;
+}
+.switch-left,
+.switch-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+.switch-left {
+  left: 0;
+}
+.switch-right {
+  right: 0;
+}
+.rocker input:not(:checked) + .switch-left {
+  background-color: #ddd;
+  color: Black;
+}
+.rocker input:not(:checked) + .switch-left + .switch-right {
+  background-color: #FF3030;
+  color: Black;
+}
+.rocker input:checked + .switch-left {
+  background-color: var(--primary-color);
+  color: Black;
+  overflow: hidden;
+}
+.rocker input:checked + .switch-left + .switch-right {
+  background-color: #ddd;
+  color: Black;
+}
+.rocker input:checked + .switch-left::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -110%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+  transform: skewX(-25deg);
+}
+.rocker input:checked + .switch-left:hover::after {
+  animation: shine 1s forwards;
+}
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 150%;
+  }
+}.toggle-info {
+   position: absolute;
+   top: -0.5em;
+   right: -0.5em;
+   background-color: var(--primary-color);
+   color: #fff;
+   width: 1.5em;
+   height: 1.5em;
+   border-radius: 50%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-size: 0.8em;
+   cursor: pointer;
+   z-index: 2;
+ }
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  background-color: #333;
+  color: #fff;
+  border-radius: 5px;
+  padding: 0.5em;
+  position: absolute;
+  top: -4em;
+  width: 50vw;
+  max-width: 90vw;
+  word-wrap: break-word;
+  white-space: normal;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+  font-size: 0.8em;
+}
+.toggle-info:hover + .tooltip,
+.toggle-info:focus + .tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 </style>

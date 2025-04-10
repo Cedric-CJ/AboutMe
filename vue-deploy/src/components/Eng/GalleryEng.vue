@@ -4,6 +4,7 @@
     <NorthernLights />
     <header class="gallery-header">
       <h1>Example Galleries</h1>
+      <p>⭐Best experience in desktop mode⭐</p>
     </header>
     <div v-if="!selectedGallery">
       <section>
