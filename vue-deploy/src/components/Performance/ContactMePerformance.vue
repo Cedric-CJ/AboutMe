@@ -130,5 +130,13 @@ export default {
     width: 14vh;
     height: 14vh;
   }
+  .card1,
+  .card1:link,
+  .card1:visited,
+  .card1:hover,
+  .card1:active,
+  .card1 * {
+    text-decoration: none;
+  }
 }
 </style>
