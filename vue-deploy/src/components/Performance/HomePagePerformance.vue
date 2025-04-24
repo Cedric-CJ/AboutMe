@@ -222,7 +222,6 @@ onMounted(() => {
   transform-origin: center center;
   position: relative;
   overflow: visible;
-  z-index: 1;
 }
 .project-links {
   display: inline-flex;
