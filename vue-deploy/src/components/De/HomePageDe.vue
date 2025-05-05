@@ -8,11 +8,7 @@
   <div class="container">
     <section class="intro">
       <h1 data-text="Hi, Ich bin Cedric">Hi, Ich bin Cedric</h1>
-      <p class="info">
-        Diese Webseite habe ich als persönliches Hobby gestaltet, um meine Leidenschaft für Webentwicklung und Digitalisierung auszuleben. Sie dient gleichzeitig als Inspirationsquelle für Unternehmen oder Privatpersonen, die ihre eigene Online-Präsenz modernisieren oder neu aufbauen möchten.
-        <br><br>
-        Wenn Sie Unterstützung bei der Gestaltung oder Optimierung Ihrer Webseite benötigen, können Sie sich gerne bei mir melden. Ich helfe Ihnen, Ihre Ideen umzusetzen und Ihre digitale Präsenz zu stärken.
-      </p>
+      <img src="@/assets/Pictures/Me.png" alt="Mein Bild" class="intro-image">
     </section>
       <section class="my-skills">
         <h2>Meine Fähigkeiten</h2>

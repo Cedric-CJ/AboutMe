@@ -8,11 +8,7 @@
   <div class="container">
     <section class="intro">
       <h1 data-text="Hi, I'm Cedric">Hi, I'm Cedric</h1>
-      <p class="info">
-        I created this website as a personal hobby to pursue my passion for web development and digitalization. It also serves as a source of inspiration for companies or individuals looking to modernize or build their own online presence.
-        <br><br>
-        If you need support in designing or optimizing your website, feel free to contact me. I can help you bring your ideas to life and strengthen your digital presence.
-      </p>
+      <img src="@/assets/Pictures/Me.png" alt="Mein Bild" class="intro-image">
     </section>
     <section class="my-skills">
       <h2>My Skills</h2>
