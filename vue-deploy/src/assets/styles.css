@@ -46,6 +46,13 @@ main {
     margin: 0;
     padding: 0;
 }
+.intro-image {
+    display: block;
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    margin: -2rem auto 2rem;
+}
 .footer-credits {
     color: var(--text-color);
     font-size: 10px;

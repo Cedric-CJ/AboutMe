@@ -5,7 +5,7 @@
   <div class="container">
     <section class="intro">
       <h1>{{ titleText }}</h1>
-      <p class="info" v-html="introText"></p>
+      <img src="@/assets/Pictures/Me.png" alt="Mein Bild" class="intro-image">
     </section>
     <section class="my-skills">
       <h2>{{ skillsTitle }}</h2>
@@ -56,15 +56,6 @@ const currentLang = computed(() => {
 const titleText = computed(() =>
     currentLang.value === "en" ? "Hi, I am Cedric" : "Hi, Ich bin Cedric"
 );
-const introText = computed(() => {
-  return currentLang.value === "en"
-      ? `This website is a personal project to explore my passion for web development and digitalization.
-         <br><br>
-         If you need support in designing or optimizing your website, feel free to contact me – I help bring your ideas to life.`
-      : `Diese Webseite habe ich als persönliches Hobby gestaltet, um meine Leidenschaft für Webentwicklung und Digitalisierung auszuleben.
-         <br><br>
-         Wenn Sie Unterstützung bei der Gestaltung oder Optimierung Ihrer Webseite benötigen, können Sie sich gerne bei mir melden. Ich helfe Ihnen, Ihre Ideen umzusetzen und Ihre digitale Präsenz zu stärken.`;
-});
 const skillsTitle = computed(() =>
     currentLang.value === "en" ? "My Skills" : "Meine Fähigkeiten");
 const timelineTitle = computed(() =>

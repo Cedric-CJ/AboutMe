@@ -151,7 +151,6 @@ export default {
           about: "Über mich",
           gallery: "Galerie",
           contact: 'Kontakt',
-          workInProgress: '...',
           chooseAccent: 'Akzentfarbe wählen:',
           red: 'Rot',
           green: 'Grün',
@@ -164,7 +163,6 @@ export default {
           about: "About Me",
           gallery: "Gallery",
           contact: 'Contact',
-          workInProgress: '...',
           chooseAccent: 'Choose accent color:',
           red: 'Red',
           green: 'Green',
@@ -324,8 +322,8 @@ header {
 .menubutton {
   cursor: pointer;
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: 1.5rem;
+  left: 2rem;
   z-index: 300;
 }
 .menubutton input {
@@ -356,11 +354,16 @@ header {
 }
 .language-switcher {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 1rem;
+  right: 2rem;
   display: flex;
   gap: 1.5rem;
   z-index: 400;
+}
+@media (max-width: 550px) {
+  .language-switcher {
+    top: 1.5rem;
+  }
 }
 .language-switcher img {
   width: 10vw;
