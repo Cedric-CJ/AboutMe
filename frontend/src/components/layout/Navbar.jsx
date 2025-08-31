@@ -3,17 +3,22 @@ import { NavLink, useLocation } from "react-router-dom";
 import { Menu, Github, Linkedin, Mail } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../../components/ui/sheet";
+import { Switch } from "../../components/ui/switch";
+import { useTheme } from "../../context/ThemeContext";
 
 const nav = [
   { to: "/", label: "Start" },
   { to: "/projects", label: "Projekte" },
-  { to: "/skills", label: "Skills" },
-  { to: "/experience", label: "Werdegang" },
+  { to: "/about", label: "Über mich" },
+  { to: "/gallery", label: "Galerie" },
+  { to: "/blog", label: "Blog" },
   { to: "/contact", label: "Kontakt" },
+  { to: "/en", label: "English" },
 ];
 
 export default function Navbar() {
   const { pathname } = useLocation();
+  const { motion, setMotion } = useTheme();
 
   const LinkItem = ({ to, label, onClick }) => (
     <NavLink
@@ -22,7 +27,7 @@ export default function Navbar() {
       className={({ isActive }) =>
         `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
           isActive || pathname === to
-            ? "text-cyan-300"
+            ? "text-accent"
             : "text-zinc-300 hover:text-white"
         }`
       }
@@ -35,7 +40,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 backdrop-blur-xl border-b border-white/10 bg-zinc-900/50">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-cyan-400/30 to-teal-300/20 border border-white/10 shadow-[0_0_30px_-10px_rgba(45,212,191,.7)]" />
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-accent/40 to-accent/20 border border-white/10" />
           <NavLink to="/" className="text-sm sm:text-base font-semibold tracking-wide text-white">
             BlackIce Portfolio
           </NavLink>
@@ -47,7 +52,11 @@ export default function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-3">
+          <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <span>Anim.</span>
+            <Switch checked={motion} onCheckedChange={setMotion} />
+          </div>
           <Button variant="ghost" size="icon" asChild>
             <a href="#" aria-label="GitHub" className="text-zinc-300 hover:text-white">
               <Github size={18} />
@@ -58,7 +67,7 @@ export default function Navbar() {
               <Linkedin size={18} />
             </a>
           </Button>
-          <Button asChild className="bg-cyan-400/20 hover:bg-cyan-400/30 text-cyan-200 border border-cyan-300/30">
+          <Button asChild className="bg-accent/20 hover:bg-accent/30 text-accent-foreground border border-accent/30">
             <NavLink to="/contact" className="flex items-center gap-2">
               <Mail size={16} />
               Schreiben

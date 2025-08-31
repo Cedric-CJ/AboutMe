@@ -1,30 +1,54 @@
 import React from "react";
+import { Button } from "../../components/ui/button";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Footer() {
+  const { accent, setAccent } = useTheme();
+
+  const AccentBtn = ({ value, label }) => (
+    <Button
+      size="sm"
+      variant={accent === value ? "default" : "outline"}
+      className={accent === value ? "bg-accent text-white border-accent" : "border-white/15 bg-white/5 text-white hover:bg-white/10"}
+      onClick={() => setAccent(value)}
+    >
+      {label}
+    </Button>
+  );
+
   return (
     <footer className="border-t border-white/10 mt-16">
       <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-zinc-400">
         <div>
           <p className="text-white font-medium">BlackIce Portfolio</p>
-          <p className="mt-2">Dunkles Apple-Glass Design mit leichten Arctic-Cyan Akzenten.</p>
+          <p className="mt-2">Dunkles Apple-Glass Design mit variabler Akzentfarbe.</p>
+          <div className="mt-3 space-y-2">
+            <p className="text-zinc-300">Akzentfarbe wählen:</p>
+            <div className="flex gap-2">
+              <AccentBtn value="red" label="Rot" />
+              <AccentBtn value="green" label="Grün" />
+              <AccentBtn value="blue" label="Blau" />
+            </div>
+          </div>
         </div>
         <div>
-          <p className="text-white font-medium">Links</p>
+          <p className="text-white font-medium">Seiten</p>
           <ul className="mt-2 space-y-1">
-            <li><a href="/projects" className="hover:text-cyan-300">Projekte</a></li>
-            <li><a href="/skills" className="hover:text-cyan-300">Skills</a></li>
-            <li><a href="/experience" className="hover:text-cyan-300">Werdegang</a></li>
+            <li><a href="/about" className="hover:text-accent">Über mich</a></li>
+            <li><a href="/gallery" className="hover:text-accent">Galerie</a></li>
+            <li><a href="/blog" className="hover:text-accent">Blog</a></li>
+            <li><a href="/contact" className="hover:text-accent">Kontakt</a></li>
           </ul>
         </div>
         <div>
           <p className="text-white font-medium">Rechtliches</p>
           <ul className="mt-2 space-y-1">
-            <li>Impressum (Platzhalter)</li>
-            <li>Datenschutz (Platzhalter)</li>
+            <li><a href="/impressum" className="hover:text-accent">Impressum</a></li>
+            <li><a href="/datenschutz" className="hover:text-accent">Datenschutz</a></li>
           </ul>
         </div>
       </div>
-      <div className="text-center px-4 pb-10 text-xs text-zinc-500">© {new Date().getFullYear()} – Mock-Frontend, Backend folgt.</div>
+      <div className="text-center px-4 pb-10 text-xs text-zinc-500">© 2024 Cedric Arnhold — Mock-Frontend, Backend folgt.</div>
     </footer>
   );
 }

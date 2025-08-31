@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route, NavLink, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, NavLink, useLocation, useParams } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { Toaster } from "./components/ui/toaster";
@@ -10,18 +10,20 @@ import { Input } from "./components/ui/input";
 import { Textarea } from "./components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs";
 import { useToast } from "./hooks/use-toast";
-import { projects, skills, experience, profile, contactPreset } from "./mock";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select";
+import { projects, skills, profile, contactPreset, timeline, gallery, blogPosts } from "./mock";
 import { ArrowUpRight, Rocket, Layers, Code2, Mail, Download, Star, Filter } from "lucide-react";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 
-// Simple page container with mount transition
 function PageContainer({ children }) {
+  const { motion } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 10);
     return () => clearTimeout(t);
   }, []);
   return (
-    <div className={`max-w-6xl mx-auto px-4 pt-10 pb-20 transition-opacity duration-500 ${mounted ? "opacity-100" : "opacity-0"}`}>
+    <div className={`max-w-6xl mx-auto px-4 pt-10 pb-20 ${motion ? "transition-opacity duration-500" : ""} ${mounted ? "opacity-100" : "opacity-0"}`}>
       {children}
     </div>
   );
@@ -29,11 +31,11 @@ function PageContainer({ children }) {
 
 function Hero() {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[inset_0_0_0_1px_rgba(255,255,255,.03),0_20px_70px_-30px_rgba(34,211,238,.35)]">
-      <div className="absolute inset-0 bg-[radial-gradient(600px_200px_at_10%_-10%,rgba(34,211,238,0.15),transparent),radial-gradient(500px_200px_at_100%_0%,rgba(20,184,166,0.12),transparent)]" />
+    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
+      <div className="absolute inset-0 bg-[radial-gradient(600px_200px_at_10%_-10%,rgba(255,255,255,0.06),transparent),radial-gradient(500px_200px_at_100%_0%,rgba(255,255,255,0.04),transparent)]" />
       <div className="relative p-8 md:p-12">
         <div className="flex items-center gap-2 text-xs text-zinc-400">
-          <span className="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_12px_2px_rgba(103,232,249,0.6)]" />
+          <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_2px_rgba(99,102,241,0.25)]" />
           BlackIce • Dark Apple Glass
         </div>
         <h1 className="mt-3 text-3xl md:text-5xl font-semibold text-white tracking-tight">
@@ -41,7 +43,7 @@ function Hero() {
         </h1>
         <p className="mt-3 text-zinc-300 max-w-2xl">{profile.tagline}</p>
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <Button asChild className="bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-400/30">
+          <Button asChild className="bg-accent/20 hover:bg-accent/30 text-white border border-accent/30">
             <NavLink to="/projects" className="flex items-center gap-2">
               <Rocket size={16} />
               Projekte ansehen
@@ -70,7 +72,7 @@ function HomePage() {
           </CardHeader>
           <CardContent>
             <ul className="text-sm text-zinc-300 list-disc pl-5 space-y-2">
-              <li>Sauberes, dunkles Glass-UI mit Arctic-Cyan Akzenten</li>
+              <li>Sauberes, dunkles Glass-UI mit variabler Akzentfarbe</li>
               <li>Reaktionsschnelle Micro-Animationen</li>
               <li>Klares Informationsdesign für Tech-Profile</li>
             </ul>
@@ -91,7 +93,7 @@ function HomePage() {
             <CardTitle className="text-white flex items-center gap-2"><Star size={18} /> Fokus</CardTitle>
           </CardHeader>
           <CardContent className="text-sm text-zinc-300">
-            Daten, KI-Grundlagen, Web-Architektur, ETL
+            Data, Web, Infrastruktur, Lernen by Doing
           </CardContent>
         </Card>
       </section>
@@ -99,7 +101,7 @@ function HomePage() {
       <section className="mt-12">
         <div className="flex items-center justify-between">
           <h2 className="text-white text-xl font-semibold">Aktuelle Projekte</h2>
-          <Button asChild variant="ghost" className="text-cyan-200 hover:text-white">
+          <Button asChild variant="ghost" className="text-accent hover:text-white">
             <NavLink to="/projects" className="flex items-center gap-2">
               Alles ansehen <ArrowUpRight size={16} />
             </NavLink>
@@ -107,17 +109,20 @@ function HomePage() {
         </div>
         <div className="mt-6 grid md:grid-cols-3 gap-6">
           {projects.slice(0, 3).map((p) => (
-            <Card key={p.id} className="bg-white/5 border-white/10 hover:border-cyan-300/30 hover:shadow-[0_0_40px_-20px_rgba(103,232,249,.6)] transition-colors">
+            <Card key={p.id} className="bg-white/5 border-white/10 hover:border-accent/30 transition-colors">
               <CardHeader>
                 <CardTitle className="text-white">{p.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-zinc-300">{p.description}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {p.tags.map((t) => (
-                    <span key={t} className="text-[11px] px-2 py-1 rounded-full bg-cyan-400/10 text-cyan-200 border border-cyan-300/20">{t}</span>
+                  {p.tech.slice(0,4).map((t) => (
+                    <span key={t} className="text-[11px] px-2 py-1 rounded-full bg-accent/10 text-white border border-accent/20">{t}</span>
                   ))}
                 </div>
+                <Button asChild variant="ghost" className="mt-3 text-accent hover:text-white">
+                  <NavLink to={`/projects/${p.id}`}>Mehr erfahren</NavLink>
+                </Button>
               </CardContent>
             </Card>
           ))}
@@ -132,7 +137,7 @@ function ProjectsPage() {
   const filtered = useMemo(() => {
     return projects.filter(p =>
       p.title.toLowerCase().includes(query.toLowerCase()) ||
-      p.tags.some(t => t.toLowerCase().includes(query.toLowerCase()))
+      p.tech.some(t => t.toLowerCase().includes(query.toLowerCase()))
     );
   }, [query]);
 
@@ -141,26 +146,33 @@ function ProjectsPage() {
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-white text-2xl font-semibold">Projekte</h2>
         <div className="flex items-center gap-2">
-          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Filtern nach Titel/Tag" className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500" />
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Filtern nach Titel/Tech" className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500" />
           <Button variant="outline" className="border-white/15 bg-white/5 text-white hover:bg-white/10"><Filter size={16} /></Button>
         </div>
       </div>
       <div className="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map((p) => (
-          <Card key={p.id} className="bg-white/5 border-white/10 hover:border-cyan-300/30 transition-colors">
+          <Card key={p.id} className="bg-white/5 border-white/10 hover:border-accent/30 transition-colors">
             <CardHeader>
               <CardTitle className="text-white">{p.title}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-zinc-300">{p.description}</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                {p.tags.map((t) => (
-                  <span key={t} className="text-[11px] px-2 py-1 rounded-full bg-cyan-400/10 text-cyan-200 border border-cyan-300/20">{t}</span>
+                {p.tech.map((t) => (
+                  <span key={t} className="text-[11px] px-2 py-1 rounded-full bg-accent/10 text-white border border-accent/20">{t}</span>
                 ))}
               </div>
-              <Button asChild variant="ghost" className="mt-4 text-cyan-200 hover:text-white">
-                <a href={p.link}>Details</a>
-              </Button>
+              <div className="mt-4 flex gap-2">
+                <Button asChild variant="ghost" className="text-accent hover:text-white">
+                  <NavLink to={`/projects/${p.id}`}>Details</NavLink>
+                </Button>
+                {p.links.live && (
+                  <Button asChild variant="ghost" className="text-accent hover:text-white">
+                    <a href={p.links.live} target="_blank" rel="noreferrer">Live</a>
+                  </Button>
+                )}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -169,50 +181,157 @@ function ProjectsPage() {
   );
 }
 
-function SkillsPage() {
+function ProjectDetailPage() {
+  const { id } = useParams();
+  const p = projects.find((x) => x.id === id);
+  if (!p) {
+    return (
+      <PageContainer>
+        <h2 className="text-white text-2xl">Projekt nicht gefunden</h2>
+      </PageContainer>
+    );
+  }
   return (
     <PageContainer>
-      <h2 className="text-white text-2xl font-semibold">Skills</h2>
-      <Tabs defaultValue={skills[0]?.category} className="mt-6">
-        <TabsList className="bg-white/5 border border-white/10">
-          {skills.map((s) => (
-            <TabsTrigger key={s.category} value={s.category} className="text-white data-[state=active]:bg-cyan-400/20 data-[state=active]:text-cyan-100">
-              {s.category}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {skills.map((s) => (
-          <TabsContent key={s.category} value={s.category} className="mt-6">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {s.items.map((it) => (
-                <div key={it} className="px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-zinc-200">{it}</div>
-              ))}
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-white text-2xl font-semibold">{p.title}</h2>
+        <div className="flex gap-2">
+          {p.links.repo && (
+            <Button asChild variant="outline" className="border-white/15 bg-white/5 text-white hover:bg-white/10"><a href={p.links.repo}>GitHub</a></Button>
+          )}
+          {p.links.live && (
+            <Button asChild className="bg-accent/20 hover:bg-accent/30 text-white border border-accent/30"><a href={p.links.live}>Live</a></Button>
+          )}
+        </div>
+      </div>
+      <div className="mt-6 grid md:grid-cols-3 gap-6">
+        <Card className="bg-white/5 border-white/10 md:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-white">Überblick</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-zinc-300 space-y-3">
+            <p>{p.overview}</p>
+            <p className="text-zinc-400">Status: {p.status}</p>
+            <div>
+              <p className="text-white font-medium">Highlights</p>
+              <ul className="list-disc pl-5 mt-2 space-y-1">
+                {p.highlights.map((h, i) => (<li key={i}>{h}</li>))}
+              </ul>
             </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader>
+            <CardTitle className="text-white">Tech-Stack</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            {p.tech.map((t) => (
+              <span key={t} className="text-[11px] px-2 py-1 rounded-full bg-accent/10 text-white border border-accent/20">{t}</span>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+      <div className="mt-6 grid md:grid-cols-3 gap-6">
+        <Card className="bg-white/5 border-white/10 md:col-span-3">
+          <CardHeader>
+            <CardTitle className="text-white">Screenshots &amp; Galerie (Platzhalter)</CardTitle>
+          </CardHeader>
+          <CardContent className="grid sm:grid-cols-3 gap-4">
+            {[1,2,3,4,5,6].map((i) => (
+              <div key={i} className="h-28 rounded-lg bg-gradient-to-br from-accent/20 to-white/5 border border-white/10" />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </PageContainer>
   );
 }
 
-function ExperiencePage() {
+function AboutPage() {
   return (
     <PageContainer>
-      <h2 className="text-white text-2xl font-semibold">Werdegang</h2>
-      <div className="mt-6 space-y-6">
-        {experience.map((e) => (
-          <div key={e.id} className="relative p-5 rounded-xl bg-white/5 border border-white/10">
-            <div className="absolute left-0 top-0 h-full w-[2px] bg-gradient-to-b from-cyan-300/60 to-teal-300/40 rounded" />
-            <div className="pl-3">
-              <div className="text-white font-medium">{e.role} • {e.company}</div>
-              <div className="text-xs text-zinc-400">{e.start} – {e.end}</div>
-              <ul className="mt-3 list-disc pl-5 text-sm text-zinc-300 space-y-1">
-                {e.bullets.map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
-            </div>
+      <h2 className="text-white text-2xl font-semibold">Hi, ich bin Cedric</h2>
+      <div className="mt-6 grid md:grid-cols-3 gap-6">
+        <Card className="bg-white/5 border-white/10 md:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-white">Über mich</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-zinc-300 space-y-3">
+            <p>Student der Wirtschaftsinformatik an der HTW Berlin mit Interesse an Webentwicklung, Daten und Infrastruktur.</p>
+            <p>Ich lerne am liebsten praxisnah – durch eigene Projekte und reale Einsätze.</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader>
+            <CardTitle className="text-white">Mein Bild (Platzhalter)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-40 rounded-xl bg-gradient-to-br from-accent/30 to-white/10 border border-white/10" />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-6 grid md:grid-cols-2 gap-6">
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader>
+            <CardTitle className="text-white">Meine Fähigkeiten</CardTitle>
+          </CardHeader>
+          <CardContent className="grid sm:grid-cols-2 gap-3">
+            {skills.flatMap((s) => s.items).map((it) => (
+              <div key={it} className="px-4 py-2 rounded-md bg-white/5 border border-white/10 text-zinc-200">{it}</div>
+            ))}
+          </CardContent>
+        </Card>
+        <Card className="bg-white/5 border-white/10">
+          <CardHeader>
+            <CardTitle className="text-white">Mein Lebenslauf</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-zinc-300">
+            {timeline.map((t) => (
+              <div key={t.year} className="p-3 rounded-md bg-white/5 border border-white/10">
+                <div className="text-white font-medium">{t.year}: {t.title}</div>
+                <div className="text-xs text-zinc-400">{t.org}</div>
+                <div className="mt-1">{t.detail}</div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </PageContainer>
+  );
+}
+
+function GalleryPage() {
+  return (
+    <PageContainer>
+      <h2 className="text-white text-2xl font-semibold">Galerie</h2>
+      <div className="mt-6 grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {gallery.map((g) => (
+          <div key={g.id} className="h-40 rounded-xl bg-gradient-to-br from-accent/25 to-white/10 border border-white/10 flex items-end p-3 text-sm text-white">
+            {g.title}
           </div>
+        ))}
+      </div>
+    </PageContainer>
+  );
+}
+
+function BlogPage() {
+  return (
+    <PageContainer>
+      <h2 className="text-white text-2xl font-semibold">Blog</h2>
+      <div className="mt-6 grid sm:grid-cols-2 gap-6">
+        {blogPosts.map((b) => (
+          <Card key={b.id} className="bg-white/5 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white">{b.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-zinc-300">
+              <div className="text-[11px] inline-flex px-2 py-1 rounded-full bg-accent/10 text-white border border-accent/20">{b.tag}</div>
+              <p className="mt-2">{b.excerpt}</p>
+              <Button variant="ghost" className="mt-3 text-accent hover:text-white">Weiterlesen (Platzhalter)</Button>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </PageContainer>
@@ -243,15 +362,16 @@ function ContactPage() {
           <CardContent className="space-y-4">
             <div>
               <label className="text-xs text-zinc-400">Thema</label>
-              <select
-                className="mt-1 w-full px-3 py-2 rounded-md bg-white/5 border border-white/10 text-white"
-                value={form.topic}
-                onChange={(e) => setForm((f) => ({ ...f, topic: e.target.value }))}
-              >
-                {contactPreset.topics.map((t) => (
-                  <option key={t.value} value={t.value} className="bg-zinc-900">{t.label}</option>
-                ))}
-              </select>
+              <Select value={form.topic} onValueChange={(v) => setForm((f) => ({ ...f, topic: v }))}>
+                <SelectTrigger className="mt-1 bg-white/5 border-white/10 text-white">
+                  <SelectValue placeholder="Thema wählen" />
+                </SelectTrigger>
+                <SelectContent className="bg-zinc-900 border-white/10 text-white">
+                  {contactPreset.topics.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label className="text-xs text-zinc-400">Name</label>
@@ -265,7 +385,7 @@ function ContactPage() {
               <label className="text-xs text-zinc-400">Nachricht</label>
               <Textarea required value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} className="mt-1 bg-white/5 border-white/10 text-white min-h-[120px]" />
             </div>
-            <Button type="submit" className="w-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-400/30">Senden (Mock)</Button>
+            <Button type="submit" className="w-full bg-accent/20 hover:bg-accent/30 text-white border border-accent/30">Senden (Mock)</Button>
           </CardContent>
         </Card>
         <Card className="bg-white/5 border-white/10 md:col-span-1">
@@ -276,16 +396,37 @@ function ContactPage() {
             <div><span className="text-zinc-400">E-Mail:</span> {profile.email}</div>
             <div><span className="text-zinc-400">Standort:</span> {profile.location}</div>
             <div className="pt-2">
-              <Button asChild variant="ghost" className="text-cyan-200 hover:text-white">
+              <Button asChild variant="ghost" className="text-accent hover:text-white">
                 <a href="#">GitHub</a>
               </Button>
-              <Button asChild variant="ghost" className="text-cyan-200 hover:text-white">
+              <Button asChild variant="ghost" className="text-accent hover:text-white">
                 <a href="#">LinkedIn</a>
               </Button>
             </div>
           </CardContent>
         </Card>
       </form>
+    </PageContainer>
+  );
+}
+
+function LegalPage({ type }) {
+  return (
+    <PageContainer>
+      <h2 className="text-white text-2xl font-semibold">{type === "impressum" ? "Impressum" : "Datenschutz"}</h2>
+      <div className="mt-6 space-y-3 text-sm text-zinc-300">
+        <p>Platzhalter-Text. Inhalte folgen.</p>
+        <p>Kontakt siehe Kontaktseite. Dies ist eine Mock-Seite ohne Rechtsverbindlichkeit.</p>
+      </div>
+    </PageContainer>
+  );
+}
+
+function EnglishPage() {
+  return (
+    <PageContainer>
+      <h2 className="text-white text-2xl font-semibold">English</h2>
+      <p className="mt-4 text-zinc-300">An English version of this portfolio will be available soon. Meanwhile, feel free to explore the German pages.</p>
     </PageContainer>
   );
 }
@@ -303,7 +444,6 @@ function Layout({ children }) {
 function RoutesWithTransitions() {
   const location = useLocation();
   useEffect(() => {
-    // Scroll to top on route change
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [location.pathname]);
 
@@ -311,9 +451,14 @@ function RoutesWithTransitions() {
     <Routes>
       <Route path="/" element={<Layout><HomePage /></Layout>} />
       <Route path="/projects" element={<Layout><ProjectsPage /></Layout>} />
-      <Route path="/skills" element={<Layout><SkillsPage /></Layout>} />
-      <Route path="/experience" element={<Layout><ExperiencePage /></Layout>} />
+      <Route path="/projects/:id" element={<Layout><ProjectDetailPage /></Layout>} />
+      <Route path="/about" element={<Layout><AboutPage /></Layout>} />
+      <Route path="/gallery" element={<Layout><GalleryPage /></Layout>} />
+      <Route path="/blog" element={<Layout><BlogPage /></Layout>} />
       <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+      <Route path="/impressum" element={<Layout><LegalPage type="impressum" /></Layout>} />
+      <Route path="/datenschutz" element={<Layout><LegalPage type="datenschutz" /></Layout>} />
+      <Route path="/en" element={<Layout><EnglishPage /></Layout>} />
       <Route path="*" element={<Layout><HomePage /></Layout>} />
     </Routes>
   );
@@ -322,10 +467,12 @@ function RoutesWithTransitions() {
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <RoutesWithTransitions />
-      </BrowserRouter>
-      <Toaster />
+      <ThemeProvider>
+        <BrowserRouter>
+          <RoutesWithTransitions />
+        </BrowserRouter>
+        <Toaster />
+      </ThemeProvider>
     </div>
   );
 }
