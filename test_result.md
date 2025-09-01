@@ -107,48 +107,60 @@
 ## backend:
   - task: "Products CRUD"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/shop.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented /api/products CRUD with Mongo via motor"
+      - working: true
+        agent: "testing"
+        comment: "All CRUD operations tested successfully: POST /api/products creates product with ID, GET /api/products lists products and supports query by title/tags, GET /api/products/{id} retrieves specific product, PATCH /api/products/{id} updates title, DELETE /api/products/{id} returns {ok:true}. Fixed import error in server.py (relative import issue)."
   - task: "Checkout session creation"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/shop.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Returns placeholder redirect if ADYEN_* not configured; persists order"
+      - working: true
+        agent: "testing"
+        comment: "POST /api/checkout/session works correctly: accepts provider=paypal and items array, returns 200 with order_id and status indicating missing ADYEN_* configuration as expected. Order persistence verified."
   - task: "Webhook capture"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/shop.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Stores raw webhook payloads; signature verification TODO"
+      - working: true
+        agent: "testing"
+        comment: "POST /api/checkout/webhook?provider=paypal accepts JSON payload and returns {ok:true} as expected. Webhook storage functionality working."
   - task: "Contact POST"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/shop.py"
     stuck_count: 0
     priority: "low"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Simple persistence of contact messages"
+      - working: true
+        agent: "testing"
+        comment: "POST /api/contact accepts {topic, name, email, message} and returns object with ID. Contact message persistence working correctly."
 
 ## frontend:
   - task: "Shop page (mock)"
