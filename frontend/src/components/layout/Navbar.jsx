@@ -8,6 +8,7 @@ import { useTheme } from "../../context/ThemeContext";
 
 const nav = [
   { to: "/", label: "Start" },
+  { to: "/shop", label: "Shop" },
   { to: "/projects", label: "Projekte" },
   { to: "/about", label: "Über mich" },
   { to: "/gallery", label: "Galerie" },

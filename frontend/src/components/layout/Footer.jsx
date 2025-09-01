@@ -9,7 +9,7 @@ export default function Footer() {
     <Button
       size="sm"
       variant={accent === value ? "default" : "outline"}
-      className={accent === value ? "bg-accent text-white border-accent" : "border-white/15 bg-white/5 text-white hover:bg-white/10"}
+      className={accent === value ? "glass-btn text-white" : "glass-btn-secondary"}
       onClick={() => setAccent(value)}
     >
       {label}
@@ -21,7 +21,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-zinc-400">
         <div>
           <p className="text-white font-medium">BlackIce Portfolio</p>
-          <p className="mt-2">Dunkles Apple-Glass Design mit variabler Akzentfarbe.</p>
+          <p className="mt-2">Eis-/Türkis-Hintergrund mit gläsernen UI-Elementen.</p>
           <div className="mt-3 space-y-2">
             <p className="text-zinc-300">Akzentfarbe wählen:</p>
             <div className="flex gap-2">
@@ -34,6 +34,7 @@ export default function Footer() {
         <div>
           <p className="text-white font-medium">Seiten</p>
           <ul className="mt-2 space-y-1">
+            <li><a href="/shop" className="hover:text-accent">Shop</a></li>
             <li><a href="/about" className="hover:text-accent">Über mich</a></li>
             <li><a href="/gallery" className="hover:text-accent">Galerie</a></li>
             <li><a href="/blog" className="hover:text-accent">Blog</a></li>
@@ -48,7 +49,7 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="text-center px-4 pb-10 text-xs text-zinc-500">© 2024 Cedric Arnhold — Mock-Frontend, Backend folgt.</div>
+      <div className="text-center px-4 pb-10 text-xs text-zinc-500">© 2025 – Mock-Frontend, Backend bereit. Zahlungen sind Demo bis ADYEN_* Keys hinterlegt sind.</div>
     </footer>
   );
 }
