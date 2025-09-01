@@ -81,3 +81,11 @@ export const performanceData = {
     { label: "CLS", value: 0.02, unit: "", target: "< 0.1" }
   ]
 };
+
+export const contactPreset = {
+  topics: [
+    { value: "projekt", label: "Projektanfrage" },
+    { value: "werkstudent", label: "Werkstudent/Praktikum" },
+    { value: "sonstiges", label: "Sonstiges" }
+  ]
+};
