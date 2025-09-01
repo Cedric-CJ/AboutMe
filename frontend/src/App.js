@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { projects, skills, profile, contactPreset, timeline, gallery, blogPosts } from "./mock";
 import { ArrowUpRight, Rocket, Layers, Code2, Mail, Download, Star, Filter } from "lucide-react";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import PerformancePage from "./pages/Performance";
+import ResumePage from "./pages/Resume";
 
 function PageContainer({ children }) {
   const { motion } = useTheme();
@@ -50,9 +52,9 @@ function Hero() {
             </NavLink>
           </Button>
           <Button variant="outline" className="border-white/15 bg-white/5 text-white hover:bg-white/10">
-            <NavLink to="#" onClick={(e) => { e.preventDefault(); }} className="flex items-center gap-2">
+            <NavLink to="/resume" className="flex items-center gap-2">
               <Download size={16} />
-              Lebenslauf (bald)
+              Lebenslauf
             </NavLink>
           </Button>
         </div>
@@ -234,7 +236,7 @@ function ProjectDetailPage() {
       <div className="mt-6 grid md:grid-cols-3 gap-6">
         <Card className="bg-white/5 border-white/10 md:col-span-3">
           <CardHeader>
-            <CardTitle className="text-white">Screenshots &amp; Galerie (Platzhalter)</CardTitle>
+            <CardTitle className="text-white">Screenshots & Galerie (Platzhalter)</CardTitle>
           </CardHeader>
           <CardContent className="grid sm:grid-cols-3 gap-4">
             {[1,2,3,4,5,6].map((i) => (
@@ -455,6 +457,8 @@ function RoutesWithTransitions() {
       <Route path="/about" element={<Layout><AboutPage /></Layout>} />
       <Route path="/gallery" element={<Layout><GalleryPage /></Layout>} />
       <Route path="/blog" element={<Layout><BlogPage /></Layout>} />
+      <Route path="/performance" element={<Layout><PerformancePage /></Layout>} />
+      <Route path="/resume" element={<Layout><ResumePage /></Layout>} />
       <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
       <Route path="/impressum" element={<Layout><LegalPage type="impressum" /></Layout>} />
       <Route path="/datenschutz" element={<Layout><LegalPage type="datenschutz" /></Layout>} />

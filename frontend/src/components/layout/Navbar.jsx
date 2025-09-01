@@ -12,6 +12,8 @@ const nav = [
   { to: "/about", label: "Über mich" },
   { to: "/gallery", label: "Galerie" },
   { to: "/blog", label: "Blog" },
+  { to: "/performance", label: "Performance" },
+  { to: "/resume", label: "Lebenslauf" },
   { to: "/contact", label: "Kontakt" },
   { to: "/en", label: "English" },
 ];
@@ -90,18 +92,6 @@ export default function Navbar() {
                 {nav.map((n) => (
                   <LinkItem key={n.to} {...n} />
                 ))}
-                <div className="pt-4 flex gap-2">
-                  <Button variant="ghost" size="icon" asChild>
-                    <a href="#" aria-label="GitHub" className="text-zinc-300 hover:text-white">
-                      <Github size={18} />
-                    </a>
-                  </Button>
-                  <Button variant="ghost" size="icon" asChild>
-                    <a href="#" aria-label="LinkedIn" className="text-zinc-300 hover:text-white">
-                      <Linkedin size={18} />
-                    </a>
-                  </Button>
-                </div>
               </div>
             </SheetContent>
           </Sheet>

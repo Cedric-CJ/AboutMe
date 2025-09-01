@@ -5,6 +5,7 @@ export const profile = {
   tagline: "Wirtschaftsinformatik-Student – Data, Web & Infrastruktur",
   location: "Berlin, Deutschland",
   email: "cedric@example.com",
+  cvUrl: "", // optional PDF URL
   social: {
     github: "https://github.com/cedric",
     linkedin: "https://www.linkedin.com/in/cedric/",
@@ -13,61 +14,18 @@ export const profile = {
 };
 
 export const timeline = [
-  {
-    year: "2026",
-    title: "Bachelor of Science – Wirtschaftsinformatik",
-    org: "HTW Berlin",
-    detail: "Voraussichtlicher Abschluss 2026.",
-  },
-  {
-    year: "2024",
-    title: "Praktikum – Bundesministerium für Digitales und Verkehr (Z33)",
-    org: "BMDV",
-    detail: "IT-Betrieb, Server und Infrastruktur (12/2024 – 03/2025).",
-  },
-  {
-    year: "2022–2024",
-    title: "Werkstudent",
-    org: "Kaufland Deutschland",
-    detail: "Von 06/2022 bis 08/2024 als Werkstudent tätig.",
-  },
-  {
-    year: "2022",
-    title: "Abitur",
-    org: "Ernst-Haeckel-Schule Berlin",
-    detail: "Mathe/Geschichte Abitur mit 2,8.",
-  },
-  {
-    year: "2018",
-    title: "Praktikum",
-    org: "Finanzamt Marzahn-Hellersdorf",
-    detail: "Einblicke in Büro- und Verhandlungstätigkeiten.",
-  },
-  {
-    year: "2016",
-    title: "Praktikum",
-    org: "Dr. Albrecht &amp; Plogmaker GbR",
-    detail: "Fünf freiwillige Praktika in Steuerberatung, vertiefte Einblicke.",
-  },
+  { year: "2026", title: "Bachelor of Science – Wirtschaftsinformatik", org: "HTW Berlin", detail: "Voraussichtlicher Abschluss 2026." },
+  { year: "2024", title: "Praktikum – Bundesministerium für Digitales und Verkehr (Z33)", org: "BMDV", detail: "IT-Betrieb, Server und Infrastruktur (12/2024 – 03/2025)." },
+  { year: "2022–2024", title: "Werkstudent", org: "Kaufland Deutschland", detail: "Von 06/2022 bis 08/2024 als Werkstudent tätig." },
+  { year: "2022", title: "Abitur", org: "Ernst-Haeckel-Schule Berlin", detail: "Mathe/Geschichte Abitur mit 2,8." },
+  { year: "2018", title: "Praktikum", org: "Finanzamt Marzahn-Hellersdorf", detail: "Einblicke in Büro- und Verhandlungstätigkeiten." },
+  { year: "2016", title: "Praktikum", org: "Dr. Albrecht & Plogmaker GbR", detail: "Fünf freiwillige Praktika in Steuerberatung, vertiefte Einblicke." },
 ];
 
 export const skills = [
-  {
-    category: "Sprachen/Technologien",
-    items: [
-      "JavaScript", "TypeScript", "Python", "SQL", "HTML", "CSS", "Dart"
-    ]
-  },
-  {
-    category: "Frameworks &amp; Tools",
-    items: [
-      "Vue", "React", "Spring Boot", "Java", "Flutter", "Docker"
-    ]
-  },
-  {
-    category: "Datenbanken/Hosting",
-    items: ["PostgreSQL", "Oracle", "Render", "SQL-DB"]
-  }
+  { category: "Sprachen/Technologien", items: ["JavaScript", "TypeScript", "Python", "SQL", "HTML", "CSS", "Dart"] },
+  { category: "Frameworks & Tools", items: ["Vue", "React", "Spring Boot", "Java", "Flutter", "Docker"] },
+  { category: "Datenbanken/Hosting", items: ["PostgreSQL", "Oracle", "Render", "SQL-DB"] }
 ];
 
 export const projects = [
@@ -79,11 +37,7 @@ export const projects = [
     status: "Derzeit nicht funktionsfähig (DB offline).",
     tech: ["Vue", "JavaScript", "HTML", "CSS", "Docker", "TypeScript", "SQL", "React", "REST"],
     links: { live: "#", repo: "#" },
-    highlights: [
-      "Auth-Flows mit Session Handling (Mock)",
-      "Spiel-Loop mit Zeit-basierten Needs",
-      "Leaderboards &amp; Entity-Modelle"
-    ]
+    highlights: ["Auth-Flows mit Session Handling (Mock)", "Spiel-Loop mit Zeit-basierten Needs", "Leaderboards & Entity-Modelle"]
   },
   {
     id: "metallbaumeister",
@@ -93,11 +47,7 @@ export const projects = [
     status: "Live",
     tech: ["HTML", "CSS", "JavaScript", "Vue"],
     links: { live: "#", repo: "#" },
-    highlights: [
-      "Bild-Durchschaltung &amp; Vorher-Nachher",
-      "Impressum/Datenschutz nach aktuellem Stand",
-      "Performante, schlichte Umsetzung"
-    ]
+    highlights: ["Bild-Durchschaltung & Vorher-Nachher", "Impressum/Datenschutz nach aktuellem Stand", "Performante, schlichte Umsetzung"]
   }
 ];
 
@@ -116,10 +66,18 @@ export const blogPosts = [
   { id: "b3", title: "SQL-Tipps für kleine Projekte", tag: "Daten", excerpt: "Indexe, Joins, und Lesbarkeit." }
 ];
 
-export const contactPreset = {
-  topics: [
-    { value: "projekt", label: "Projektanfrage" },
-    { value: "werkstudent", label: "Werkstudent/Praktikum" },
-    { value: "sonstiges", label: "Sonstiges" }
+export const performanceData = {
+  skillScores: [
+    { name: "JavaScript/TypeScript", score: 78, note: "Projekte & Studienarbeiten" },
+    { name: "Vue/React", score: 74, note: "Mehrere Frontends" },
+    { name: "SQL & DB", score: 66, note: "Postgres/Oracle Basics" },
+    { name: "Java/Spring Boot", score: 58, note: "Grundlagen & Praktika" },
+    { name: "Docker", score: 62, note: "Dev-Container & Deploys" },
+    { name: "Infrastruktur", score: 60, note: "Serverbetrieb (BMDV-Praktikum)" }
+  ],
+  vitals: [
+    { label: "LCP", value: 1.9, unit: "s", target: "< 2.5s" },
+    { label: "TBT", value: 120, unit: "ms", target: "< 200ms" },
+    { label: "CLS", value: 0.02, unit: "", target: "< 0.1" }
   ]
 };
