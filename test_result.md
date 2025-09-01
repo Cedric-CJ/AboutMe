@@ -182,10 +182,7 @@
   run_ui: false
 
 ## test_plan:
-  current_focus:
-    - "Products CRUD"
-    - "Checkout session creation"
-    - "Webhook capture"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -193,3 +190,5 @@
 ## agent_communication:
   - agent: "main"
     message: "Please test backend endpoints under /api: products CRUD; checkout/session happy path with sample items; webhook accepts JSON; contact POST."
+  - agent: "testing"
+    message: "Backend testing completed successfully. All API endpoints working: GET /api/ returns Hello World, Products CRUD fully functional, Checkout session creation works with proper ADYEN_* config messaging, Webhook capture accepts JSON and returns {ok:true}, Contact POST creates records with IDs. Fixed import error in server.py. Created comprehensive backend_test.py for future testing. All backend tasks are now working and ready for frontend integration."
