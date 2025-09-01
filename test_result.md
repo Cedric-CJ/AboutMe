@@ -101,3 +101,83 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+## user_problem_statement: "Build a BlackIce/Apple Glass style portfolio with shop page; add backend with payments (PayPal, Klarna, Apple Pay, Google Pay)"
+
+## backend:
+  - task: "Products CRUD"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/shop.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented /api/products CRUD with Mongo via motor"
+  - task: "Checkout session creation"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/shop.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Returns placeholder redirect if ADYEN_* not configured; persists order"
+  - task: "Webhook capture"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/shop.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Stores raw webhook payloads; signature verification TODO"
+  - task: "Contact POST"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/shop.py"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Simple persistence of contact messages"
+
+## frontend:
+  - task: "Shop page (mock)"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/pages/Shop.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "To be implemented after backend test"
+
+## metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+## test_plan:
+  current_focus:
+    - "Products CRUD"
+    - "Checkout session creation"
+    - "Webhook capture"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+## agent_communication:
+  - agent: "main"
+    message: "Please test backend endpoints under /api: products CRUD; checkout/session happy path with sample items; webhook accepts JSON; contact POST."
