@@ -22,6 +22,9 @@ db = client[os.environ['DB_NAME']]
 # Create the main app without a prefix
 app = FastAPI()
 
+# Attach db to app state for routers
+app.state.db = db
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
@@ -52,13 +55,15 @@ async def get_status_checks():
     status_checks = await db.status_checks.find().to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
-# Include the router in the main app
+# Include routers
+from .shop import router as shop_router
 app.include_router(api_router)
+app.include_router(shop_router)
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
