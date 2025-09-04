@@ -17,6 +17,7 @@ import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import PerformancePage from "./pages/Performance";
 import ResumePage from "./pages/Resume";
 import ShopPage from "./pages/Shop";
+import PaymentResultPage from "./pages/PaymentResult";
 
 function PageContainer({ children }) {
   const { motion } = useTheme();
@@ -462,6 +463,7 @@ function RoutesWithTransitions() {
       <Route path="/performance" element={<Layout><PerformancePage /></Layout>} />
       <Route path="/resume" element={<Layout><ResumePage /></Layout>} />
       <Route path="/contact" element={<Layout><ContactPage /></Layout>} />
+      <Route path="/payment/result" element={<Layout><PaymentResultPage /></Layout>} />
       <Route path="/impressum" element={<Layout><LegalPage type="impressum" /></Layout>} />
       <Route path="/datenschutz" element={<Layout><LegalPage type="datenschutz" /></Layout>} />
       <Route path="/en" element={<Layout><EnglishPage /></Layout>} />

@@ -1,10 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { useToast } from "../hooks/use-toast";
 import { Badge } from "../components/ui/badge";
 import axios from "axios";
+import AdyenCheckout from "@adyen/adyen-web";
+import "@adyen/adyen-web/dist/adyen.css";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -81,6 +84,54 @@ export default function ShopPage() {
     }
   };
 
+  // --- Real Adyen Drop-in flow ---
+  const dropinRef = useRef(null);
+  const [isStarting, setIsStarting] = useState(false);
+  const startAdyenCheckout = async () => {
+    if (cart.length === 0) {
+      toast({ title: "Warenkorb leer", description: "Bitte füge Artikel hinzu." });
+      return;
+    }
+    setIsStarting(true);
+    try {
+      const items = cart.map((i) => ({ product_id: i.id, qty: i.qty }));
+      const { data } = await axios.post(`${API}/checkout/session`, { provider: "adyen", items });
+      if (!data?.adyen?.id || !data?.adyen?.sessionData) {
+        toast({ title: "Adyen nicht konfiguriert", description: data?.message || "Bitte ADYEN_* Variablen setzen." });
+        setIsStarting(false);
+        return;
+      }
+      const checkout = await AdyenCheckout({
+        clientKey: data.adyen.clientKey,
+        environment: data.adyen.environment === "live" ? "live" : "test",
+        locale: "de-DE",
+        session: {
+          id: data.adyen.id,
+          sessionData: data.adyen.sessionData,
+        },
+        onPaymentCompleted: (result, component) => {
+          toast({ title: "Zahlung abgeschlossen", description: result?.resultCode || "Erfolg" });
+          setCart([]);
+        },
+        onError: (error, component) => {
+          console.error(error);
+          toast({ title: "Zahlungsfehler", description: error?.message || "Unbekannter Fehler" });
+        },
+      });
+      const dropin = checkout.create("dropin", {
+        paymentMethodConfiguration: {},
+      });
+      if (dropinRef.current) {
+        dropin.mount(dropinRef.current);
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Checkout nicht möglich", description: "Bitte Backend/Keys prüfen." });
+    } finally {
+      setIsStarting(false);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 pt-10 pb-20">
       <div className="ice-hero">
@@ -139,6 +190,10 @@ export default function ShopPage() {
                   ))}
                 </div>
               )}
+              {/* Adyen Drop-in Mount Point */}
+              <div className="mt-6">
+                <div ref={dropinRef} />
+              </div>
             </CardContent>
           </Card>
           <Card className="glass-card">
@@ -152,12 +207,14 @@ export default function ShopPage() {
                 <Button className="glass-btn" onClick={() => checkout("klarna")}>Klarna (Demo)</Button>
                 <Button className="glass-btn" onClick={() => checkout("applepay")}>Apple Pay (Demo)</Button>
                 <Button className="glass-btn" onClick={() => checkout("googlepay")}>Google Pay (Demo)</Button>
+                <Button disabled={isStarting} className="glass-btn" onClick={startAdyenCheckout}>{isStarting ? "Lade Zahlung..." : "Zur Kasse (Adyen)"}</Button>
               </div>
               <p className="text-[12px] text-ice-dim mt-3">Zahlung ist Demo. Für Live-Zahlungen benötigen wir deine ADYEN_* Keys.</p>
             </CardContent>
           </Card>
         </div>
       </div>
+
     </div>
   );
 }

@@ -4,6 +4,11 @@ from typing import List, Optional
 from datetime import datetime
 import uuid
 import os
+import hmac
+import hashlib
+import base64
+import json
+import requests
 
 router = APIRouter(prefix="/api")
 
@@ -107,6 +112,7 @@ async def create_checkout_session(request: Request, payload: CheckoutRequest):
     # Load products and compute totals
     ids = [i.product_id for i in payload.items]
     found = await _fetch_products_by_ids(db, ids)
+
     if len(found) != len(ids):
         raise HTTPException(status_code=400, detail="Einige Produkte existieren nicht")
 
@@ -128,39 +134,127 @@ async def create_checkout_session(request: Request, payload: CheckoutRequest):
     order = Order(items=order_items, total_cents=total, currency=currency or "EUR", status="created", provider=provider)
     await db.orders.insert_one(order.model_dump())
 
-    # Provider config check
+    # Helper for missing configuration
     def missing(msg: str):
         return {"order_id": order.id, "provider": provider, "status": "requires_configuration", "message": msg}
 
-    if provider in ("applepay", "googlepay", "klarna", "paypal", "adyen"):
-        # Recommended: use ADYEN_* for all (Adyen routes PayPal/Klarna/Apple/Google)
-        has_adyen = bool(os.environ.get("ADYEN_API_KEY") and os.environ.get("ADYEN_MERCHANT_ACCOUNT") and os.environ.get("ADYEN_CLIENT_KEY"))
-        if not has_adyen:
-            return missing("Fehlende ADYEN_* Umgebungsvariablen. Empfohlen: Adyen für PayPal/Klarna/Apple/Google unter einer Integration.")
-        # Keys exist, but full call not yet wired without credentials. Return pseudo-session for now.
+    # We support a single integration via Adyen that can handle PayPal/Klarna/Apple/Google and cards.
+    if provider in ("applepay", "googlepay", "klarna", "paypal", "adyen", "card"):
+        api_key = os.environ.get("ADYEN_API_KEY")
+        merchant_account = os.environ.get("ADYEN_MERCHANT_ACCOUNT")
+        client_key = os.environ.get("ADYEN_CLIENT_KEY")
+        environment = os.environ.get("ADYEN_ENV", "test")  # 'test' or 'live'
+
+        if not (api_key and merchant_account and client_key):
+            return missing("Fehlende ADYEN_* Umgebungsvariablen (ADYEN_API_KEY, ADYEN_MERCHANT_ACCOUNT, ADYEN_CLIENT_KEY).")
+
+        # Build Adyen Sessions API request body
+        # Docs: https://docs.adyen.com/online-payments/web-drop-in#create-payment-session
+        # Note: amount in minor units (e.g. cents).
+        base_url = "https://checkout-test.adyen.com" if environment == "test" else "https://checkout-live.adyen.com"
+        sessions_url = f"{base_url}/v70/sessions"
+
+        # Choose a reference for reconciliation
+        reference = f"ORDER-{order.id}"
+
+        # Return URLs (for redirects). In dev you can keep placeholders; frontend can handle final result page.
+        origin = os.environ.get("FRONTEND_ORIGIN", "http://localhost:3000")
+        return_url = f"{origin}/payment/result?orderId={order.id}"
+
+        body = {
+            "amount": {"currency": order.currency, "value": order.total_cents},
+            "merchantAccount": merchant_account,
+            "reference": reference,
+            "returnUrl": return_url,
+            # Restrict or allow payment methods depending on selected provider
+            # If explicit provider is selected, we can pass a hint via 'shopperLocale' or let Drop-in present options.
+            # For simplicity, we let Drop-in handle available methods by account configuration.
+            "channel": "Web",
+            # Optional: countryCode, shopperLocale, etc.
+        }
+
+        headers = {
+            "x-API-key": api_key,
+            "content-type": "application/json",
+        }
+
+        try:
+            resp = requests.post(sessions_url, headers=headers, data=json.dumps(body), timeout=15)
+        except Exception as e:
+            return {"order_id": order.id, "provider": provider, "status": "error", "message": f"Adyen Sessions Request fehlgeschlagen: {e}"}
+
+        if resp.status_code != 200:
+            return {"order_id": order.id, "provider": provider, "status": "error", "message": f"Adyen Sessions Status {resp.status_code}: {resp.text}"}
+
+        data = resp.json()
+        # Persist the provider session id for later mapping
+        provider_session_id = data.get("id")
+        await db.orders.update_one({"id": order.id}, {"$set": {"provider_session_id": provider_session_id}})
+
         return {
             "order_id": order.id,
             "provider": provider,
-            "mode": "redirect",
-            "redirect_url": "/payment/redirect/placeholder",
-            "message": "Adyen konfiguriert – Redirect-URL wird nach echter API-Initialisierung geliefert."
+            "status": "session_created",
+            "adyen": {
+                "id": data.get("id"),
+                "sessionData": data.get("sessionData"),
+                "clientKey": client_key,
+                "environment": environment,
+            },
         }
 
     raise HTTPException(status_code=400, detail="Unbekannter Provider")
 
 @router.post("/checkout/webhook")
 async def checkout_webhook(request: Request, provider: Optional[str] = None):
+    """
+    Webhook endpoint to receive payment result notifications.
+    - Stores all events in 'checkout_events'.
+    - If ADYEN_HMAC_KEY is configured and the payload contains Adyen fields, verifies HMAC signature.
+    NOTE: In production, configure the exact webhook format in Adyen and adapt verification accordingly.
+    """
     db = get_db(request)
     body = await request.json()
+
+    verified = None
+    hmac_key_b64 = os.environ.get("ADYEN_HMAC_KEY")
+
+    # Minimalistic verification attempt for Adyen standard webhook format (json with additionalData.hmacSignature)
+    try:
+        if hmac_key_b64 and isinstance(body, dict):
+            additional = body.get("additionalData") or {}
+            signature = additional.get("hmacSignature")
+            # Construct signing string as per your Adyen webhook configuration.
+            # This varies by webhook type; adjust accordingly.
+            # Here we try a common pattern using amount.currency:value:pspReference:merchantAccountCode:merchantReference:eventCode:success
+            amount = body.get("amount", {})
+            signing_items = [
+                amount.get("currency", ""),
+                str(amount.get("value", "")),
+                body.get("pspReference", ""),
+                body.get("merchantAccountCode") or body.get("merchantAccount", ""),
+                body.get("merchantReference", ""),
+                body.get("eventCode", ""),
+                str(body.get("success", "")),
+            ]
+            signing_string = ":".join(signing_items)
+
+            key = base64.b64decode(hmac_key_b64)
+            mac = hmac.new(key, signing_string.encode("utf-8"), hashlib.sha256)
+            calc_sig = base64.b64encode(mac.digest()).decode("utf-8")
+            verified = (signature == calc_sig)
+    except Exception:
+        verified = False
+
     event = {
         "id": str(uuid.uuid4()),
         "provider": provider or "unknown",
         "payload": body,
         "received_at": datetime.utcnow(),
+        "verified": verified,
     }
     await db.checkout_events.insert_one(event)
-    # TODO: verify signatures per provider (Adyen HMAC, PayPal webhook signature)
-    return {"ok": True}
+    return {"ok": True, "verified": verified}
 
 class ContactIn(BaseModel):
     topic: str
