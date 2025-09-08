@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "../../components/ui/button";
+import { Button } from "../ui/button";
 import { useTheme } from "../../context/ThemeContext";
 
 export default function Footer() {

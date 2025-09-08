@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tokens inspired by frontend-vorlage */
+:root {
+  --bg-dark:#0A0F14; --bg-teal:#0E636A; --bg-ice:#BCECF0;
+  --text-high:#EAF6F7; --text-dim:#B8D6D9; --accent:#71F0F2;
+  --r-lg:16px; --r-md:12px; --r-sm:10px;
+  --blur:12px; --glass-alpha:.14; --glass-b-alpha:.28;
+
+  --background: 0 0% 4%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 6%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 6%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 187 92% 48%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 14.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 20%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent-h: 180; --accent-s: 70%; --accent-l: 70%;
+  --accent: var(--accent-h) var(--accent-s) var(--accent-l);
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 0 0% 83.1%;
+  --radius: 12px;
+}
+
+html, body, #app { height: 100%; }
+body { @apply bg-background text-foreground; font-family: 'Acme', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+
+/* Glass elements aligned with vorlage */
+.glass-card {
+  background: rgba(255,255,255,var(--glass-alpha));
+  border: 1px solid rgba(255,255,255,var(--glass-b-alpha));
+  backdrop-filter: blur(var(--blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
+  border-radius: var(--r-lg);
+}
+.glass-btn{
+  position:relative; color:var(--text-high);
+  border:1px solid rgba(var(--accent-rgb, 113,240,242), .55);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb, 0,210,200), .35), rgba(255,255,255,.12));
+  backdrop-filter: blur(var(--blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
+}
+.glass-btn::before{ content:""; position:absolute; inset:1px; border-radius:inherit; pointer-events:none; background:linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,0)); mix-blend-mode:screen; opacity:.7 }
+.glass-btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 40px rgba(0,0,0,.35) }
+.glass-btn:active{ transform:none; box-shadow: 0 6px 18px rgba(0,0,0,.32) }
+.glass-btn-secondary{ color:var(--text-high); border:1px solid rgba(255,255,255,.24); background: rgba(255,255,255,.10); backdrop-filter: blur(var(--blur)) saturate(140%); -webkit-backdrop-filter: blur(var(--blur)) saturate(140%) }
+
+/* ICE BACKGROUND LAYERS from vorlage */
+.site-bg{
+  position:fixed; inset:0; z-index:-3;
+  background:
+    linear-gradient(112deg, #0a0f14 0%, #083137 30%, rgba(var(--accent-rgb, 15,111,118), .65) 60%, rgba(var(--accent-rgb, 167,239,242), .35) 100%),
+    radial-gradient(1200px 600px at 15% 60%, rgba(0,0,0,.45), rgba(0,0,0,0) 60%),
+    radial-gradient(900px 500px at 85% 20%, rgba(255,255,255,.08), rgba(255,255,255,0) 60%);
+  background-blend-mode: overlay, normal, normal;
+}
+.site-bg::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(120% 100% at 20% 50%, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 30%, rgba(0,0,0,0) 60%),
+    linear-gradient(90deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 60%),
+    linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+}
+.bg-mark{ position:fixed; inset:0; z-index:-2; display:grid; place-items:center; pointer-events:none; }
+.bg-mark::after{
+  content:""; width:clamp(120px, 16vw, 240px); aspect-ratio:1;
+  background:radial-gradient(circle at 60% 40%, rgba(0,0,0,.5), transparent 60%),
+             radial-gradient(circle at 40% 60%, rgba(0,0,0,.35), transparent 60%);
+  opacity:.18; filter: drop-shadow(0 1px 0 rgba(255,255,255,.07));
+  mix-blend-mode: multiply; border-radius: 22% 78% 63% 37%/61% 30% 70% 39%;
+}
+
+/* Per-page auto-contrast helpers */
+.page-auto-contrast h1,
+.page-auto-contrast h2,
+.page-auto-contrast h3,
+.page-auto-contrast h4 { text-shadow: 0 1px 2px rgba(0,0,0,.55) }
+.page-auto-contrast p,
+.page-auto-contrast li { text-shadow: 0 1px 2px rgba(0,0,0,.45) }
+.page-auto-contrast .text-block { background: rgba(0,0,0,.28); padding: .5rem .75rem; border-radius: 10px }

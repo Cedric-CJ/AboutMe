@@ -1,9 +1,9 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Menu, Github, Linkedin, Mail } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../../components/ui/sheet";
-import { Switch } from "../../components/ui/switch";
+import { Button } from "../ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import { Switch } from "../ui/switch";
 import { useTheme } from "../../context/ThemeContext";
 
 const nav = [
