@@ -73,6 +73,12 @@ body { @apply bg-background text-foreground; font-family: 'Acme', system-ui, -ap
   background:
     radial-gradient(ellipse at top left, rgba(0,0,0,.3) 0%, transparent 50%),
     radial-gradient(ellipse at bottom right, rgba(var(--accent-rgb, 18,179,166), .15) 0%, transparent 50%);
+  animation: fogFlicker 7s ease-in-out infinite alternate;
+}
+@keyframes fogFlicker {
+  0% { opacity: .14; filter: brightness(0.95) contrast(1.02); }
+  50%{ opacity: .23; filter: brightness(1.02) contrast(1.04); }
+  100%{ opacity: .18; filter: brightness(1.00) contrast(1.03); }
 }
 .bg-mark{ position:fixed; inset:0; z-index:-2; display:grid; place-items:center; pointer-events:none; }
 .bg-mark::after{

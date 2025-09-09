@@ -2,17 +2,19 @@
   <section>
     <h2 class="text-white text-2xl font-semibold">Hi, I'm Cedric</h2>
     <div class="mt-6 grid md:grid-cols-3 gap-6">
-      <div class="glass-card md:col-span-2 p-6 text-sm text-zinc-300 space-y-3">
-        <p>
+      <div class="glass-card md:col-span-2 p-6 text-center">
+        <div class="text-zinc-300 space-y-4 max-w-none">
+        <p class="text-justify">
           I'm Cedric Arnhold (22), studying Business Informatics at HTW Berlin. Besides my studies, I enjoy turning ideas into
           working projects — like this website. During my mandatory internship at the Federal Ministry for Digital and Transport
           (BMDV), I gained solid hands‑on experience in system administration and server infrastructure in a short time.
         </p>
-        <p>
+        <p class="text-justify">
           In parallel, I maintain my father's website and make it work well across devices. I'm also modernising my former
           university project “VirtualPet”. Next, I'm planning a private mail, web and cloud server. Here I’ll share more about
           projects and what I learn along the way.
         </p>
+        </div>
       </div>
       <div class="glass-card p-6 flex items-center justify-center">
         <img src="@/assets/Pictures/Me.png" alt="Cedric" class="about-me" />
@@ -35,6 +37,11 @@
           <div>
             <time class="text-white font-medium">{{ ev.year }}: {{ ev.title }}</time>
             <p class="text-zinc-300">{{ ev.description }}</p>
+            <div v-if="ev.tags?.length" class="mt-2 flex flex-wrap gap-2">
+              <span v-for="(t,i) in ev.tags" :key="i" class="px-2 py-0.5 rounded-md text-xs bg-white/10 border border-white/15 text-zinc-200">
+                {{ t }}
+              </span>
+            </div>
           </div>
         </li>
       </ul>
@@ -70,12 +77,42 @@ function generateStyle(){
 }
 
 const events = ref([
-  { year: 2026, title: 'Bachelor of Science – Business Informatics (HTW Berlin)', description: 'Expected Bachelor graduation at the University of Applied Sciences (HTW) Berlin.' },
-  { year: 2024, title: 'Mandatory Internship – BMDV (Dept. Z33)', description: 'Dec 2024 – Mar 2025 | Practical work in operating servers & IT infrastructure; first experience in system administration.' },
-  { year: 2022, title: 'Working Student at Kaufland', description: 'June 2022 – August 2024.' },
-  { year: 2022, title: 'A‑levels', description: 'Ernst‑Haeckel‑School Berlin | Final grade 2.8 (Math/History).' },
-  { year: 2018, title: 'Internship – Tax Office Marzahn‑Hellersdorf', description: 'Experience in office routines and negotiations.' },
-  { year: 2016, title: 'Internships – Dr. Albrecht & Plogmaker GbR', description: 'Five voluntary internships providing insights into tax consulting.' }
+  {
+    year: 2026,
+    title: 'Bachelor of Science – Business Informatics (HTW Berlin)',
+    description: 'Expected Bachelor graduation at the University of Applied Sciences (HTW) Berlin.',
+    tags: ['Data Analysis', 'Systems Architecture', 'Software Engineering', 'Project Work']
+  },
+  {
+    year: 2024,
+    title: 'Mandatory Internship – BMDV (Dept. Z33)',
+    description: 'Dec 2024 – Mar 2025 | Practical work in operating servers & IT infrastructure; first experience in system administration.',
+    tags: ['Windows Server', 'Active Directory', 'Networking & Monitoring', 'Scripting', 'Documentation', 'Ticketing']
+  },
+  {
+    year: 2022,
+    title: 'Working Student at Kaufland',
+    description: 'June 2022 – August 2024.',
+    tags: ['Process Optimisation', 'Customer Service', 'Teamwork', 'Reliability']
+  },
+  {
+    year: 2022,
+    title: 'A‑levels (Abitur)',
+    description: 'Ernst‑Haeckel‑School Berlin | Final grade 2.8 (Math/History).',
+    tags: ['Mathematics', 'Analytical Thinking', 'Presentation', 'Time Management']
+  },
+  {
+    year: 2018,
+    title: 'Internship – Tax Office Marzahn‑Hellersdorf',
+    description: 'Experience in office routines and negotiations.',
+    tags: ['Record Handling', 'Office Organisation', 'Communication', 'Accuracy']
+  },
+  {
+    year: 2016,
+    title: 'Internships – Dr. Albrecht & Plogmaker GbR',
+    description: 'Five voluntary internships providing insights into tax consulting.',
+    tags: ['Bookkeeping', 'Voucher Auditing', 'DATEV Basics', 'Client Communication']
+  }
 ])
 
 onMounted(() => {
@@ -94,7 +131,7 @@ onMounted(() => {
 </script>
 <style scoped>
 .skills-cloud .skill{ position:absolute; font-weight:700; white-space:nowrap; will-change: transform }
-.about-me{ width: clamp(80px, 12vw, 160px); height:auto; border-radius: 9999px; border:1px solid rgba(255,255,255,.2) }
+.about-me{ height:auto; border-radius: 9999px; border:1px solid rgba(255,255,255,.2) }
 
 /* Timeline – old behavior adapted */
 .timeline ul { margin:0; padding:0 }

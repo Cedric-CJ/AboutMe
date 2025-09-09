@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen text-foreground" @click="handleClickOutside">
+  <div class="app-root min-h-screen text-foreground" @click="handleClickOutside">
     <div class="site-bg" aria-hidden="true" />
     <div class="bg-mark" aria-hidden="true" />
 
-    <!-- Flash Intro overlay: only first visit on /start and /home -->
-    <FlashIntro v-if="showIntro" @complete="handleIntroComplete" />
+    <!-- Flash Intro overlay: shown on /start and /home; keyed to route for replay -->
+    <FlashIntro v-if="showIntro" @complete="handleIntroComplete" :key="route.fullPath" />
 
     <!-- Hamburger Button -->
     <header>
@@ -44,7 +44,7 @@
       </nav>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 pt-10 pb-20">
+    <main class="app-main max-w-6xl mx-auto px-4 pt-10 pb-20">
       <RouterView />
     </main>
 
@@ -91,7 +91,7 @@ const menuItems = computed(() => {
   }
   return [
     { to: '/start', label: 'Startseite' },
-    { to: '/übermich', label: 'Über mich' },
+    { to: '/uebermich', label: 'Über mich' },
     { to: '/gallerie', label: 'Galerie' },
     { to: '/blog/de', label: 'Blog' },
     { to: '/projekte', label: 'Projekte' },
@@ -109,23 +109,17 @@ onMounted(() => {
   store.setAccent(store.accent)
 })
 
-// Intro visibility logic: only on first visit per language home
+// Intro visibility logic: show on every visit to the home routes
 const showIntro = ref(false)
 
 function updateIntroVisibility(r) {
   const shouldShow = !!(r.meta && r.meta.showIntro)
-  if (!shouldShow) { showIntro.value = false; return }
-  const key = r.name === 'de-home' ? 'intro_shown_de' : r.name === 'en-home' ? 'intro_shown_en' : null
-  if (!key) { showIntro.value = false; return }
-  const already = sessionStorage.getItem(key)
-  showIntro.value = !already
+  showIntro.value = shouldShow
 }
 
 watch(() => route.fullPath, () => updateIntroVisibility(route), { immediate: true })
 
 function handleIntroComplete(){
-  const key = route.name === 'de-home' ? 'intro_shown_de' : route.name === 'en-home' ? 'intro_shown_en' : null
-  if (key) sessionStorage.setItem(key, '1')
   showIntro.value = false
 }
 
@@ -156,6 +150,9 @@ function switchLang(lang){
 </script>
 
 <style scoped>
+.app-root { min-height: 100dvh; display: flex; flex-direction: column; }
+.app-main { flex: 1 0 auto; }
+.app-root > footer { margin-top: auto; }
 .fade-enter-active, .fade-leave-active { transition: opacity .2s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 
@@ -191,5 +188,14 @@ function switchLang(lang){
 
 @media (max-width: 640px){
   #navMenu { width: 85vw; max-width: none; }
+}
+
+/* Desktop: keep paddings compact so footer remains visible without scrolling */
+@media (min-width:1024px){
+  .app-main{ padding-top: 0rem !important; padding-bottom: 0rem !important; }
+} 
+/* Extra compact for very short heights */
+@media (min-width:1024px) and (max-height: 700px){
+  .app-main{ padding-top: .75rem !important; padding-bottom: .5rem !important; }
 }
 </style>

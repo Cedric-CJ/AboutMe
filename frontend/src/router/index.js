@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   // Root redirects to /start (DE home)
@@ -6,7 +6,8 @@ const routes = [
 
   // German primary paths
   { path: '/start', name: 'de-home', component: () => import('../pages/Home.vue'), meta: { showIntro: true } },
-  { path: '/übermich', name: 'de-about', component: () => import('../pages/About.vue'), alias: ['/ueber-mich'] },
+  // Use ASCII primary path; keep umlaut as alias to avoid server issues on refresh
+  { path: '/uebermich', name: 'de-about', component: () => import('../pages/About.vue'), alias: ['/übermich'] },
   { path: '/gallerie', name: 'de-gallery', component: () => import('../pages/Gallery.vue'), alias: ['/galerie'] },
   { path: '/blog/de', name: 'de-blog', component: () => import('../pages/Blog.vue') },
   { path: '/projekte', name: 'de-projects', component: () => import('../pages/Projects.vue') },
@@ -26,12 +27,12 @@ const routes = [
   { path: '/Privacy', name: 'en-privacy', component: () => import('../pages/PrivacyEn.vue') },
   { path: '/publisher', name: 'en-publisher', component: () => import('../pages/PublisherEn.vue') },
 
-  // Others
+  // Unknown routes go to /start, but valid subpages remain on refresh
   { path: '/:pathMatch(.*)*', redirect: '/start' }
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes
 })
 

@@ -1,5 +1,5 @@
 <template>
-  <section class="page-auto-contrast min-h-[70vh] flex flex-col items-center justify-center">
+  <section class="page-auto-contrast min-h-[100vh] flex flex-col items-center justify-center">
     <h2 class="text-white text-3xl font-semibold mb-8">Kontakt</h2>
     <div class="cards" @mousemove="handleMouseMove">
       <button class="card" @click="openEmail">
@@ -27,7 +27,7 @@
         </div>
       </a>
     </div>
-    <div class="glass-card mt-8 w-full max-w-2xl p-5">
+    <div class="glass-card mt-6 w-full max-w-2xl p-5">
       <h3 class="text-white text-xl font-semibold mb-4">Anfrage stellen</h3>
       <form @submit.prevent="submitInquiry" class="grid grid-cols-1 gap-3">
         <div class="grid md:grid-cols-2 gap-3">

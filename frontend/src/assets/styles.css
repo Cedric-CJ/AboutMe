@@ -5,7 +5,8 @@ body {
     padding: 0;
     color: var(--text-color);
     background-color: var(--background-color);
-    height: 100vh;
+    /* Use min-height to avoid mobile 100vh issues and allow content to push footer */
+    min-height: 100%;
     overflow-x: hidden;
 }
 
@@ -14,6 +15,21 @@ main {
     background-color: inherit;
     padding: 20px;
 }
+
+/* Responsive media defaults */
+img, picture, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+}
+img, picture, video { display: block; }
+
+/* Utility helpers for object-fit and aspect ratios */
+.media-cover { width: 100%; height: 100%; object-fit: cover; }
+.media-contain { width: 100%; height: 100%; object-fit: contain; }
+.ratio-16x9 { aspect-ratio: 16 / 9; }
+.ratio-4x3  { aspect-ratio: 4 / 3; }
+.ratio-1x1  { aspect-ratio: 1 / 1; }
+.ratio-21x9 { aspect-ratio: 21 / 9; }
 
 :root {
     --background-color: Black;
@@ -136,8 +152,8 @@ footer {
     background: var(--background-color);
     color: var(--text-color);
     text-align: center;
-    position: fixed;
-    bottom: 0;
+    /* Use normal flow; container handles min-height so footer sits at bottom */
+    position: static;
     width: 100%;
 }
 
@@ -330,14 +346,6 @@ a:hover{
     height: 100%;
     width: 100%;
     position: absolute;
-    top: 0;
-    left: 0;
-    border-radius: inherit;
-    background: radial-gradient(
-            circle at var(--xPos, 50%) var(--yPos, 50%),
-            var(--primary-color),
-            transparent 100%
-    );
     transition: opacity 0.3s ease-in-out;
     opacity: 0;
 }

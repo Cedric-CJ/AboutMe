@@ -33,6 +33,11 @@
           <div>
             <time class="text-white font-medium">{{ ev.year }}: {{ ev.title }}</time>
             <p class="text-zinc-300">{{ ev.description }}</p>
+            <div v-if="ev.tags?.length" class="mt-2 flex flex-wrap gap-2">
+              <span v-for="(t,i) in ev.tags" :key="i" class="px-2 py-0.5 rounded-md text-xs bg-white/10 border border-white/15 text-zinc-200">
+                {{ t }}
+              </span>
+            </div>
           </div>
         </li>
       </ul>
@@ -70,12 +75,42 @@ function generateStyle(){
 }
 
 const events = ref([
-  { year: 2026, title: 'Bachelor of Science - Wirtschaftsinformatik', description: 'Voraussichtlicher Abschluss an der HTW Berlin. Schwerpunkt auf Datenanalyse und Systemarchitektur.' },
-  { year: 2024, title: 'Praktikum BMDV Abteilung Z33', description: '3,5-monatiges Fachpraktikum im IT-Bereich. Schwerpunkt: Server-Betrieb und Infrastruktur-Management.' },
-  { year: 2022, title: 'Werksstudent bei Kaufland', description: 'Zwei Jahre als Werksstudent tätig. Erfahrungen in Prozessoptimierung und Kundenbetreuung.' },
-  { year: 2022, title: 'Abitur Ernst-Haeckel-Schule', description: 'Abschluss mit 2,8 im Mathe-Geschichte Profil. Grundlagen für technisches Studium gelegt.' },
-  { year: 2018, title: 'Praktikum Finanzamt Marzahn-Hellersdorf', description: 'Einblicke in Bürotätigkeiten und Verhandlungsführung. Erste Berufserfahrungen gesammelt.' },
-  { year: 2016, title: 'Praktikum Dr. Albrecht & Plogmaker', description: 'Fünf freiwillige Praktika in Steuerberatung. Tiefe Einblicke in Beratungsprozesse erhalten.' },
+  {
+    year: 2026,
+    title: 'Bachelor of Science - Wirtschaftsinformatik',
+    description: 'Voraussichtlicher Abschluss an der HTW Berlin. Schwerpunkt auf Datenanalyse und Systemarchitektur.',
+    tags: ['Datenanalyse', 'Systemarchitektur', 'Software Engineering', 'Projektarbeit']
+  },
+  {
+    year: 2024,
+    title: 'Praktikum BMDV Abteilung Z33',
+    description: '3,5-monatiges Fachpraktikum im IT-Bereich. Schwerpunkt: Server-Betrieb und Infrastruktur-Management.',
+    tags: ['Windows Server', 'Active Directory', 'Netzwerk & Monitoring', 'Scripting', 'Dokumentation', 'Ticketsystem']
+  },
+  {
+    year: 2022,
+    title: 'Werksstudent bei Kaufland',
+    description: 'Zwei Jahre als Werksstudent tätig. Erfahrungen in Prozessoptimierung und Kundenbetreuung.',
+    tags: ['Prozessoptimierung', 'Kundenservice', 'Teamarbeit', 'Zuverlässigkeit']
+  },
+  {
+    year: 2022,
+    title: 'Abitur Ernst-Haeckel-Schule',
+    description: 'Abschluss mit 2,8 im Mathe-Geschichte Profil. Grundlagen für technisches Studium gelegt.',
+    tags: ['Mathematik', 'Analytisches Denken', 'Präsentation', 'Zeitmanagement']
+  },
+  {
+    year: 2018,
+    title: 'Praktikum Finanzamt Marzahn-Hellersdorf',
+    description: 'Einblicke in Bürotätigkeiten und Verhandlungsführung. Erste Berufserfahrungen gesammelt.',
+    tags: ['Aktenbearbeitung', 'Büroorganisation', 'Kommunikation', 'Sorgfalt']
+  },
+  {
+    year: 2016,
+    title: 'Praktikum Dr. Albrecht & Plogmaker',
+    description: 'Fünf freiwillige Praktika in Steuerberatung. Tiefe Einblicke in Beratungsprozesse erhalten.',
+    tags: ['Buchhaltung', 'Belegprüfung', 'DATEV-Einblicke', 'Mandantenkommunikation']
+  }
 ])
 
 onMounted(() => {

@@ -21,7 +21,7 @@
             <svg viewBox="0 0 24 24" class="arr" :class="{rot: open[index]}"><path d="M8 5l8 7-8 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
           </button>
         </div>
-        <transition name="expand">
+        <transition name="expand" @enter="onEnter" @after-enter="onAfterEnter" @leave="onLeave">
           <div v-show="open[index]" class="blog-card-body is-collapsible">
             <div class="blog-content-wrapper">
               <div v-for="(section, sIndex) in blog.sections" :key="sIndex" class="blog-section">
@@ -57,9 +57,16 @@ function formatContent(content){ return (content || '').replace(/\n/g, '<br>') }
 function getImageClass(position){ return position === 'right' ? 'float-top-right' : 'float-top-left' }
 function handleMediaError(){ isMediaError.value = true }
 
+function absPublic(path){
+  if (!path) return path
+  // Normalize "./foo" to "/foo" so it loads from public even on nested routes
+  return path.startsWith('./') ? path.slice(1) : path
+}
+
 function fetchVideo(section){
   if (!section.video) return
-  fetch(section.video).then(r => { if(!r.ok) throw new Error('Video failed'); return r.blob() })
+  const v = absPublic(section.video)
+  fetch(v).then(r => { if(!r.ok) throw new Error('Video failed'); return r.blob() })
     .then(blob => { section.videoObjectUrl = URL.createObjectURL(blob) })
     .catch(() => handleMediaError())
 }
@@ -77,12 +84,47 @@ onMounted(async () => {
   try {
     const res = await fetch('/BlogsEng.json')
     const data = await res.json()
-    blogs.value = data.map(b => ({ ...b, summary: makeSummary(b) }))
+    // Normalize media URLs to absolute public paths so they work on /en routes
+    blogs.value = data.map(b => ({
+      ...b,
+      sections: (b.sections||[]).map(s => ({
+        ...s,
+        image: absPublic(s.image),
+        video: absPublic(s.video)
+      })),
+      summary: makeSummary(b)
+    }))
     open.value = data.map(() => false)
     blogs.value.forEach(blog => blog.sections.forEach(fetchVideo))
   } catch (e) { /* ignore */ }
 })
 function toggle(i){ open.value[i] = !open.value[i] }
+
+// Smooth height transitions for collapsible sections
+function onEnter(el){
+  el.style.height = '0px'
+  el.style.opacity = '0'
+  el.style.transform = 'translateY(-4px)'
+  requestAnimationFrame(() => {
+    el.style.transition = 'height .35s ease, opacity .3s ease, transform .3s ease'
+    el.style.height = el.scrollHeight + 'px'
+    el.style.opacity = '1'
+    el.style.transform = 'translateY(0)'
+  })
+}
+function onAfterEnter(el){
+  el.style.height = 'auto'
+  el.style.transition = ''
+}
+function onLeave(el){
+  el.style.height = el.scrollHeight + 'px'
+  el.style.opacity = '1'
+  requestAnimationFrame(() => {
+    el.style.transition = 'height .3s ease, opacity .25s ease'
+    el.style.height = '0px'
+    el.style.opacity = '0'
+  })
+}
 </script>
 <style scoped>
 .adblock-warning { position: fixed; top: 85vh; left: 10vw; right: 10vw; background-color: #ffdddd; color: #a00; padding: 1rem; border: 1px solid #a00; border-radius: 5px; z-index: 1; text-align:center; font-size:.8rem }
@@ -106,7 +148,5 @@ function toggle(i){ open.value[i] = !open.value[i] }
 .indicator{ display:flex; align-items:center; justify-content:center; width:40px; height:40px; border-radius:10px; background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); color:#cfeff7 }
 .indicator .arr{ width:18px; height:18px; transition: transform .25s ease }
 .indicator .arr.rot{ transform: rotate(90deg) }
-.expand-enter-active, .expand-leave-active { transition: max-height .35s ease, opacity .3s ease, transform .3s ease; }
-.expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; transform: translateY(-4px); }
-.is-collapsible{ overflow: hidden; max-height: 1200px }
+.is-collapsible{ overflow: hidden }
 </style>

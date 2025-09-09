@@ -5,66 +5,15 @@
       <p class="text-zinc-300">⭐Beste Erfahrung im Desktopmodus⭐</p>
     </header>
     <section class="relative z-10 px-4 max-w-6xl mx-auto">
-      <h2 class="text-white text-xl mb-4">Animiert</h2>
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <div class="glass-card overflow-hidden cursor-pointer" @click="open('Schiebend')">
-          <div class="h-40 bg-cover bg-center" :style="bg('slide')" />
-          <div class="p-3 text-white">
-            <h3 class="font-medium">Schiebegalerie Stadt</h3>
-            <p class="text-sm text-zinc-300">Wunderschöne Stadtszenen mit Informationspanelen</p>
-          </div>
-        </div>
-        <div class="glass-card overflow-hidden cursor-pointer" @click="open('Karten')">
-          <div class="h-40 bg-cover bg-center" :style="bg('card')" />
-          <div class="p-3 text-white">
-            <h3 class="font-medium">Karten-Galerie</h3>
-            <p class="text-sm text-zinc-300">Schräge Karten mit stilvollen Hover-Effekten</p>
-          </div>
-        </div>
-        <div class="glass-card overflow-hidden cursor-pointer" @click="open('Raster')">
-          <div class="h-40 bg-cover bg-center" :style="bg('grid')" />
-          <div class="p-3 text-white">
-            <h3 class="font-medium">Raster-Galerie</h3>
-            <p class="text-sm text-zinc-300">Interaktives 3x3-Raster</p>
-          </div>
-        </div>
-        <div class="glass-card overflow-hidden cursor-pointer" @click="open('Box')">
-          <div class="h-40 bg-cover bg-center" :style="bg('box')" />
-          <div class="p-3 text-white">
-            <h3 class="font-medium">Box-Galerie</h3>
-            <p class="text-sm text-zinc-300">Flexible Boxen mit Zoom-Effekt</p>
-          </div>
-        </div>
-      </div>
-      
-      <h2 class="text-white text-xl mb-4 mt-8">Modern</h2>
-      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <div class="glass-card overflow-hidden cursor-pointer" @click="open('Modern1')">
-          <div class="h-40 bg-cover bg-center" :style="bg('modern1')" />
-          <div class="p-3 text-white">
-            <h3 class="font-medium">Hover-Galerie</h3>
-            <p class="text-sm text-zinc-300">Elegante Hover-Effekte mit Kategorien</p>
-          </div>
-        </div>
-        <div class="glass-card overflow-hidden cursor-pointer" @click="open('Modern2')">
-          <div class="h-40 bg-cover bg-center" :style="bg('modern2')" />
-          <div class="p-3 text-white">
-            <h3 class="font-medium">Masonry-Galerie</h3>
-            <p class="text-sm text-zinc-300">Dynamisches Grid mit Lightbox</p>
-          </div>
-        </div>
-        <div class="glass-card overflow-hidden cursor-pointer" @click="open('Modern3')">
-          <div class="h-40 bg-cover bg-center" :style="bg('modern3')" />
-          <div class="p-3 text-white">
-            <h3 class="font-medium">Thumbnail-Galerie</h3>
-            <p class="text-sm text-zinc-300">Hauptbild mit Thumbnail-Navigation</p>
-          </div>
-        </div>
-        <div class="glass-card overflow-hidden cursor-pointer" @click="open('Modern4')">
-          <div class="h-40 bg-cover bg-center" :style="bg('modern4')" />
-          <div class="p-3 text-white">
-            <h3 class="font-medium">Vergleichs-Galerie</h3>
-            <p class="text-sm text-zinc-300">Vorher/Nachher Schieberegler</p>
+        <div v-for="g in galleries" :key="g.key" class="glass-card overflow-hidden cursor-pointer" @click="open(g.key)">
+          <div class="h-40 relative">
+            <img :src="g.img" alt="" class="w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-black/35"></div>
+            <div class="absolute inset-x-0 bottom-0 p-3 text-white">
+              <h3 class="font-medium">{{ g.title }}</h3>
+              <p class="text-sm text-zinc-300">{{ g.desc }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -92,6 +41,16 @@ import ModernGallery3 from '../components/gallery/ModernGallery3.vue'
 import ModernGallery4 from '../components/gallery/ModernGallery4.vue'
 
 const selected = ref(null)
+const galleries = ref([
+  { key:'Schiebend', title:'Schiebegalerie Stadt', desc:'Wunderschöne Stadtszenen mit Informationspanelen', img: new URL('@/assets/Pictures/Gallery/4er/Alanya.jpg', import.meta.url).href },
+  { key:'Karten', title:'Karten-Galerie', desc:'Schräge Karten mit stilvollen Hover-Effekten', img: new URL('@/assets/Pictures/Gallery/4er/Tokyostore.jpg', import.meta.url).href },
+  { key:'Raster', title:'Raster-Galerie', desc:'Interaktives 3x3-Raster', img: new URL('@/assets/Pictures/Gallery/4er/Schloss_Fürstlich_Drehna.jpg', import.meta.url).href },
+  { key:'Box', title:'Box-Galerie', desc:'Flexible Boxen mit Zoom-Effekt', img: new URL('@/assets/Pictures/Gallery/4er/Side.jpg', import.meta.url).href },
+  { key:'Modern1', title:'Hover-Galerie', desc:'Elegante Hover-Effekte mit Kategorien', img: new URL('@/assets/Pictures/Gallery/Berlin.jpg', import.meta.url).href },
+  { key:'Modern2', title:'Masonry-Galerie', desc:'Dynamisches Grid mit Lightbox', img: new URL('@/assets/Pictures/Gallery/Katze1.jpg', import.meta.url).href },
+  { key:'Modern3', title:'Thumbnail-Galerie', desc:'Hauptbild mit Thumbnail-Navigation', img: new URL('@/assets/Pictures/Gallery/Katze2.jpg', import.meta.url).href },
+  { key:'Modern4', title:'Vergleichs-Galerie', desc:'Vorher/Nachher Schieberegler', img: new URL('@/assets/Pictures/Gallery/Storch.jpg', import.meta.url).href }
+])
 function open(type) { selected.value = type }
 function close() { selected.value = null }
 const current = computed(() => {
@@ -108,19 +67,7 @@ const current = computed(() => {
   }
 })
 
-function bg(kind) {
-  const previews = {
-    slide: 'linear-gradient(135deg, rgba(59,130,246,.5), rgba(16,185,129,.3)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 60\'%3E%3Crect width=\'100\' height=\'60\' fill=\'%23374151\'/%3E%3Ctext x=\'50\' y=\'35\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\'%3ESlide%3C/text%3E%3C/svg%3E")',
-    card: 'linear-gradient(135deg, rgba(236,72,153,.5), rgba(168,85,247,.3)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 60\'%3E%3Crect width=\'100\' height=\'60\' fill=\'%23374151\'/%3E%3Ctext x=\'50\' y=\'35\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\'%3ECards%3C/text%3E%3C/svg%3E")',
-    grid: 'linear-gradient(135deg, rgba(34,197,94,.5), rgba(59,130,246,.3)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 60\'%3E%3Crect width=\'100\' height=\'60\' fill=\'%23374151\'/%3E%3Ctext x=\'50\' y=\'35\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\'%3EGrid%3C/text%3E%3C/svg%3E")',
-    box: 'linear-gradient(135deg, rgba(245,158,11,.5), rgba(239,68,68,.3)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 60\'%3E%3Crect width=\'100\' height=\'60\' fill=\'%23374151\'/%3E%3Ctext x=\'50\' y=\'35\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\'%3EBox%3C/text%3E%3C/svg%3E")',
-    modern1: 'linear-gradient(135deg, rgba(139,69,19,.5), rgba(160,82,45,.3)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 60\'%3E%3Crect width=\'100\' height=\'60\' fill=\'%23374151\'/%3E%3Ctext x=\'50\' y=\'35\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\'%3EHover%3C/text%3E%3C/svg%3E")',
-    modern2: 'linear-gradient(135deg, rgba(75,0,130,.5), rgba(138,43,226,.3)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 60\'%3E%3Crect width=\'100\' height=\'60\' fill=\'%23374151\'/%3E%3Ctext x=\'50\' y=\'35\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\'%3EMasonry%3C/text%3E%3C/svg%3E")',
-    modern3: 'linear-gradient(135deg, rgba(220,20,60,.5), rgba(255,20,147,.3)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 60\'%3E%3Crect width=\'100\' height=\'60\' fill=\'%23374151\'/%3E%3Ctext x=\'50\' y=\'35\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\'%3EThumb%3C/text%3E%3C/svg%3E")',
-    modern4: 'linear-gradient(135deg, rgba(0,128,128,.5), rgba(32,178,170,.3)), url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 60\'%3E%3Crect width=\'100\' height=\'60\' fill=\'%23374151\'/%3E%3Ctext x=\'50\' y=\'35\' text-anchor=\'middle\' fill=\'white\' font-size=\'12\'%3ECompare%3C/text%3E%3C/svg%3E")'
-  }
-  return { backgroundImage: previews[kind] || previews.slide }
-}
+// preview background no longer used – images are explicit in template
 </script>
 <style>
 .fade-enter-active,.fade-leave-active{transition:opacity .2s ease}

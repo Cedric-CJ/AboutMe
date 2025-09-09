@@ -1,6 +1,5 @@
 <template>
-  <FlashIntro v-if="showIntro" @complete="showIntro = false" />
-  <section v-show="!showIntro">
+  <section class="home-page">
     <div class="hero glass-card p-6 md:p-10">
       <div class="hero-grid">
         <div class="hero-copy">
@@ -88,21 +87,56 @@
 </template>
 <script setup>
 import { RouterLink } from 'vue-router'
-import { ref } from 'vue'
-import FlashIntro from '@/components/FlashIntro.vue'
-
-const showIntro = ref(true)
 </script>
 <style scoped>
-.hero{ overflow:hidden }
-.hero-grid{ display:grid; grid-template-columns: 1.4fr .8fr; gap: 1.25rem; align-items: center }
-@media (max-width: 900px){ .hero-grid{ grid-template-columns: 1fr; } .hero-portrait{ order:-1; justify-content:flex-start } }
+/* Base styles */
+.home-page{ min-height:90vh; display:flex; align-items:center; margin-top:2.5rem; margin-bottom: -.5rem; }
+.hero{ overflow:visible }
+.hero-grid{ display:grid; grid-template-columns: 1.4fr .8fr; gap: 1.25rem; align-items: start }
 .hero-copy{ display:flex; flex-direction:column }
-.me{ height:auto; border-radius: 9999px; border:2px solid rgba(255,255,255,.25); background: rgba(255,255,255,.06) }
-.portrait-ring{ position:relative; display:inline-block; border-radius:9999px }
+.me{ height:auto; width: clamp(160px, 22vw, 240px); max-height: 42vh; object-fit: cover; border-radius: 9999px; border:2px solid rgba(255,255,255,.25); background: rgba(255,255,255,.06) }
+.portrait-ring{ position:relative; display:inline-block; border-radius:9999px}
 .hero-portrait{ display:flex; justify-content:flex-end }
-.name{ color:#fff; font-weight:700; font-size: clamp(2rem,4vw,3rem); letter-spacing:.2px }
+.name{ color:#fff; font-weight:700; font-size: clamp(1.8rem,3.2vw,2.6rem); letter-spacing:.2px; line-height:1.1 }
 .tagline{ color:#cfeff7; margin-top:2px }
-.intro{ color:#ddd; margin-top: 12px; max-width: 64ch }
+.intro{ color:#ddd; margin-top: 12px; max-width: 64ch; font-size: clamp(.9rem, 1.3vw, 1rem) }
 .links{ margin-top: 16px; display:flex; flex-wrap:wrap; gap:10px }
+
+/* Mobile responsive */
+@media (max-width: 900px){ 
+  .hero-grid{ grid-template-columns: 1fr; } 
+  .hero-portrait{ order:-1; justify-content:flex-start } 
+}
+
+/* Desktop - heights above 700px: ensure footer visibility */
+@media (min-width: 1024px) and (min-height: 701px){
+  .home-page{ min-height: calc(100vh - 8rem); }
+  .home-page .hero{ max-height:calc(100vh - 8rem); display:flex; flex-direction:column; justify-content:center; padding:1.75rem 1.25rem 1.25rem }
+  .home-page .mt-8{ margin-top: .5rem }
+  .home-page .grid.md\:grid-cols-3{ gap:.75rem }
+}
+
+/* Desktop - heights under 700px: compact layout */
+@media (min-width: 1024px) and (max-height: 700px){
+  .home-page{ min-height: calc(100vh - 6rem); margin-top: 1rem; }
+  .name{ font-size: clamp(1.2rem, 1.8vw, 1.6rem); line-height: 1.05; }
+  .tagline{ margin-top: 1px; font-size: 0.9rem; }
+  .intro{ font-size: clamp(.75rem, .9vw, .82rem); margin-top: 8px; line-height: 1.3; }
+  .links{ margin-top: 6px; gap:6px; }
+  .links .glass-btn, .links .glass-btn-secondary{ padding: 6px 12px; font-size: 0.85rem; }
+  .hero-grid{ gap: .8rem; align-items: center; }
+  .me{ max-height: 18vh; width: clamp(100px, 14vw, 160px); }
+  .home-page .hero{ max-height: calc(100vh - 6rem); padding: 0.75rem 1rem 0.5rem; overflow: hidden; }
+  .home-page .mt-8{ margin-top: .15rem; }
+  .home-page .mt-4{ margin-top: .15rem; }
+  .home-page .grid.md\:grid-cols-3{ gap:.5rem; }
+  .home-page .grid.md\:grid-cols-2{ gap:.5rem; }
+  .home-page .glass-card{ padding: 0.75rem !important; }
+  .home-page .glass-card h3{ font-size: 0.9rem; }
+  .home-page .glass-card p{ font-size: 0.8rem; line-height: 1.3; }
+  .home-page .glass-card ul li{ font-size: 0.75rem; }
+  .home-page .glass-card .w-8{ width: 1.75rem; height: 1.75rem; }
+  .home-page .glass-card .w-8 svg{ width: 0.875rem; height: 0.875rem; }
+  .home-page .mb-6{ margin-bottom: 0.5rem; }
+}
 </style>

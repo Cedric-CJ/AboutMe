@@ -15,7 +15,7 @@
             <svg viewBox="0 0 24 24" class="arr" :class="{rot: open[i]}"><path d="M8 5l8 7-8 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
           </button>
         </div>
-        <transition name="expand">
+        <transition name="expand" @enter="onEnter" @after-enter="onAfterEnter" @leave="onLeave">
           <div v-show="open[i]" class="project-body is-collapsible">
             <div class="laptop-frame">
               <img src="@/assets/Pictures/Laptop.png" alt="Laptop" class="laptop-image" />
@@ -62,6 +62,32 @@ const projects = ref([
 ])
 open.value = projects.value.map(() => false)
 function toggle(i){ open.value[i] = !open.value[i] }
+
+// Smooth height transitions for collapsible project details
+function onEnter(el){
+  el.style.height = '0px'
+  el.style.opacity = '0'
+  el.style.transform = 'translateY(-4px)'
+  requestAnimationFrame(() => {
+    el.style.transition = 'height .35s ease, opacity .3s ease, transform .3s ease'
+    el.style.height = el.scrollHeight + 'px'
+    el.style.opacity = '1'
+    el.style.transform = 'translateY(0)'
+  })
+}
+function onAfterEnter(el){
+  el.style.height = 'auto'
+  el.style.transition = ''
+}
+function onLeave(el){
+  el.style.height = el.scrollHeight + 'px'
+  el.style.opacity = '1'
+  requestAnimationFrame(() => {
+    el.style.transition = 'height .3s ease, opacity .25s ease'
+    el.style.height = '0px'
+    el.style.opacity = '0'
+  })
+}
 </script>
 <style scoped>
 .projects-cards{ display:grid; grid-template-columns: 1fr; gap: 14px }
@@ -73,12 +99,15 @@ function toggle(i){ open.value[i] = !open.value[i] }
 .indicator .arr{ width:18px; height:18px; transition: transform .25s ease }
 .indicator .arr.rot{ transform: rotate(90deg) }
 .laptop-frame{ position:relative; width:90vw; height:calc(100vw * .66); max-width: 1100px; max-height: calc(1100px * .66); margin:auto }
-.laptop-image{ width:100%; height:auto; display:block; z-index:1 }
-.laptop-screen{ position:absolute; top:8%; left:14%; width:72%; height:70%; background: rgba(0,0,0,.4); overflow:hidden; border-radius: 6px }
-.live-iframe{ position:relative; width:100%; height:100%; border:none }
+.laptop-image{ width:100%; height:auto; display:block; z-index:0; position: relative }
+/* Place live frame behind the laptop image and slightly reduce height so it never peeks out */
+.laptop-screen{ position:absolute; top:8%; left:14%; width:72%; height:66%; background: rgba(0,0,0,.4); overflow:hidden; border-radius: 6px; z-index:1 }
+.live-iframe{ position:relative; width:100%; height:100%; border:none; display:block }
 .chev{ display:inline-block; transition: transform .25s ease }
 .chev.rot{ transform: rotate(180deg) }
-.expand-enter-active, .expand-leave-active { transition: max-height .35s ease, opacity .3s ease, transform .3s ease; }
-.expand-enter-from, .expand-leave-to { max-height: 0; opacity: 0; transform: translateY(-4px); }
-.is-collapsible{ overflow: hidden; max-height: 1200px }
+.is-collapsible{ overflow: hidden }
+@media (max-width: 900px){
+  .laptop-frame{ width:100%; height:56vw; max-height: none }
+  .laptop-screen{ top:8%; left:10%; width:80%; height:64% }
+}
 </style>
