@@ -13,50 +13,106 @@
       <div v-for="p in filtered" :key="p.id" class="glass-card p-4">
         <div class="text-white flex items-center justify-between text-lg font-medium">
           <span>{{ p.title }}</span>
-          <span class="text-cyan-300">€ {{ centsToEUR(p.price_cents) }}</span>
+          <div class="flex items-center gap-2">
+            <span class="text-cyan-300">{{ formatPrice(p.price_cents) }}</span>
+            <button @click="showInfo(p)" class="info-icon" title="More information">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+            </button>
+          </div>
         </div>
         <p class="text-sm text-zinc-300 mt-2 min-h-[40px]">{{ p.description }}</p>
         <div class="mt-3 flex flex-wrap gap-2">
           <span v-for="t in (p.tags || [])" :key="t" class="text-[11px] px-2 py-1 rounded-full bg-white/10 text-white border border-white/15">{{ t }}</span>
         </div>
         <div class="mt-4 flex gap-2">
-          <button class="glass-btn px-3 py-2 rounded-md" @click="addToCart(p)">Add to cart</button>
-          <button class="glass-btn-secondary px-3 py-2 rounded-md" @click="addToCart(p)">Quick buy</button>
+          <button class="glass-btn px-3 py-2 rounded-md" @click="openInquiry(p)">Make inquiry</button>
+          <button class="glass-btn-secondary px-3 py-2 rounded-md" @click="openInquiry(p)">Direct inquiry</button>
         </div>
       </div>
     </div>
 
-    <div class="mt-12">
-      <h3 class="text-white text-lg font-semibold">Cart</h3>
-      <div class="mt-4 grid md:grid-cols-3 gap-6">
-        <div class="md:col-span-2 glass-card p-6">
-          <div v-if="cart.length === 0" class="text-zinc-300">No items in the cart yet.</div>
-          <div v-else class="space-y-3">
-            <div v-for="i in cart" :key="i.id" class="flex items-center justify-between text-sm text-white">
-              <div>
-                <div class="font-medium">{{ i.title }}</div>
-                <div class="text-zinc-400">{{ i.qty }} × € {{ centsToEUR(i.price_cents) }}</div>
-              </div>
-              <button class="text-cyan-300 hover:text-white" @click="removeFromCart(i.id)">Remove</button>
-            </div>
-          </div>
-          <div class="mt-6">
-            <div ref="dropinRef"></div>
-          </div>
+    <!-- Inquiry Overlay -->
+    <div v-if="showInquiryOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="glass-card p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-white text-lg font-semibold">Make Inquiry</h3>
+          <button @click="closeInquiry" class="text-zinc-400 hover:text-white">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
         </div>
-        <div class="glass-card p-6">
-          <div class="flex items-center justify-between text-white">
-            <span>Subtotal</span>
-            <span>€ {{ centsToEUR(totalCents) }}</span>
+        
+        <div v-if="selectedProduct" class="mb-4 p-3 bg-white/5 rounded border border-white/10">
+          <div class="text-white font-medium">{{ selectedProduct.title }}</div>
+          <div class="text-cyan-300 text-sm">{{ formatPrice(selectedProduct.price_cents) }}</div>
+        </div>
+        
+        <form @submit.prevent="submitInquiry" class="space-y-4">
+          <div>
+            <label class="block text-white text-sm font-medium mb-2">Name *</label>
+            <input v-model="inquiry.name" type="text" required class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md" placeholder="Your name" />
           </div>
-          <div class="mt-4 grid gap-2">
-            <button class="glass-btn px-3 py-2 rounded-md" @click="checkout('paypal')">PayPal (Demo)</button>
-            <button class="glass-btn px-3 py-2 rounded-md" @click="checkout('klarna')">Klarna (Demo)</button>
-            <button class="glass-btn px-3 py-2 rounded-md" @click="checkout('applepay')">Apple Pay (Demo)</button>
-            <button class="glass-btn px-3 py-2 rounded-md" @click="checkout('googlepay')">Google Pay (Demo)</button>
-            <button class="glass-btn px-3 py-2 rounded-md" :disabled="isStarting" @click="startAdyenCheckout">{{ isStarting ? 'Loading payment...' : 'Checkout (Adyen)' }}</button>
+          
+          <div>
+            <label class="block text-white text-sm font-medium mb-2">Email *</label>
+            <input v-model="inquiry.email" type="email" required class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md" placeholder="your@email.com" />
           </div>
-          <p class="text-[12px] text-zinc-400 mt-3">Payments are demo only. For live payments you need your ADYEN_* keys.</p>
+          
+          <div>
+            <label class="block text-white text-sm font-medium mb-2">Phone (optional)</label>
+            <input v-model="inquiry.phone" type="tel" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md" placeholder="+1 234 567890" />
+          </div>
+          
+          <div>
+            <label class="block text-white text-sm font-medium mb-2">Message *</label>
+            <textarea v-model="inquiry.message" required rows="4" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md resize-none" placeholder="Describe your project or inquiry..."></textarea>
+          </div>
+          
+          <div class="flex gap-2">
+            <button type="submit" class="glass-btn px-4 py-2 rounded-md flex-1">Send inquiry</button>
+            <button type="button" @click="closeInquiry" class="glass-btn-secondary px-4 py-2 rounded-md">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Info Modal -->
+    <div v-if="showInfoModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="glass-card p-6 max-w-lg w-full">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-white text-lg font-semibold">{{ selectedProduct?.title }}</h3>
+          <button @click="closeInfo" class="text-zinc-400 hover:text-white">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div v-if="selectedProduct" class="space-y-3">
+          <div class="text-cyan-300 text-lg font-medium">{{ formatPrice(selectedProduct.price_cents) }}</div>
+          <p class="text-zinc-300">{{ selectedProduct.description }}</p>
+          
+          <div class="bg-white/5 rounded p-3 border border-white/10">
+            <h4 class="text-white font-medium mb-2">What's included:</h4>
+            <ul class="text-zinc-300 text-sm space-y-1">
+              <li v-if="selectedProduct.id === 'consulting'">• Personal consultation (60 min.)<br>• Analysis of your current situation<br>• Concrete recommendations<br>• Written summary</li>
+              <li v-else-if="selectedProduct.id === 'modernise'">• Technical analysis of existing site<br>• Modern, responsive design<br>• Performance optimization<br>• SEO basics<br>• Testing & launch</li>
+              <li v-else-if="selectedProduct.id === 'custom'">• Individual consultation<br>• Tailored solution<br>• Price based on effort<br>• Transparent cost estimate</li>
+              <li v-else-if="selectedProduct.id === 'site-from-scratch'">• Concept & planning<br>• Individual design<br>• Responsive development<br>• CMS integration<br>• Hosting setup<br>• 3 months support</li>
+              <li v-else-if="selectedProduct.id === 'performance-seo'">• Lighthouse audit<br>• Core Web Vitals analysis<br>• SEO check<br>• Detailed report<br>• Prioritized action plan</li>
+              <li v-else-if="selectedProduct.id === 'maintenance-monitoring'">• Regular updates<br>• Automatic backups<br>• Security monitoring<br>• Uptime monitoring<br>• Support for issues</li>
+              <li v-else-if="selectedProduct.id === 'hosting-mail-setup'">• Domain configuration<br>• SSL certificate<br>• Email setup<br>• DNS management<br>• Basic configuration</li>
+            </ul>
+          </div>
+          
+          <button @click="openInquiryFromInfo" class="glass-btn w-full px-4 py-2 rounded-md">Inquire now</button>
         </div>
       </div>
     </div>
@@ -84,15 +140,25 @@ const demoProducts = [
 const query = ref('')
 const products = ref(demoProducts)
 const selectedTags = ref([])
-const cart = ref(JSON.parse(localStorage.getItem('ice_cart_en') || '[]'))
-const dropinRef = ref(null)
-const isStarting = ref(false)
+const showInquiryOverlay = ref(false)
+const showInfoModal = ref(false)
+const selectedProduct = ref(null)
+const inquiry = ref({
+  name: '',
+  email: '',
+  phone: '',
+  message: ''
+})
 
 onMounted(async () => {
   // Demo only
 })
 
-function centsToEUR(c) { return (c / 100).toFixed(2).replace('.', ',') }
+function formatPrice(cents) {
+  if (cents === 0) return 'Price on request'
+  const euro = (cents / 100).toFixed(0)
+  return `(from) ${euro} €`
+}
 
 const allTags = computed(() => Array.from(new Set(products.value.flatMap(p => p.tags || []))))
 function toggleTag(t){
@@ -107,59 +173,61 @@ const filtered = computed(() => products.value.filter(p => {
   return matchQ && matchTags
 }))
 
-function addToCart(p) {
-  const existing = cart.value.find(i => i.id === p.id)
-  if (existing) existing.qty += 1
-  else cart.value.unshift({ id: p.id, title: p.title, price_cents: p.price_cents, currency: p.currency, qty: 1 })
-  localStorage.setItem('ice_cart_en', JSON.stringify(cart.value))
-}
-function removeFromCart(id) {
-  cart.value = cart.value.filter(i => i.id !== id)
-  localStorage.setItem('ice_cart_en', JSON.stringify(cart.value))
+function openInquiry(product) {
+  selectedProduct.value = product
+  inquiry.value.message = `Hello,\n\nI'm interested in "${product.title}".\n\nMy project/inquiry:\n`
+  showInquiryOverlay.value = true
 }
 
-const totalCents = computed(() => cart.value.reduce((s, i) => s + i.price_cents * i.qty, 0))
-
-async function checkout(provider) {
-  try {
-    const items = cart.value.map(i => ({ product_id: i.id, qty: i.qty }))
-    const res = await axios.post(`${API}/checkout/session`, { provider, items })
-    console.info(`Checkout ${provider}:`, res.data)
-  } catch (e) {
-    console.warn('Checkout demo only. Missing ADYEN_* keys.')
-  }
+function closeInquiry() {
+  showInquiryOverlay.value = false
+  selectedProduct.value = null
+  inquiry.value = { name: '', email: '', phone: '', message: '' }
 }
 
-async function startAdyenCheckout() {
-  if (cart.value.length === 0) return
-  isStarting.value = true
-  try {
-    const items = cart.value.map(i => ({ product_id: i.id, qty: i.qty }))
-    const { data } = await axios.post(`${API}/checkout/session`, { provider: 'adyen', items })
-    if (!data?.adyen?.id || !data?.adyen?.sessionData) {
-      console.warn('Adyen not configured. Please provide ADYEN_* variables.')
-      isStarting.value = false
-      return
-    }
-    const checkout = await AdyenCheckout({
-      clientKey: data.adyen.clientKey,
-      environment: data.adyen.environment === 'live' ? 'live' : 'test',
-      locale: 'en-GB',
-      session: { id: data.adyen.id, sessionData: data.adyen.sessionData },
-      onPaymentCompleted: () => { cart.value = []; localStorage.setItem('ice_cart_en', '[]') },
-      onError: (err) => { console.error(err) }
-    })
-    const dropin = checkout.create('dropin', { paymentMethodConfiguration: {} })
-    if (dropinRef.value) dropin.mount(dropinRef.value)
-  } catch (err) {
-    console.error(err)
-  } finally {
-    isStarting.value = false
-  }
+function showInfo(product) {
+  selectedProduct.value = product
+  showInfoModal.value = true
+}
+
+function closeInfo() {
+  showInfoModal.value = false
+  selectedProduct.value = null
+}
+
+function openInquiryFromInfo() {
+  closeInfo()
+  openInquiry(selectedProduct.value)
+}
+
+function submitInquiry() {
+  const subject = `Inquiry: ${selectedProduct.value?.title || 'General inquiry'}`
+  const body = `Name: ${inquiry.value.name}\nEmail: ${inquiry.value.email}\nPhone: ${inquiry.value.phone || 'Not provided'}\n\nService: ${selectedProduct.value?.title || 'Not specified'}\nPrice: ${selectedProduct.value ? formatPrice(selectedProduct.value.price_cents) : 'N/A'}\n\nMessage:\n${inquiry.value.message}`
+  
+  const mailtoLink = `mailto:cedric@cedricarnhold.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  window.open(mailtoLink, '_blank')
+  
+  closeInquiry()
 }
 </script>
 
 <style scoped>
 .tagchip{ font-size:12px; padding:.25rem .5rem; border-radius:9999px; background: rgba(255,255,255,.1); color:#fff; border:1px solid rgba(255,255,255,.15) }
 .tagchip.active{ background: var(--accent-raw); border-color: rgba(255,255,255,.3) }
+
+.info-icon {
+  color: rgba(255,255,255,0.6);
+  transition: all 0.2s ease;
+  padding: 2px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-icon:hover {
+  color: var(--accent-raw);
+  background: rgba(255,255,255,0.1);
+  transform: scale(1.1);
+}
 </style>

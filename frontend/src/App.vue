@@ -3,6 +3,9 @@
     <div class="site-bg" aria-hidden="true" />
     <div class="bg-mark" aria-hidden="true" />
 
+    <!-- Flash Intro overlay: only first visit on /start and /home -->
+    <FlashIntro v-if="showIntro" @complete="handleIntroComplete" />
+
     <!-- Hamburger Button -->
     <header>
       <label class="menubutton" @click.stop>
@@ -52,9 +55,10 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import Footer from './components/layout/Footer.vue'
+import FlashIntro from './components/FlashIntro.vue'
 import { useThemeStore } from './stores/theme'
 import flagDe from '@/assets/Pictures/flag-de.webp'
 import flagEn from '@/assets/Pictures/flag-us.webp'
@@ -104,6 +108,26 @@ onMounted(() => {
   // apply stored accent on first load
   store.setAccent(store.accent)
 })
+
+// Intro visibility logic: only on first visit per language home
+const showIntro = ref(false)
+
+function updateIntroVisibility(r) {
+  const shouldShow = !!(r.meta && r.meta.showIntro)
+  if (!shouldShow) { showIntro.value = false; return }
+  const key = r.name === 'de-home' ? 'intro_shown_de' : r.name === 'en-home' ? 'intro_shown_en' : null
+  if (!key) { showIntro.value = false; return }
+  const already = sessionStorage.getItem(key)
+  showIntro.value = !already
+}
+
+watch(() => route.fullPath, () => updateIntroVisibility(route), { immediate: true })
+
+function handleIntroComplete(){
+  const key = route.name === 'de-home' ? 'intro_shown_de' : route.name === 'en-home' ? 'intro_shown_en' : null
+  if (key) sessionStorage.setItem(key, '1')
+  showIntro.value = false
+}
 
 function handleClickOutside(e){
   const nav = document.getElementById('navMenu')

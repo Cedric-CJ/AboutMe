@@ -2,17 +2,15 @@
   <section>
     <h2 class="text-white text-2xl font-semibold">Hi, ich bin Cedric</h2>
     <div class="mt-6 grid md:grid-cols-3 gap-6">
-      <div class="glass-card md:col-span-2 p-6 text-sm text-zinc-300 space-y-3">
-        <p>
-          Ich bin Cedric Arnhold (22) und studiere Wirtschaftsinformatik an der HTW Berlin. Neben dem Studium setze ich
-          gern Ideen praktisch um – wie diese Website. Im Rahmen meines Pflichtpraktikums im BMDV habe ich in kurzer Zeit
-          fundierte Einblicke in Systemadministration und Serverinfrastruktur gewonnen.
-        </p>
-        <p>
-          Parallel betreue ich die Website meines Vaters und optimiere sie für unterschiedliche Endgeräte. Außerdem
-          modernisiere ich mein früheres Hochschulprojekt „VirtualPet“. Als Nächstes plane ich einen privaten Mail‑, Web‑
-          und Cloud‑Server. Hier teile ich künftig mehr zu Projekten und Learnings.
-        </p>
+      <div class="glass-card md:col-span-2 p-6 text-center">
+        <div class="text-zinc-300 space-y-4 max-w-none">
+          <p class="text-justify">
+            Ich bin Cedric Arnhold (22) und studiere Wirtschaftsinformatik an der HTW Berlin. Neben dem Studium setze ich gerne Ideen in funktionierende Projekte um – wie diese Webseite. Während meines Pflichtpraktikums im BMDV habe ich fundierte Erfahrungen in Systemadministration gesammelt.
+          </p>
+          <p class="text-justify">
+            Parallel betreue ich die Webseite meines Vaters und modernisiere mein Hochschulprojekt „VirtualPet". Als Nächstes plane ich einen privaten Mail‑, Web‑ und Cloud‑Server. Hier teile ich künftig mehr zu Projekten und Learnings.
+          </p>
+        </div>
       </div>
       <div class="glass-card p-6 flex items-center justify-center">
         <img src="@/assets/Pictures/Me.png" alt="Cedric" class="about-me" />
@@ -72,12 +70,12 @@ function generateStyle(){
 }
 
 const events = ref([
-  { year: 2026, title: 'Bachelor of Science - Wirtschaftsinformatik', description: 'An der Hochschule für Technik und Wirtschaft Berlin werde ich voraussichtlich 2026 mein Bachelorstudium abschließen.' },
-  { year: 2024, title: 'Praktikum im Bundesministerium für Digitales und Verkehr Abteilung Z33', description: 'Im 4. Fachsemester absolvierte ich von Dezember 2024 bis März 2025 ein 3,5-monatiges Fachpraktikum im Bereich Informationstechnik, bei dem der Schwerpunkt auf dem Betrieb von Servern und IT-Infrastruktur im BMDV lag.'},
-  { year: 2022, title: 'Werksstudent bei Kaufland', description: 'Kaufland Deutschland. Von Juni 2022 bis August 2024 als Werksstudent tätig.' },
-  { year: 2022, title: 'Abitur', description: 'An der Ernst-Haeckel-Schule Berlin. Abschluss mit 2,8er im Mathe-Geschichte Abitur.' },
-  { year: 2018, title: 'Praktikum Finanzamt Marzahn-Hellersdorf', description: 'Praktikum beim Finanzamt Marzahn-Hellersdorf, mit Erfahrungen sowohl in Bürotätigkeiten als auch bei Verhandlungen.' },
-  { year: 2016, title: 'Praktikum bei Dr. Albrecht & Plogmaker GbR', description: 'Fünf freiwillige Praktika bei der Steuerkanzlei, wo ich tiefe Einblicke in die Steuerberatung erhielt.' },
+  { year: 2026, title: 'Bachelor of Science - Wirtschaftsinformatik', description: 'Voraussichtlicher Abschluss an der HTW Berlin. Schwerpunkt auf Datenanalyse und Systemarchitektur.' },
+  { year: 2024, title: 'Praktikum BMDV Abteilung Z33', description: '3,5-monatiges Fachpraktikum im IT-Bereich. Schwerpunkt: Server-Betrieb und Infrastruktur-Management.' },
+  { year: 2022, title: 'Werksstudent bei Kaufland', description: 'Zwei Jahre als Werksstudent tätig. Erfahrungen in Prozessoptimierung und Kundenbetreuung.' },
+  { year: 2022, title: 'Abitur Ernst-Haeckel-Schule', description: 'Abschluss mit 2,8 im Mathe-Geschichte Profil. Grundlagen für technisches Studium gelegt.' },
+  { year: 2018, title: 'Praktikum Finanzamt Marzahn-Hellersdorf', description: 'Einblicke in Bürotätigkeiten und Verhandlungsführung. Erste Berufserfahrungen gesammelt.' },
+  { year: 2016, title: 'Praktikum Dr. Albrecht & Plogmaker', description: 'Fünf freiwillige Praktika in Steuerberatung. Tiefe Einblicke in Beratungsprozesse erhalten.' },
 ])
 
 onMounted(() => {

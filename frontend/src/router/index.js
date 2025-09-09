@@ -5,7 +5,7 @@ const routes = [
   { path: '/', redirect: '/start' },
 
   // German primary paths
-  { path: '/start', name: 'de-home', component: () => import('../pages/Home.vue') },
+  { path: '/start', name: 'de-home', component: () => import('../pages/Home.vue'), meta: { showIntro: true } },
   { path: '/übermich', name: 'de-about', component: () => import('../pages/About.vue'), alias: ['/ueber-mich'] },
   { path: '/gallerie', name: 'de-gallery', component: () => import('../pages/Gallery.vue'), alias: ['/galerie'] },
   { path: '/blog/de', name: 'de-blog', component: () => import('../pages/Blog.vue') },
@@ -16,7 +16,7 @@ const routes = [
   { path: '/datenschutz', name: 'de-datenschutz', component: () => import('../pages/Privacy.vue') },
 
   // English counterparts (mount minimal wrappers where applicable)
-  { path: '/home', name: 'en-home', component: () => import('../pages/HomeEn.vue') },
+  { path: '/home', name: 'en-home', component: () => import('../pages/HomeEn.vue'), meta: { showIntro: true } },
   { path: '/aboutme', name: 'en-about', component: () => import('../pages/AboutEn.vue') },
   { path: '/gallery', name: 'en-gallery', component: () => import('../pages/GalleryEn.vue') },
   { path: '/blog/eng', name: 'en-blog', component: () => import('../pages/BlogEn.vue') },
