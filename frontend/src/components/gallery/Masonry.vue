@@ -22,12 +22,11 @@
 import { ref } from 'vue'
 
 const images = ref([
-  { url: '/src/assets/Pictures/Gallery/Berlin.jpg', title: 'Berlin' },
-  { url: '/src/assets/Pictures/Gallery/Huhn.jpg', title: 'Huhn' },
-  { url: '/src/assets/Pictures/Gallery/Katze1.jpg', title: 'Katze 1' },
-  { url: '/src/assets/Pictures/Gallery/Katze2.jpg', title: 'Katze 2' },
-  { url: '/src/assets/Pictures/Gallery/Katze3.jpg', title: 'Katze 3' },
-  { url: '/src/assets/Pictures/Gallery/Storch.jpg', title: 'Storch' }
+  { url: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href, title: 'Vespa' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Alanya.jpg', import.meta.url).href, title: 'Alanya' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Tokyostore.jpg', import.meta.url).href, title: 'Tokyostore' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Schloss_Fürstlich_Drehna.jpg', import.meta.url).href, title: 'Schloss Fürstlich Drehna' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Side.jpg', import.meta.url).href, title: 'Side' }
 ])
 
 const lightboxOpen = ref(false)

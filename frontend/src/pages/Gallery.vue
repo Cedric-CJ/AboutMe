@@ -60,10 +60,10 @@ const selected = ref(null)
 const detailOpen = ref(false)
 // Statisch: Hover, Masonry, Thumbnail, Vergleich
 const staticGalleries = ref([
-  { key:'Modern1', title:'Hover', desc:'Elegante Hover-Effekte mit Kategorien', img: new URL('@/assets/Pictures/Gallery/Berlin.jpg', import.meta.url).href },
-  { key:'Modern2', title:'Masonry', desc:'Dynamisches Grid mit Lightbox', img: new URL('@/assets/Pictures/Gallery/Katze1.jpg', import.meta.url).href },
-  { key:'Modern3', title:'Thumbnail', desc:'Hauptbild mit Thumbnail-Navigation', img: new URL('@/assets/Pictures/Gallery/Katze2.jpg', import.meta.url).href },
-  { key:'Modern4', title:'Vergleich', desc:'Vorher/Nachher Schieberegler', img: new URL('@/assets/Pictures/Gallery/Storch.jpg', import.meta.url).href }
+  { key:'Modern1', title:'Hover', desc:'Elegante Hover-Effekte mit Kategorien', img: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href },
+  { key:'Modern2', title:'Masonry', desc:'Dynamisches Grid mit Lightbox', img: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href },
+  { key:'Modern3', title:'Thumbnail', desc:'Hauptbild mit Thumbnail-Navigation', img: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href },
+  { key:'Modern4', title:'Vergleich', desc:'Vorher/Nachher Schieberegler', img: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href }
 ])
 // Animiert: übrige
 const animatedGalleries = ref([

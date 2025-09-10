@@ -24,11 +24,11 @@
         <div class="comparison-slider">
           <div class="comparison-container">
             <div class="before-image">
-              <img src="/src/assets/Pictures/Gallery/9er/Katze1.jpg" alt="Vorher" />
+              <img :src="beforeUrl" alt="Vorher" />
               <div class="label">Vorher</div>
             </div>
             <div class="after-image" :style="{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }">
-              <img src="/src/assets/Pictures/Gallery/9er/Katze2.jpg" alt="Nachher" />
+              <img :src="afterUrl" alt="Nachher" />
               <div class="label">Nachher</div>
             </div>
             <div 
@@ -52,13 +52,15 @@
 import { ref, onUnmounted } from 'vue'
 
 const images = ref([
-  { url: '/src/assets/Pictures/Gallery/4er2/BerlinerBär.jpg', title: 'Berliner Bär' },
-  { url: '/src/assets/Pictures/Gallery/4er2/Huhn.jpg', title: 'Huhn' },
-  { url: '/src/assets/Pictures/Gallery/9er/Katze1.jpg', title: 'Katze 1' },
-  { url: '/src/assets/Pictures/Gallery/9er/Katze2.jpg', title: 'Katze 2' },
-  { url: '/src/assets/Pictures/Gallery/9er/Katze3.jpg', title: 'Katze 3' },
-  { url: '/src/assets/Pictures/Gallery/9er/Storch.jpg', title: 'Storch' }
+  { url: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href, title: 'Vespa' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Alanya.jpg', import.meta.url).href, title: 'Alanya' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Tokyostore.jpg', import.meta.url).href, title: 'Tokyostore' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Schloss_Fürstlich_Drehna.jpg', import.meta.url).href, title: 'Schloss Fürstlich Drehna' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Side.jpg', import.meta.url).href, title: 'Side' }
 ])
+
+const beforeUrl = new URL('@/assets/Pictures/Gallery/4er/Alanya.jpg', import.meta.url).href
+const afterUrl = new URL('@/assets/Pictures/Gallery/4er/Side.jpg', import.meta.url).href
 
 const sliderPosition = ref(50)
 const isDragging = ref(false)

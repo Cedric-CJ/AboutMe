@@ -18,12 +18,11 @@
 import { ref } from 'vue'
 
 const images = ref([
-  { url: '/src/assets/Pictures/Gallery/Berlin.jpg', title: 'Berlin', category: 'Städte' },
-  { url: '/src/assets/Pictures/Gallery/Huhn.jpg', title: 'Huhn', category: 'Tiere' },
-  { url: '/src/assets/Pictures/Gallery/Katze1.jpg', title: 'Katze', category: 'Tiere' },
-  { url: '/src/assets/Pictures/Gallery/Katze2.jpg', title: 'Katze 2', category: 'Tiere' },
-  { url: '/src/assets/Pictures/Gallery/Katze3.jpg', title: 'Katze 3', category: 'Tiere' },
-  { url: '/src/assets/Pictures/Gallery/Storch.jpg', title: 'Storch', category: 'Tiere' }
+  { url: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href, title: 'Vespa', category: 'Fahrzeuge' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Alanya.jpg', import.meta.url).href, title: 'Alanya', category: 'Städte' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Tokyostore.jpg', import.meta.url).href, title: 'Tokio Store', category: 'Städte' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Schloss_Fürstlich_Drehna.jpg', import.meta.url).href, title: 'Schloss Fürstlich Drehna', category: 'Sehenswürdigkeiten' },
+  { url: new URL('@/assets/Pictures/Gallery/4er/Side.jpg', import.meta.url).href, title: 'Side', category: 'Landschaften' }
 ])
 
 function selectImage(index) {
