@@ -40,26 +40,112 @@ export default {
 .BoxGallery {
   display: flex;
   width: 100%;
-  padding: 4% 2%;
+  padding: 2%;
   box-sizing: border-box;
   height: 100vh;
+  gap: 1%;
 }
+
 .box {
   flex: 1;
   position: relative;
   overflow: hidden;
-  transition: 0.5s ease;
-  margin: 0 2%;
-  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1);
+  transition: flex 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  will-change: flex;
+  min-width: 0;
 }
-.placeholder { width: 100%; height: calc(100% - 10vh); transition: 0.5s ease; }
-.placeholder img { width: 100%; height: 100%; object-fit: cover; }
+
+.placeholder { 
+  width: 100%; 
+  height: calc(100% - 8vh); 
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: height;
+}
+
+.placeholder img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover;
+  display: block;
+}
+
 .box > span {
-  position: absolute; bottom: 0; left: 0; width: 100%;
-  font-size: 3.8vh; text-align: center; color: var(--text-color, #fff);
-  text-shadow: 4px 4px 8px rgba(0,0,0,1); background: rgba(255,255,255,0.1);
-  padding: 0.5em 0; box-sizing: border-box; z-index: 2; transition: 0.5s ease;
+  position: absolute; 
+  bottom: 0; 
+  left: 0; 
+  width: 100%;
+  font-size: clamp(1rem, 3vh, 2rem);
+  text-align: center; 
+  color: var(--text-color, #fff);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8); 
+  background: rgba(0,0,0,0.3);
+  padding: 0.5em 0; 
+  box-sizing: border-box; 
+  z-index: 2; 
+  transition: background 0.3s ease;
 }
-.box:hover { flex: 1 1 50%; }
-.box:hover .placeholder { height: 100%; }
+
+.box:hover { 
+  flex: 2; 
+}
+
+.box:hover .placeholder { 
+  height: 100%; 
+}
+
+.box:hover > span {
+  background: rgba(0,0,0,0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .BoxGallery {
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 100vh;
+    padding: 1%;
+    gap: 1%;
+  }
+  
+  .box {
+    flex: 1 1 48%;
+    height: 48vh;
+    min-height: 200px;
+    margin: 0;
+  }
+  
+  .box:hover {
+    flex: 1 1 48%;
+    height: 48vh;
+  }
+  
+  .placeholder {
+    height: calc(100% - 6vh);
+  }
+  
+  .box > span {
+    font-size: clamp(0.9rem, 2.5vh, 1.5rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .BoxGallery {
+    padding: 0.5%;
+  }
+  
+  .box {
+    height: 20vh;
+    min-height: 150px;
+  }
+  
+  .box:hover {
+    height: 35vh;
+  }
+  
+  .box > span {
+    font-size: clamp(0.8rem, 2vh, 1.2rem);
+    padding: 0.3em 0;
+  }
+}
 </style>

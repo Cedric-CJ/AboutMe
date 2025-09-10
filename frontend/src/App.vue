@@ -86,7 +86,7 @@ const menuItems = computed(() => {
       { to: '/blog/eng', label: 'Blog' },
       { to: '/projects', label: 'Projects' },
       { to: '/contact', label: 'Contact' },
-      { to: '/shop/eng', label: 'Shop' },
+      { to: '/service', label: 'Services' },
     ]
   }
   return [
@@ -96,7 +96,7 @@ const menuItems = computed(() => {
     { to: '/blog/de', label: 'Blog' },
     { to: '/projekte', label: 'Projekte' },
     { to: '/kontakt', label: 'Kontakt' },
-    { to: '/shop/de', label: 'Shop' },
+    { to: '/leistungen', label: 'Leistungen' },
   ]
 })
 
@@ -139,7 +139,7 @@ function switchLang(lang){
     'de-blog': 'en-blog', 'en-blog': 'de-blog',
     'de-projects': 'en-projects', 'en-projects': 'de-projects',
     'de-contact': 'en-contact', 'en-contact': 'de-contact',
-    'de-shop': 'en-shop', 'en-shop': 'de-shop',
+    'de-services': 'en-services', 'en-services': 'de-services',
     'de-impressum': 'en-publisher', 'en-publisher': 'de-impressum',
     'de-datenschutz': 'en-privacy', 'en-privacy': 'de-datenschutz',
   }

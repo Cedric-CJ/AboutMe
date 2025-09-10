@@ -1,8 +1,10 @@
 <template>
   <div class="page-auto-contrast max-w-6xl mx-auto px-4 pt-10 pb-20">
     <div class="ice-hero">
-      <h2 class="text-white text-2xl font-semibold">Shop</h2>
-      <div class="mt-2 text-yellow-200 text-sm bg-yellow-500/10 border border-yellow-300/20 rounded px-3 py-2 inline-block">Hinweis: Der Shop ist im Aufbau. Zahlungen sind Demo.</div>
+      <h2 class="text-white text-2xl font-semibold">Leistungen</h2>
+      <div class="mt-2 text-cyan-200 text-sm bg-cyan-500/10 border border-cyan-300/20 rounded px-3 py-2 inline-block">
+        Alle Dienstleistungen sind auf Anfrage. Preise verstehen sich als Richtwerte. Bis jetzt nur mit externen Mailclients möglich.
+      </div>
       <div class="mt-4 flex gap-2 flex-wrap items-center">
         <input v-model="query" type="text" placeholder="Suchen nach Titel/Tag" class="bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 w-64 px-3 py-2 rounded-md" />
         <button v-for="t in allTags" :key="t" @click="toggleTag(t)" :class="['tagchip', { active: selectedTags.includes(t) }]">{{ t }}</button>
@@ -14,7 +16,7 @@
         <div class="text-white flex items-center justify-between text-lg font-medium">
           <span>{{ p.title }}</span>
           <div class="flex items-center gap-2">
-            <span class="text-cyan-300">{{ formatPrice(p.price_cents) }}</span>
+            <span class="text-cyan-300 whitespace-nowrap">{{ formatPriceWithContext(p) }}</span>
             <button @click="showInfo(p)" class="info-icon" title="Mehr Informationen">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
@@ -28,16 +30,15 @@
         <div class="mt-3 flex flex-wrap gap-2">
           <span v-for="t in (p.tags || [])" :key="t" class="text-[11px] px-2 py-1 rounded-full bg-white/10 text-white border border-white/15">{{ t }}</span>
         </div>
-        <div class="mt-4 flex gap-2">
-          <button class="glass-btn px-3 py-2 rounded-md" @click="openInquiry(p)">Anfrage stellen</button>
-          <button class="glass-btn-secondary px-3 py-2 rounded-md" @click="openInquiry(p)">Direkt anfragen</button>
+        <div class="mt-4">
+          <button class="glass-btn px-3 py-2 rounded-md w-full" @click="openInquiry(p)">Anfrage stellen</button>
         </div>
       </div>
     </div>
 
     <!-- Inquiry Overlay -->
     <div v-if="showInquiryOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="glass-card p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div class="glass-card glass-modal p-6 max-w-3xl w-full max-h-[95vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-white text-lg font-semibold">Anfrage stellen</h3>
           <button @click="closeInquiry" class="text-zinc-400 hover:text-white">
@@ -48,9 +49,13 @@
           </button>
         </div>
         
-        <div v-if="selectedProduct" class="mb-4 p-3 bg-white/5 rounded border border-white/10">
-          <div class="text-white font-medium">{{ selectedProduct.title }}</div>
-          <div class="text-cyan-300 text-sm">{{ formatPrice(selectedProduct.price_cents) }}</div>
+        <div class="mb-4">
+          <label class="block text-white text-sm font-medium mb-2">Leistung auswählen</label>
+          <select v-model="selectedProductId" class="glass-select w-full px-3 py-2 rounded-md">
+            <option v-for="opt in products" :key="opt.id" :value="opt.id">
+              {{ sanitizeTitle(opt.title) }} — {{ formatPriceWithContext(opt) }}
+            </option>
+          </select>
         </div>
         
         <form @submit.prevent="submitInquiry" class="space-y-4">
@@ -71,7 +76,7 @@
           
           <div>
             <label class="block text-white text-sm font-medium mb-2">Nachricht *</label>
-            <textarea v-model="inquiry.message" required rows="4" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md resize-none" placeholder="Beschreiben Sie Ihr Projekt oder Ihre Anfrage..."></textarea>
+            <textarea v-model="inquiry.message" required rows="8" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md resize-none min-h-[200px]" placeholder="Beschreiben Sie Ihr Projekt oder Ihre Anfrage..."></textarea>
           </div>
           
           <div class="flex gap-2">
@@ -96,7 +101,7 @@
         </div>
         
         <div v-if="selectedProduct" class="space-y-3">
-          <div class="text-cyan-300 text-lg font-medium">{{ formatPrice(selectedProduct.price_cents) }}</div>
+          <div class="text-cyan-300 text-lg font-medium whitespace-nowrap">{{ formatPriceWithContext(selectedProduct) }}</div>
           <p class="text-zinc-300">{{ selectedProduct.description }}</p>
           
           <div class="bg-white/5 rounded p-3 border border-white/10">
@@ -120,22 +125,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
-import AdyenCheckout from '@adyen/adyen-web'
-import '@adyen/adyen-web/dist/adyen.css'
-
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || ''
-const API = `${BACKEND_URL}/api`
+import { ref, computed, onMounted, watch } from 'vue'
 
 const demoProducts = [
   { id: 'beratung', title: 'Beratung', description: 'Individuelle Beratung rund um Web, Hosting und Modernisierung.', price_cents: 9900, currency: 'EUR', tags: ['Service'], active: true },
   { id: 'modernisieren', title: 'Seite modernisieren', description: 'Bestehende Webseite in modernes Design und bessere Performance überführen.', price_cents: 24900, currency: 'EUR', tags: ['Service'], active: true },
   { id: 'sonderwuensche', title: 'Sonderwünsche', description: 'Individuelle Features und Speziallösungen nach Absprache.', price_cents: 0, currency: 'EUR', tags: ['Service'], active: true },
-  { id: 'web-von-grund-auf', title: 'Webseite von Grund auf (ab)', description: 'Planung, Design, Umsetzung & Hosting-Einrichtung – alles aus einer Hand.', price_cents: 89900, currency: 'EUR', tags: ['Projekt','Web'], active: true },
-  { id: 'performance-seo', title: 'Performance-/SEO-Check (ab)', description: 'Core Web Vitals, Lighthouse, Bildoptimierung, Caching, Accessibility – Bericht & Maßnahmenplan.', price_cents: 14900, currency: 'EUR', tags: ['Audit','SEO','Performance'], active: true },
-  { id: 'wartung-monitoring', title: 'Wartung & Monitoring (ab/Monat)', description: 'Updates, Backups, Security-Checks, Uptime-Monitoring und kleinere Fixes.', price_cents: 5900, currency: 'EUR', tags: ['Wartung'], active: true },
-  { id: 'hosting-mail-setup', title: 'Hosting-/Mail-Setup (ab)', description: 'Domain, DNS, SSL, Mail (z. B. mit eigenen Subdomains), grundlegende Server-Konfiguration.', price_cents: 12900, currency: 'EUR', tags: ['Setup','Server'], active: true }
+  { id: 'web-von-grund-auf', title: 'Webseite von Grund auf', description: 'Planung, Design, Umsetzung & Hosting-Einrichtung – alles aus einer Hand.', price_cents: 89900, currency: 'EUR', tags: ['Projekt','Web'], active: true },
+  { id: 'performance-seo', title: 'Performance-/SEO-Check', description: 'Core Web Vitals, Lighthouse, Bildoptimierung, Caching, Accessibility – Bericht & Maßnahmenplan.', price_cents: 14900, currency: 'EUR', tags: ['Audit','SEO','Performance'], active: true },
+  { id: 'wartung-monitoring', title: 'Wartung & Monitoring', description: 'Updates, Backups, Security-Checks, Uptime-Monitoring und kleinere Fixes.', price_cents: 5900, currency: 'EUR', tags: ['Wartung'], active: true },
+  { id: 'hosting-mail-setup', title: 'Hosting-/Mail-Setup', description: 'Domain, DNS, SSL, Mail (z. B. mit eigenen Subdomains), grundlegende Server-Konfiguration.', price_cents: 12900, currency: 'EUR', tags: ['Setup','Server'], active: true }
 ]
 
 const query = ref('')
@@ -144,6 +143,7 @@ const selectedTags = ref([])
 const showInquiryOverlay = ref(false)
 const showInfoModal = ref(false)
 const selectedProduct = ref(null)
+const selectedProductId = ref(null)
 const inquiry = ref({
   name: '',
   email: '',
@@ -152,13 +152,27 @@ const inquiry = ref({
 })
 
 onMounted(async () => {
-  // Für jetzt: Nur die drei Services lokal anbieten (keine API-Produkte laden)
+  // Inhalte sind nur zur Auswahl, Beauftragung erfolgt nach Rücksprache
 })
 
 function formatPrice(cents) {
   if (cents === 0) return 'Preis auf Anfrage'
   const euro = (cents / 100).toFixed(0)
   return `(ab) ${euro} €`
+}
+
+function formatPriceWithContext(p) {
+  if (!p) return ''
+  const base = formatPrice(p.price_cents)
+  // Append per-month marker for maintenance plan
+  if (p.id === 'wartung-monitoring') return `${base}\u00A0p.M.`
+  return base
+}
+
+function sanitizeTitle(title){
+  if (!title) return ''
+  // Remove occurrences like '(ab)', '(ab/Monat)', '(from)', '(from/month)' etc.
+  return title.replace(/\s*\((ab|from)(?:[^)]*)\)/gi, '').trim()
 }
 
 const allTags = computed(() => Array.from(new Set(products.value.flatMap(p => p.tags || []))))
@@ -176,7 +190,8 @@ const filtered = computed(() => products.value.filter(p => {
 
 function openInquiry(product) {
   selectedProduct.value = product
-  inquiry.value.message = `Hallo,\n\nich interessiere mich für "${product.title}".\n\nMein Projekt/meine Anfrage:\n`
+  selectedProductId.value = product?.id || null
+  inquiry.value.message = `Hallo Cedric,\n\nich interessiere mich für \"${sanitizeTitle(product.title)}\".\n\nKurz zu meinem Projekt/meiner Anfrage:\n`
   showInquiryOverlay.value = true
 }
 
@@ -201,11 +216,41 @@ function openInquiryFromInfo() {
   openInquiry(selectedProduct.value)
 }
 
+const inquirySelectedProduct = computed(() => {
+  const byId = products.value.find(p => p.id === selectedProductId.value)
+  return byId || selectedProduct.value
+})
+
+const emailSubject = computed(() => {
+  const p = inquirySelectedProduct.value
+  return `Anfrage: ${p ? sanitizeTitle(p.title) : 'Allgemeine Anfrage'}`
+})
+
+// Keep the inquiry text in sync with dropdown selection (only if template header is intact)
+function updateInquiryTemplateService() {
+  const p = inquirySelectedProduct.value
+  if (!p) return
+  const header = 'Hallo Cedric,'
+  const marker = 'Kurz zu meinem Projekt/meiner Anfrage:'
+  const msg = inquiry.value.message || ''
+  if (msg.startsWith(header)) {
+    // Split by marker to preserve everything the user wrote after it
+    const parts = msg.split(marker)
+    const tail = parts.length > 1 ? parts.slice(1).join(marker) : '\n'
+    inquiry.value.message = `${header}\n\nich interessiere mich für \"${sanitizeTitle(p.title)}\".\n\n${marker}\n${tail.trimStart()}`
+  }
+}
+
+watch(selectedProductId, () => {
+  if (showInquiryOverlay.value) updateInquiryTemplateService()
+})
+
 function submitInquiry() {
-  const subject = `Anfrage: ${selectedProduct.value?.title || 'Allgemeine Anfrage'}`
-  const body = `Name: ${inquiry.value.name}\nE-Mail: ${inquiry.value.email}\nTelefon: ${inquiry.value.phone || 'Nicht angegeben'}\n\nService: ${selectedProduct.value?.title || 'Nicht spezifiziert'}\nPreis: ${selectedProduct.value ? formatPrice(selectedProduct.value.price_cents) : 'N/A'}\n\nNachricht:\n${inquiry.value.message}`
+  const p = inquirySelectedProduct.value
+  const subject = emailSubject.value
+  const body = `Name: ${inquiry.value.name}\nE-Mail: ${inquiry.value.email}\nTelefon: ${inquiry.value.phone || 'Nicht angegeben'}\n\nService: ${p ? sanitizeTitle(p.title) : 'Nicht spezifiziert'}\nPreis: ${p ? formatPriceWithContext(p) : 'N/A'}\n\nNachricht an Cedric:\n${inquiry.value.message}`
   
-  const mailtoLink = `mailto:cedric@cedricarnhold.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  const mailtoLink = `mailto:cedric.jon.arnhold@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   window.open(mailtoLink, '_blank')
   
   closeInquiry()
@@ -231,4 +276,41 @@ function submitInquiry() {
   background: rgba(255,255,255,0.1);
   transform: scale(1.1);
 }
+
+/* Glass select for dark mode */
+.glass-select {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  backdrop-filter: blur(6px);
+}
+/* Add a subtle dropdown arrow using a linear-gradient */
+.glass-select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.6) 50%),
+    linear-gradient(135deg, rgba(255,255,255,0.6) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) calc(50% - 2px),
+    calc(100% - 15px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 36px; /* room for arrow */
+}
+.glass-select:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+}
+/* Ensure options have readable contrast in dark mode (support varies across browsers) */
+.glass-select option { color: #fff; background: rgba(0,0,0,0.8); }
+
+/* Glass styled scrollbar for the inquiry modal */
+.glass-modal {
+  /* Hide scrollbar visuals but keep scrolling if needed */
+  scrollbar-width: none; /* Firefox */
+}
+.glass-modal::-webkit-scrollbar { width: 0; height: 0; }
 </style>

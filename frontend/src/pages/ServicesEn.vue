@@ -1,8 +1,10 @@
 <template>
   <div class="page-auto-contrast max-w-6xl mx-auto px-4 pt-10 pb-20">
     <div class="ice-hero">
-      <h2 class="text-white text-2xl font-semibold">Shop</h2>
-      <div class="mt-2 text-yellow-200 text-sm bg-yellow-500/10 border border-yellow-300/20 rounded px-3 py-2 inline-block">Note: The shop is under construction. Payments are demo-only.</div>
+      <h2 class="text-white text-2xl font-semibold">Services</h2>
+      <div class="mt-2 text-cyan-200 text-sm bg-cyan-500/10 border border-cyan-300/20 rounded px-3 py-2 inline-block">
+        All services are on request. Select multiple tags to filter to the most relevant services. Prices are indicative starting points.
+      </div>
       <div class="mt-4 flex gap-2 flex-wrap items-center">
         <input v-model="query" type="text" placeholder="Search by title/tag" class="bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 w-64 px-3 py-2 rounded-md" />
         <button v-for="t in allTags" :key="t" @click="toggleTag(t)" :class="['tagchip', { active: selectedTags.includes(t) }]">{{ t }}</button>
@@ -14,7 +16,7 @@
         <div class="text-white flex items-center justify-between text-lg font-medium">
           <span>{{ p.title }}</span>
           <div class="flex items-center gap-2">
-            <span class="text-cyan-300">{{ formatPrice(p.price_cents) }}</span>
+            <span class="text-cyan-300 whitespace-nowrap">{{ formatPriceWithContext(p) }}</span>
             <button @click="showInfo(p)" class="info-icon" title="More information">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
@@ -28,16 +30,15 @@
         <div class="mt-3 flex flex-wrap gap-2">
           <span v-for="t in (p.tags || [])" :key="t" class="text-[11px] px-2 py-1 rounded-full bg-white/10 text-white border border-white/15">{{ t }}</span>
         </div>
-        <div class="mt-4 flex gap-2">
-          <button class="glass-btn px-3 py-2 rounded-md" @click="openInquiry(p)">Make inquiry</button>
-          <button class="glass-btn-secondary px-3 py-2 rounded-md" @click="openInquiry(p)">Direct inquiry</button>
+        <div class="mt-4">
+          <button class="glass-btn px-3 py-2 rounded-md w-full" @click="openInquiry(p)">Make inquiry</button>
         </div>
       </div>
     </div>
 
     <!-- Inquiry Overlay -->
     <div v-if="showInquiryOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="glass-card p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+      <div class="glass-card glass-modal p-6 max-w-3xl w-full max-h-[95vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-white text-lg font-semibold">Make Inquiry</h3>
           <button @click="closeInquiry" class="text-zinc-400 hover:text-white">
@@ -48,9 +49,13 @@
           </button>
         </div>
         
-        <div v-if="selectedProduct" class="mb-4 p-3 bg-white/5 rounded border border-white/10">
-          <div class="text-white font-medium">{{ selectedProduct.title }}</div>
-          <div class="text-cyan-300 text-sm">{{ formatPrice(selectedProduct.price_cents) }}</div>
+        <div class="mb-4">
+          <label class="block text-white text-sm font-medium mb-2">Select a service</label>
+          <select v-model="selectedProductId" class="glass-select w-full px-3 py-2 rounded-md">
+            <option v-for="opt in products" :key="opt.id" :value="opt.id">
+              {{ sanitizeTitle(opt.title) }} — {{ formatPriceWithContext(opt) }}
+            </option>
+          </select>
         </div>
         
         <form @submit.prevent="submitInquiry" class="space-y-4">
@@ -71,7 +76,7 @@
           
           <div>
             <label class="block text-white text-sm font-medium mb-2">Message *</label>
-            <textarea v-model="inquiry.message" required rows="4" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md resize-none" placeholder="Describe your project or inquiry..."></textarea>
+            <textarea v-model="inquiry.message" required rows="8" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md resize-none min-h-[200px]" placeholder="Describe your project or inquiry..."></textarea>
           </div>
           
           <div class="flex gap-2">
@@ -96,7 +101,7 @@
         </div>
         
         <div v-if="selectedProduct" class="space-y-3">
-          <div class="text-cyan-300 text-lg font-medium">{{ formatPrice(selectedProduct.price_cents) }}</div>
+          <div class="text-cyan-300 text-lg font-medium whitespace-nowrap">{{ formatPriceWithContext(selectedProduct) }}</div>
           <p class="text-zinc-300">{{ selectedProduct.description }}</p>
           
           <div class="bg-white/5 rounded p-3 border border-white/10">
@@ -118,14 +123,9 @@
     </div>
   </div>
 </template>
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
-import AdyenCheckout from '@adyen/adyen-web'
-import '@adyen/adyen-web/dist/adyen.css'
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || ''
-const API = `${BACKEND_URL}/api`
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue'
 
 const demoProducts = [
   { id: 'consulting', title: 'Consulting', description: 'Individual consulting around web, hosting and modernisation.', price_cents: 9900, currency: 'EUR', tags: ['Service'], active: true },
@@ -143,6 +143,7 @@ const selectedTags = ref([])
 const showInquiryOverlay = ref(false)
 const showInfoModal = ref(false)
 const selectedProduct = ref(null)
+const selectedProductId = ref(null)
 const inquiry = ref({
   name: '',
   email: '',
@@ -151,13 +152,25 @@ const inquiry = ref({
 })
 
 onMounted(async () => {
-  // Demo only
+  // Showcase only; engagements happen after direct contact
 })
 
 function formatPrice(cents) {
   if (cents === 0) return 'Price on request'
   const euro = (cents / 100).toFixed(0)
   return `(from) ${euro} €`
+}
+
+function formatPriceWithContext(p) {
+  if (!p) return ''
+  const base = formatPrice(p.price_cents)
+  if (p.id === 'maintenance-monitoring') return `${base}\u00A0p.m.`
+  return base
+}
+
+function sanitizeTitle(title){
+  if (!title) return ''
+  return title.replace(/\s*\((ab|from)(?:[^)]*)\)/gi, '').trim()
 }
 
 const allTags = computed(() => Array.from(new Set(products.value.flatMap(p => p.tags || []))))
@@ -175,7 +188,8 @@ const filtered = computed(() => products.value.filter(p => {
 
 function openInquiry(product) {
   selectedProduct.value = product
-  inquiry.value.message = `Hello,\n\nI'm interested in "${product.title}".\n\nMy project/inquiry:\n`
+  selectedProductId.value = product?.id || null
+  inquiry.value.message = `Hello Cedric,\n\nI'm interested in \"${sanitizeTitle(product.title)}\".\n\nA quick note about my project/inquiry:\n`
   showInquiryOverlay.value = true
 }
 
@@ -200,9 +214,38 @@ function openInquiryFromInfo() {
   openInquiry(selectedProduct.value)
 }
 
+const inquirySelectedProduct = computed(() => {
+  const byId = products.value.find(p => p.id === selectedProductId.value)
+  return byId || selectedProduct.value
+})
+
+const emailSubject = computed(() => {
+  const p = inquirySelectedProduct.value
+  return `Inquiry: ${p ? sanitizeTitle(p.title) : 'General inquiry'}`
+})
+
+// Keep the inquiry text in sync with dropdown selection while preserving user content
+function updateInquiryTemplateService() {
+  const p = inquirySelectedProduct.value
+  if (!p) return
+  const header = 'Hello Cedric,'
+  const marker = 'A quick note about my project/inquiry:'
+  const msg = inquiry.value.message || ''
+  if (msg.startsWith(header)) {
+    const parts = msg.split(marker)
+    const tail = parts.length > 1 ? parts.slice(1).join(marker) : '\n'
+    inquiry.value.message = `${header}\n\nI'm interested in \"${sanitizeTitle(p.title)}\".\n\n${marker}\n${tail.trimStart()}`
+  }
+}
+
+watch(selectedProductId, () => {
+  if (showInquiryOverlay.value) updateInquiryTemplateService()
+})
+
 function submitInquiry() {
-  const subject = `Inquiry: ${selectedProduct.value?.title || 'General inquiry'}`
-  const body = `Name: ${inquiry.value.name}\nEmail: ${inquiry.value.email}\nPhone: ${inquiry.value.phone || 'Not provided'}\n\nService: ${selectedProduct.value?.title || 'Not specified'}\nPrice: ${selectedProduct.value ? formatPrice(selectedProduct.value.price_cents) : 'N/A'}\n\nMessage:\n${inquiry.value.message}`
+  const p = inquirySelectedProduct.value
+  const subject = emailSubject.value
+  const body = `Name: ${inquiry.value.name}\nEmail: ${inquiry.value.email}\nPhone: ${inquiry.value.phone || 'Not provided'}\n\nService: ${p ? sanitizeTitle(p.title) : 'Not specified'}\nPrice: ${p ? formatPriceWithContext(p) : 'N/A'}\n\nMessage for Cedric:\n${inquiry.value.message}`
   
   const mailtoLink = `mailto:cedric@cedricarnhold.de?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   window.open(mailtoLink, '_blank')
@@ -230,4 +273,33 @@ function submitInquiry() {
   background: rgba(255,255,255,0.1);
   transform: scale(1.1);
 }
+
+/* Glass select for dark mode */
+.glass-select {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  backdrop-filter: blur(6px);
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.6) 50%),
+    linear-gradient(135deg, rgba(255,255,255,0.6) 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) calc(50% - 2px),
+    calc(100% - 15px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+}
+.glass-select:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.25);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+}
+.glass-select option { color: #fff; background: rgba(0,0,0,0.8); }
+
+.glass-modal { scrollbar-width: none; }
+.glass-modal::-webkit-scrollbar { width: 0; height: 0; }
 </style>

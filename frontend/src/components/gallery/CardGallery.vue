@@ -23,7 +23,7 @@ export default {
         { captionDE: 'Alanya', captionEN: 'Alanya', image: alanya },
         { captionDE: 'Berge', captionEN: 'Mountains', image: berge },
         { captionDE: 'Himmel', captionEN: 'Sky', image: himmel },
-        { captionDE: 'Wolkiger Himmel', captionEN: 'Cloudy Sky', image: himmel2 },
+        { captionDE: 'Wolken', captionEN: 'Cloudy Sky', image: himmel2 },
         { captionDE: 'Wasserfall', captionEN: 'Waterfall', image: wasserfall }
       ]
     }

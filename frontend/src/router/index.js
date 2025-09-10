@@ -12,7 +12,7 @@ const routes = [
   { path: '/blog/de', name: 'de-blog', component: () => import('../pages/Blog.vue') },
   { path: '/projekte', name: 'de-projects', component: () => import('../pages/Projects.vue') },
   { path: '/kontakt', name: 'de-contact', component: () => import('../pages/Contact.vue') },
-  { path: '/shop/de', name: 'de-shop', component: () => import('../pages/Shop.vue') },
+  { path: '/leistungen', name: 'de-services', component: () => import('../pages/Services.vue') },
   { path: '/impressum', name: 'de-impressum', component: () => import('../pages/Publisher.vue') },
   { path: '/datenschutz', name: 'de-datenschutz', component: () => import('../pages/Privacy.vue') },
 
@@ -23,12 +23,13 @@ const routes = [
   { path: '/blog/eng', name: 'en-blog', component: () => import('../pages/BlogEn.vue') },
   { path: '/projects', name: 'en-projects', component: () => import('../pages/ProjectsEn.vue') },
   { path: '/contact', name: 'en-contact', component: () => import('../pages/ContactEn.vue') },
-  { path: '/shop/eng', name: 'en-shop', component: () => import('../pages/ShopEn.vue') },
+  { path: '/service', name: 'en-services', component: () => import('../pages/ServicesEn.vue') },
   { path: '/Privacy', name: 'en-privacy', component: () => import('../pages/PrivacyEn.vue') },
   { path: '/publisher', name: 'en-publisher', component: () => import('../pages/PublisherEn.vue') },
 
   // Unknown routes go to /start, but valid subpages remain on refresh
-  { path: '/:pathMatch(.*)*', redirect: '/start' }
+  { path: '/:pathMatch(.*)*', redirect: '/start' },
+  { path: '/test', name: 'test', component: () => import('../components/NorthernLights.vue') },
 ]
 
 const router = createRouter({
