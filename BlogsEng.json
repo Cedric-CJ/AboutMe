@@ -1,0 +1,47 @@
+[
+  {
+    "title": "Hey everyone!",
+    "date": "Saturday, 15 February 2025",
+    "sections": [
+      {
+        "content": "I'm Cedric Arnhold, 21 years old, and I am currently studying Business Informatics at the University of Technology and Economics in Berlin. I also work on various projects that come to mind, such as this website. At the moment, I am doing my mandatory internship at the BMDV, where I gained my first experience in system administration and server infrastructure through an intensive crash course in just two months. I receive a lot of input from both the BMDV and my personal projects, as I run not only this website but also my father's website, striving to display it correctly on all devices. Additionally, I'm working on reviving and modernizing my old university project, VirtualPet. Now, the next major project is on the horizon: a private mail, web, and cloud server for my father. I look forward to sharing more about my projects and experiences in the future.",
+        "image": "./Blog/Me.jpg",
+        "imagePosition": "left"
+      }
+    ],
+    "linkText": "Mein LinkedIn",
+    "linkUrl": "https://www.linkedin.com/in/cedric-arnhold-853a122a0/"
+  },
+  {
+    "title": "Our Germany Tour",
+    "date": "Tuesday, October 01, 2024",
+    "sections": [
+      {
+        "content": "Our adventure began on a clear morning in Berlin. With our Vespa Primavera 50, we set out on a two-month tour through northern Germany. From Berlin through Swinemünde, Rügen, Lübeck, Kiel to Flensburg and Ribe, we discovered picturesque coastal towns and cozy cafés. A highlight was the two-week stop at my grandparents' in Brunsbüttel, where we recharged our batteries.",
+        "image": "./Blog/Vespa.gif",
+        "imagePosition": "right"
+      },
+      {
+        "content": "On the return journey from Brunsbüttel to Berlin, unexpected challenges arose. In Wolfsburg, misleading signage nearly directed us onto the highway—fortunately, we spotted the blue sign just in time and managed to turn around. Traveling through Bremerhaven, Bremen, Celle, and the breathtaking Harz, we finally spent a week in the Erzgebirge at my partner's grandmother's. A sudden drop in temperature and heavy rain forced us to cut the tour a few days short. Even though we couldn't visit Dresden and the Schwedenlöcher, this trip remains an unforgettable adventure that will stay with us for a long time.",
+        "video": "./Blog/Tour.mp4",
+        "imagePosition": "left"
+      }
+    ]
+  },
+  {
+    "title": "Two AWE Modules: Digital Agency & Rethinking Relationship Ideals",
+    "date": "Monday, September 15, 2025",
+    "sections": [
+      {
+        "content": "AWE: Digital Maturity (Mü(n)digkeit) in Data Capitalism — The graphic works like a road map of digital agency: from cookie banners and dark patterns to advertising, predictive analytics and micro-targeting, all the way to bias, consent and power. The takeaway is simple: pause before every click. Which data is being requested? For what purpose? What's the value, what's the risk, who benefits? This 10-second risk check turns reflexes into decisions — moving from fatigue to agency.",
+        "image": "./Blog/AWE_Digitale_Muendigkeit.jpg",
+        "imagePosition": "right"
+      },
+      {
+        "content": "AWE: Let's talk about… Questioning, rethinking and shaping sexuality & relationship ideals — The module offered a clear, safe space to examine norms and use language more intentionally. Practical tools like values and boundaries check-ins turned big topics into workable conversations. The closing film \"<a href='https://www.werstreamt.es/film/details/1650839/female-pleasure/'>Female Pleasure</a>\" distilled the message: linguistic diversity isn't a nice-to-have; it shapes visibility, options and self-determination. Net result: fewer clichés, more clarity and consent — toward relationships that truly fit.",
+        "image": "./Blog/AWE_Female_Pleasure.jpg",
+        "imagePosition": "left"
+      }
+    ]
+  }
+]

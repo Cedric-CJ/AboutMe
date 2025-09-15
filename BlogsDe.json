@@ -1,0 +1,47 @@
+[
+  {
+    "title": "Hey Alle zusammen!",
+    "date": "Samstag, 15. Februar 2025",
+    "sections": [
+      {
+        "content": "Ich bin Cedric Arnhold, 21 Jahre alt, und studiere derzeit Wirtschaftsinformatik an der Hochschule für Technik und Wirtschaft in Berlin. Ich programmiere nebenbei ein paar Sachen, die mir in den Kopf kommen, so wie diese Webseite. Zurzeit bin ich in meinem Pflichtpraktikum im BMDV und habe dort in nur zwei Monaten meine ersten Erfahrungen im Bereich der Systemadministration und Serverinfrastruktur in Form eines intensiven Crashkurses gesammelt. Aktuell bekomme ich sehr viel Input sowohl vom BMDV als auch im Privaten, da ich neben dieser Webseite auch die Webseite meines Vaters betreibe und versuche, diese auf allen möglichen Geräten richtig darzustellen. Außerdem versuche ich, mein altes Hochschulprojekt VirtualPet wiederzubeleben und zu modernisieren. Jetzt bahnt sich schon das nächste Großprojekt an: ein privater Mail-, Web- und Cloud-Server für meinen Vater. Ich freue mich darauf, in Zukunft mehr über meine Projekte und Erfahrungen zu berichten.",
+        "image": "./Blog/Me.jpg",
+        "imagePosition": "left"
+      }
+    ],
+    "linkText": "Mein LinkedIn",
+    "linkUrl": "https://www.linkedin.com/in/cedric-arnhold-853a122a0/"
+  },
+  {
+    "title": "Unsere Deutschlandtour",
+    "date": "Dienstag, 01. Oktober 2024",
+    "sections": [
+      {
+        "content": "Unser Abenteuer begann an einem klaren Morgen in Berlin. Mit unserer Vespa Primavera 50 starteten wir zu einer zweimonatigen Tour durch Norddeutschland. Von Berlin über Swinemünde, Rügen, Lübeck, Kiel bis nach Flensburg und Ribe entdeckten wir malerische Küstenstädte und gemütliche Cafés. Ein Höhepunkt war der zweiwöchige Stopp bei meinen Großeltern in Brunsbüttel, wo wir neue Energie tankten.",
+        "image": "./Blog/Vespa.gif",
+        "imagePosition": "right"
+      },
+      {
+        "content": "Auf der Rückreise von Brunsbüttel nach Berlin traten unerwartete Herausforderungen auf. In Wolfsburg führte uns eine irreführende Beschilderung fast auf die Autobahn, zum Glück hatten wir das blaue Schild im letzten Moment gesehen. Über Bremerhaven, Bremen, Celle und den atemberaubenden Harz führend, verbrachten wir schließlich eine Woche im Erzgebirge bei der Großmutter meiner Partnerin. Ein plötzlicher Temperaturabfall und heftiger Regen zwangen uns, die Tour einige Tage früher zu beenden. Auch wenn wir Dresden und die Schwedenlöcher nicht besuchen konnten, bleibt diese Reise ein unvergessliches Abenteuer, das uns noch lange in Erinnerung bleiben wird.",
+        "video": "./Blog/Tour.mp4",
+        "imagePosition": "left"
+      }
+    ]
+  },
+  {
+    "title": "Zwei AWE-Module: Digitale Mündigkeit & Beziehungsideale",
+    "date": "Monday, 01. September 2025",
+    "sections": [
+      {
+        "content": "AWE: Digitale Mü(n)digkeit im Datenkapitalismus — Die Grafik funktioniert wie eine Wegkarte der digitalen Mündigkeit: von Cookie-Bannern und Dark Patterns über Werbung, Predictive Analytics und Microtargeting bis zu Bias, Einwilligung und Machtfragen. Quintessenz: vor jedem Klick kurz prüfen. Welche Daten werden abgefragt? Wofür genau? Welcher Mehrwert, welches Risiko, wer profitiert? Diese 10-Sekunden-Risikoprüfung macht aus Reflexen Entscheidungen – und damit aus Müdigkeit Mündigkeit.",
+        "image": "./Blog/AWE_Digitale_Muendigkeit.jpg",
+        "imagePosition": "right"
+      },
+      {
+        "content": "AWE: Let's talk about… Sexualitäts- & Beziehungsideale hinterfragen, neu denken und selbst gestalten — Das Modul bot einen klaren, sicheren Rahmen, um gängige Vorstellungen zu prüfen und Sprache bewusster zu wählen. Praktische Tools wie Werte- und Grenzen-Check-ins übersetzen große Themen in handhabbare Gespräche. Der Abschlussfilm \"<a href='https://www.werstreamt.es/film/details/1650839/female-pleasure/'>Female Pleasure</a>\" hat die Wirkung von Sprache und Normen eindrucksvoll verdichtet: Diversität im Ausdruck ist kein Extra, sondern verändert Sichtbarkeit, Handlungsspielräume und Selbstbestimmung. Ergebnis: weniger Klischee, mehr Klarheit und Konsens – hin zu Beziehungen, die wirklich passen.",
+        "image": "./Blog/AWE_Female_Pleasure.jpg",
+        "imagePosition": "left"
+      }
+    ]
+  }
+]
