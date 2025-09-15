@@ -1,7 +1,7 @@
 <template>
   <div class="modern-gallery-1">
     <div class="gallery-grid">
-      <div v-for="(image, i) in images" :key="i" class="img-box" @click="selectImage(i)">
+      <div v-for="(image, i) in slides" :key="i" class="img-box" @click="selectImage(i)">
         <img :src="image.url" :alt="image.title" />
         <div class="overlay">
           <div class="caption">
@@ -15,18 +15,28 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const isEn = computed(() => String(route.name || '').startsWith('en-'))
 
 const images = ref([
-  { url: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href, title: 'Vespa', category: 'Fahrzeuge' },
-  { url: new URL('@/assets/Pictures/Gallery/4er/Alanya.jpg', import.meta.url).href, title: 'Alanya', category: 'Städte' },
-  { url: new URL('@/assets/Pictures/Gallery/4er/Tokyostore.jpg', import.meta.url).href, title: 'Tokio Store', category: 'Städte' },
-  { url: new URL('@/assets/Pictures/Gallery/4er/Schloss_Fürstlich_Drehna.jpg', import.meta.url).href, title: 'Schloss Fürstlich Drehna', category: 'Sehenswürdigkeiten' },
-  { url: new URL('@/assets/Pictures/Gallery/4er/Side.jpg', import.meta.url).href, title: 'Side', category: 'Landschaften' }
+  { url: new URL('@/assets/Pictures/Gallery/Box/BerlinerBär.jpg', import.meta.url).href, titleDe: 'Berliner Bär', catDe: 'Stadt', titleEn: 'Berlin Bear', catEn: 'City' },
+  { url: new URL('@/assets/Pictures/Gallery/Box/Steg.jpg', import.meta.url).href, titleDe: 'Steg', catDe: 'Landschaften', titleEn: 'Pier', catEn: 'Landscape' },
+  { url: new URL('@/assets/Pictures/Gallery/Box/Ribe.jpg', import.meta.url).href, titleDe: 'Ribe', catDe: 'Orte', titleEn: 'Ribe', catEn: 'Places' },
+  { url: new URL('@/assets/Pictures/Gallery/Grid/Storch.jpg', import.meta.url).href, titleDe: 'Storch', catDe: 'Natur', titleEn: 'Stork', catEn: 'Nature' },
+  { url: new URL('@/assets/Pictures/Gallery/Grid/Esel.jpg', import.meta.url).href, titleDe: 'Esel', catDe: 'Tiere', titleEn: 'Donkey', catEn: 'Animals' }
 ])
 
+const slides = computed(() => images.value.map(i => ({
+  url: i.url,
+  title: isEn.value ? i.titleEn : i.titleDe,
+  category: isEn.value ? i.catEn : i.catDe
+})))
+
 function selectImage(index) {
-  console.log('Selected image:', images.value[index])
+  console.log('Selected image:', slides.value[index])
 }
 </script>
 
@@ -108,15 +118,35 @@ function selectImage(index) {
 }
 
 @media (max-width: 768px) {
+  .gallery-grid { gap: 8px; }
   .img-box {
     width: 48%;
+    height: 160px; /* default phone: 2 across */
     margin: 1%;
+    aspect-ratio: unset;
   }
+  .img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* consistent look in fixed-height tiles */
+  }
+  .overlay { align-items: flex-end; padding: 12px; }
+  .caption .title { font-size: 1.05em; }
+  .caption .category { font-size: 0.8em; }
+}
+/* 3 across on mid phones */
+@media (min-width: 360px) and (max-width: 768px) {
+  .img-box { width: 32%; height: 130px; margin: 0.66%; }
+}
+/* 4 across on wide phones */
+@media (min-width: 480px) and (max-width: 768px) {
+  .img-box { width: 24%; height: 120px; margin: 0.5%; }
 }
 
 @media (max-width: 350px) {
   .img-box {
     width: 98%;
+    height: auto;
   }
 }
 </style>

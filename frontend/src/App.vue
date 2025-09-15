@@ -192,7 +192,7 @@ function switchLang(lang){
 
 /* Desktop: keep paddings compact so footer remains visible without scrolling */
 @media (min-width:1024px){
-  .app-main{ padding-top: 0rem !important; padding-bottom: 0rem !important; }
+  .app-main{ padding-top: 2rem !important; padding-bottom: 0rem !important; }
 } 
 /* Extra compact for very short heights */
 @media (min-width:1024px) and (max-height: 700px){

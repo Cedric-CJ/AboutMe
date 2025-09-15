@@ -9,10 +9,10 @@
   </div>
 </template>
 <script>
-import baer from '@/assets/Pictures/Gallery/4er2/BerlinerBär.jpg'
-import huhn from '@/assets/Pictures/Gallery/4er2/Huhn.jpg'
-import ribe from '@/assets/Pictures/Gallery/4er2/Ribe.jpg'
-import steg from '@/assets/Pictures/Gallery/4er2/Steg.jpg'
+import baer from '@/assets/Pictures/Gallery/Box/BerlinerBär.jpg'
+import huhn from '@/assets/Pictures/Gallery/Box/Huhn.jpg'
+import ribe from '@/assets/Pictures/Gallery/Box/Ribe.jpg'
+import steg from '@/assets/Pictures/Gallery/Box/Steg.jpg'
 
 export default {
   name: 'ImageHoverEffect',
@@ -42,7 +42,6 @@ export default {
   width: 100%;
   padding: 2%;
   box-sizing: border-box;
-  height: 100vh;
   gap: 1%;
 }
 
@@ -103,7 +102,6 @@ export default {
   .BoxGallery {
     flex-direction: row;
     flex-wrap: wrap;
-    height: 100vh;
     padding: 1%;
     gap: 1%;
   }

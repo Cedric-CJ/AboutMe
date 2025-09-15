@@ -9,11 +9,11 @@
   </div>
 </template>
 <script>
-import alanya from '@/assets/Pictures/Gallery/5er/Alanya1.jpg'
-import berge from '@/assets/Pictures/Gallery/5er/Berge.jpg'
-import himmel from '@/assets/Pictures/Gallery/5er/Himmel.jpg'
-import himmel2 from '@/assets/Pictures/Gallery/5er/Himmel2.jpg'
-import wasserfall from '@/assets/Pictures/Gallery/5er/Wasserfall.jpg'
+import alanya from '@/assets/Pictures/Gallery/Card/Alanya1.jpg'
+import berge from '@/assets/Pictures/Gallery/Card/Berge.jpg'
+import himmel from '@/assets/Pictures/Gallery/Card/Himmel.jpg'
+import himmel2 from '@/assets/Pictures/Gallery/Card/Himmel2.jpg'
+import wasserfall from '@/assets/Pictures/Gallery/Card/Wasserfall.jpg'
 
 export default {
   name: 'AccordionGallery',

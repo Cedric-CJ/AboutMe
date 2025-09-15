@@ -49,8 +49,5 @@
     <p class="mt-6 text-xs text-zinc-400">Letzte Aktualisierung: {{ new Date().toLocaleDateString('de-DE') }}</p>
   </section>
 </template>
-<style scoped>
-section :deep(p){ margin-bottom: .6rem; }
-</style>
 <script setup>
 </script>

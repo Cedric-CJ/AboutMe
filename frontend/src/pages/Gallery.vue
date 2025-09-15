@@ -37,7 +37,15 @@
 
     <transition name="fade">
       <div v-if="selected" class="fixed inset-0 z-50 bg-black/90">
-        <button v-if="!detailOpen" @click="close" class="absolute top-6 right-6 z-[60] bg-white/10 border border-white/20 w-10 h-10 rounded-full text-white hover:bg-white/20 transition-colors">✕</button>
+        <button
+          v-if="!detailOpen"
+          @click="close"
+          aria-label="Schließen"
+          class="absolute left-1/2 -translate-x-1/2 bottom-4 md:top-4 md:bottom-auto z-[60]
+                 bg-white/15 border border-white/30 backdrop-blur-md
+                 w-11 h-11 md:w-14 md:h-14 rounded-full text-white
+                 hover:bg-white/25 transition-colors shadow-lg flex items-center justify-center"
+        >✕</button>
         <div class="h-full flex items-center justify-center p-6">
           <component :is="current" @detail="onDetail" />
         </div>
@@ -60,17 +68,17 @@ const selected = ref(null)
 const detailOpen = ref(false)
 // Statisch: Hover, Masonry, Thumbnail, Vergleich
 const staticGalleries = ref([
-  { key:'Modern1', title:'Hover', desc:'Elegante Hover-Effekte mit Kategorien', img: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href },
-  { key:'Modern2', title:'Masonry', desc:'Dynamisches Grid mit Lightbox', img: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href },
-  { key:'Modern3', title:'Thumbnail', desc:'Hauptbild mit Thumbnail-Navigation', img: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href },
-  { key:'Modern4', title:'Vergleich', desc:'Vorher/Nachher Schieberegler', img: new URL('@/assets/Pictures/Gallery/Vespa.jpg', import.meta.url).href }
+  { key:'Modern1', title:'Hover', desc:'Elegante Hover-Effekte mit Kategorien', img: new URL('@/assets/Pictures/Gallery/Box/Ribe.jpg', import.meta.url).href },
+  { key:'Modern2', title:'Masonry', desc:'Dynamisches Grid mit Lightbox', img: new URL('@/assets/Pictures/Gallery/Card/Himmel.jpg', import.meta.url).href },
+  { key:'Modern3', title:'Thumbnail', desc:'Hauptbild mit Thumbnail-Navigation', img: new URL('@/assets/Pictures/Gallery/Card/Berge.jpg', import.meta.url).href },
+  { key:'Modern4', title:'Vergleich', desc:'Vorher/Nachher Mond-Vergleiche', img: new URL('@/assets/Pictures/Gallery/Vergleich/Mond1.jpg', import.meta.url).href }
 ])
-// Animiert: übrige
+// Animiert: Schieber, Karten, Raster, Box
 const animatedGalleries = ref([
-  { key:'Schiebend', title:'Schiebend', desc:'Wunderschöne Stadtszenen mit Informationspanelen', img: new URL('@/assets/Pictures/Gallery/4er/Alanya.jpg', import.meta.url).href },
-  { key:'Karten', title:'Karten', desc:'Schräge Karten mit stilvollen Hover-Effekten', img: new URL('@/assets/Pictures/Gallery/4er/Tokyostore.jpg', import.meta.url).href },
-  { key:'Raster', title:'Raster', desc:'Interaktives 3x3-Raster', img: new URL('@/assets/Pictures/Gallery/4er/Schloss_Fürstlich_Drehna.jpg', import.meta.url).href },
-  { key:'Box', title:'Box', desc:'Flexible Boxen mit Zoom-Effekt', img: new URL('@/assets/Pictures/Gallery/4er/Side.jpg', import.meta.url).href }
+  { key:'Schiebend', title:'Schiebend', desc:'Wunderschöne Stadtszenen mit Informationspanelen', img: new URL('@/assets/Pictures/Gallery/Slide/Alanya.jpg', import.meta.url).href },
+  { key:'Karten', title:'Karten', desc:'Schräge Karten mit stilvollen Hover-Effekten', img: new URL('@/assets/Pictures/Gallery/Slide/Tokyostore.jpg', import.meta.url).href },
+  { key:'Raster', title:'Raster', desc:'Interaktives 3x3-Raster', img: new URL('@/assets/Pictures/Gallery/Slide/Schloss_Fürstlich_Drehna.jpg', import.meta.url).href },
+  { key:'Box', title:'Box', desc:'Flexible Boxen mit Zoom-Effekt', img: new URL('@/assets/Pictures/Gallery/Slide/Side.jpg', import.meta.url).href }
 ])
 function open(type) { selected.value = type }
 function close() { selected.value = null; detailOpen.value = false }

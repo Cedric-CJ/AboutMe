@@ -32,6 +32,19 @@ export const useThemeStore = defineStore('theme', {
       const gg = parseInt(c.substring(2,4),16)
       const bb = parseInt(c.substring(4,6),16)
       root.style.setProperty('--accent-rgb', `${rr}, ${gg}, ${bb}`)
+
+      // Update browser UI theme colors (create if missing)
+      const updateOrCreateMeta = (name, content) => {
+        let el = document.querySelector(`meta[name="${name}"]`)
+        if (!el) {
+          el = document.createElement('meta')
+          el.setAttribute('name', name)
+          document.head.appendChild(el)
+        }
+        el.setAttribute('content', content)
+      }
+      updateOrCreateMeta('theme-color', color)
+      updateOrCreateMeta('msapplication-navbutton-color', color)
     },
     setMotion(v) { this.motion = v }
   }

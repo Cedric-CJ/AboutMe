@@ -32,7 +32,12 @@
                   </video>
                 </template>
                 <template v-else-if="section.image">
-                  <img :src="section.image" :alt="`Blog image ${sIndex}`" :class="getImageClass(section.imagePosition)" />
+                  <img
+                    :src="section.image"
+                    :alt="`Blog image ${sIndex}`"
+                    :class="['blog-img', getImageClass(section.imagePosition), { enlarged: section.isEnlarged }]"
+                    @click="toggleImageSize(section)"
+                  />
                 </template>
                 <p class="blog-content" v-html="formatContent(section.content)"></p>
               </div>
@@ -71,12 +76,24 @@ function fetchVideo(section){
     .catch(() => handleMediaError())
 }
 
+function toggleImageSize(section){
+  section.isEnlarged = !section.isEnlarged
+}
+
 function makeSummary(b){
   try{
     const first = (b?.sections?.[0]?.content || '').replace(/\n+/g,' ').trim()
     if (!first) return ''
-    const m = first.match(/(.{40,180}?[.!?])\s/)
-    return (m ? m[1] : first.slice(0,160)).trim()
+    // Prefer the first sentence from the beginning
+    const sentenceEndMatch = first.match(/[.!?](?:\s|$)/)
+    if (sentenceEndMatch) {
+      const endIdx = first.indexOf(sentenceEndMatch[0]) + sentenceEndMatch[0].length
+      if (endIdx >= 40 && endIdx <= 220) {
+        return first.slice(0, endIdx).trim()
+      }
+    }
+    // Fallback: take a clean slice from the start
+    return first.slice(0,160).trim()
   }catch{return ''}
 }
 
@@ -90,7 +107,8 @@ onMounted(async () => {
       sections: (b.sections||[]).map(s => ({
         ...s,
         image: absPublic(s.image),
-        video: absPublic(s.video)
+        video: absPublic(s.video),
+        isEnlarged: (s.image || '').includes('AWE_Digitale_Muendigkeit.jpg')
       })),
       summary: makeSummary(b)
     }))
@@ -139,6 +157,10 @@ function onLeave(el){
 .blog-date { font-size:.8rem; color:#bfbfbf }
 .blog-video { width:100%; max-width:220px; margin:0 .75rem .75rem 0; display:block; border-radius: 8px }
 .blog-content { margin:.75rem 0; color:#ddd; text-align:justify; font-size: clamp(.9rem, 1.4vw, 1rem) }
+.blog-content a { color:#7dd3fc; text-decoration: underline; }
+.blog-content a:hover { color:#b3e5fc; }
+.blog-img { cursor: zoom-in; transition: max-width .2s ease, transform .2s ease }
+.blog-img.enlarged { cursor: zoom-out; float:none !important; display:block; margin:.5rem auto; max-width: min(100%, 720px); width:100%; transform: translateZ(0) }
 .float-top-left { float:left; margin:0 .5rem 0 0; max-width: 220px }
 .float-top-right { float:right; margin:0 0 0 .5rem; max-width: 220px }
 .blog-section::after { content:""; display:block; clear:both }

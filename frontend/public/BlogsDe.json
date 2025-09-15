@@ -27,5 +27,21 @@
         "imagePosition": "left"
       }
     ]
+  },
+  {
+    "title": "Zwei AWE-Module: Digitale Mündigkeit & Beziehungsideale",
+    "date": "Monday, 01. September 2025",
+    "sections": [
+      {
+        "content": "AWE: Digitale Mü(n)digkeit im Datenkapitalismus — Die Grafik funktioniert wie eine Wegkarte der digitalen Mündigkeit: von Cookie-Bannern und Dark Patterns über Werbung, Predictive Analytics und Microtargeting bis zu Bias, Einwilligung und Machtfragen. Quintessenz: vor jedem Klick kurz prüfen. Welche Daten werden abgefragt? Wofür genau? Welcher Mehrwert, welches Risiko, wer profitiert? Diese 10-Sekunden-Risikoprüfung macht aus Reflexen Entscheidungen – und damit aus Müdigkeit Mündigkeit.",
+        "image": "./Blog/AWE_Digitale_Muendigkeit.jpg",
+        "imagePosition": "right"
+      },
+      {
+        "content": "AWE: Let's talk about… Sexualitäts- & Beziehungsideale hinterfragen, neu denken und selbst gestalten — Das Modul bot einen klaren, sicheren Rahmen, um gängige Vorstellungen zu prüfen und Sprache bewusster zu wählen. Praktische Tools wie Werte- und Grenzen-Check-ins übersetzen große Themen in handhabbare Gespräche. Der Abschlussfilm \"<a href='https://www.werstreamt.es/film/details/1650839/female-pleasure/'>Female Pleasure</a>\" hat die Wirkung von Sprache und Normen eindrucksvoll verdichtet: Diversität im Ausdruck ist kein Extra, sondern verändert Sichtbarkeit, Handlungsspielräume und Selbstbestimmung. Ergebnis: weniger Klischee, mehr Klarheit und Konsens – hin zu Beziehungen, die wirklich passen.",
+        "image": "./Blog/AWE_Female_Pleasure.jpg",
+        "imagePosition": "left"
+      }
+    ]
   }
 ]

@@ -9,15 +9,15 @@
   </div>
 </template>
 <script>
-import esel from '@/assets/Pictures/Gallery/9er/Esel.jpg'
-import katze from '@/assets/Pictures/Gallery/9er/Katze1.jpg'
-import katze2 from '@/assets/Pictures/Gallery/9er/Katze2.jpg'
-import katze3 from '@/assets/Pictures/Gallery/9er/Katze3.jpg'
-import katze4 from '@/assets/Pictures/Gallery/9er/Katze4.jpg'
-import katze5 from '@/assets/Pictures/Gallery/9er/Katze5.jpg'
-import katze6 from '@/assets/Pictures/Gallery/9er/Katze6.jpg'
-import katze7 from '@/assets/Pictures/Gallery/9er/Katze7.jpg'
-import storch from '@/assets/Pictures/Gallery/9er/Storch.jpg'
+import esel from '@/assets/Pictures/Gallery/Grid/Esel.jpg'
+import katze from '@/assets/Pictures/Gallery/Grid/Katze1.jpg'
+import katze2 from '@/assets/Pictures/Gallery/Grid/Katze2.jpg'
+import katze3 from '@/assets/Pictures/Gallery/Grid/Katze3.jpg'
+import katze4 from '@/assets/Pictures/Gallery/Grid/Katze4.jpg'
+import katze5 from '@/assets/Pictures/Gallery/Grid/Katze5.jpg'
+import katze6 from '@/assets/Pictures/Gallery/Grid/Katze6.jpg'
+import katze7 from '@/assets/Pictures/Gallery/Grid/Katze7.jpg'
+import storch from '@/assets/Pictures/Gallery/Grid/Storch.jpg'
 export default {
   name: 'ResponsiveGallery',
   data() {
