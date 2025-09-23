@@ -30,6 +30,13 @@
   --input: 0 0% 14.9%;
   --ring: 0 0% 83.1%;
   --radius: 12px;
+
+  /* Intro overlay neutral tone (used by Intro.vue). Adjust to match site design */
+  --intro-neutral: #2e2e2e;
+  /* RGB counterpart for building rgba() tints */
+  --intro-neutral-rgb: 46, 46, 46;
+  /* Default readable foreground for Intro overlay (falls back to accent-foreground in component) */
+  --intro-foreground: #ffffff;
 }
 
 html, body, #app { height: 100%; }

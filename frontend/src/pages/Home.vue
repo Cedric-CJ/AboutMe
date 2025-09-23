@@ -44,9 +44,10 @@
             <h3 class="text-white font-semibold">Stack</h3>
           </div>
           <ul class="text-zinc-300 text-sm space-y-1">
-            <li>• Vue + Tailwind + Router v7</li>
-            <li>• Backend: FastAPI + MongoDB</li>
+            <li>• Frontend: Vue + CSS + React</li>
+            <li>• Backend: Python, Java, FastAPI + SQL</li>
             <li>• Deploy: Render + GitHub Actions</li>
+            <li>• Umgebung: Linux, Windows, Android, IOS</li>
           </ul>
         </div>
         <div class="glass-card p-4">

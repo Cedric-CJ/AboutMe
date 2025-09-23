@@ -1,15 +1,20 @@
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 
 const routes = [
-  // Root redirects to /start (DE home)
-  { path: '/', redirect: '/start' },
+  // Unified Home at '/': wrapper decides by preferred language
+  { path: '/', name: 'home', component: () => import('../pages/HomeIndex.vue'), meta: { showIntro: true } },
+  // Keep '/home' for old links: redirect to '/'
+  { path: '/home', redirect: '/' },
+  // Legacy '/start' routes redirect to root
+  { path: '/start', redirect: '/' },
 
   // German primary paths
-  { path: '/start', name: 'de-home', component: () => import('../pages/Home.vue'), meta: { showIntro: true } },
   // Use ASCII primary path; keep umlaut as alias to avoid server issues on refresh
   { path: '/uebermich', name: 'de-about', component: () => import('../pages/About.vue'), alias: ['/übermich'] },
   { path: '/gallerie', name: 'de-gallery', component: () => import('../pages/Gallery.vue'), alias: ['/galerie'] },
   { path: '/blog/de', name: 'de-blog', component: () => import('../pages/Blog.vue') },
+  // Unified Blog at '/blog': wrapper decides by preferred language
+  { path: '/blog', name: 'blog', component: () => import('../pages/BlogIndex.vue') },
   { path: '/projekte', name: 'de-projects', component: () => import('../pages/Projects.vue') },
   { path: '/kontakt', name: 'de-contact', component: () => import('../pages/Contact.vue') },
   { path: '/leistungen', name: 'de-services', component: () => import('../pages/Services.vue') },
@@ -17,7 +22,6 @@ const routes = [
   { path: '/datenschutz', name: 'de-datenschutz', component: () => import('../pages/Privacy.vue') },
 
   // English counterparts (mount minimal wrappers where applicable)
-  { path: '/home', name: 'en-home', component: () => import('../pages/HomeEn.vue'), meta: { showIntro: true } },
   { path: '/aboutme', name: 'en-about', component: () => import('../pages/AboutEn.vue') },
   { path: '/gallery', name: 'en-gallery', component: () => import('../pages/GalleryEn.vue') },
   { path: '/blog/eng', name: 'en-blog', component: () => import('../pages/BlogEn.vue') },
@@ -27,8 +31,8 @@ const routes = [
   { path: '/Privacy', name: 'en-privacy', component: () => import('../pages/PrivacyEn.vue') },
   { path: '/publisher', name: 'en-publisher', component: () => import('../pages/PublisherEn.vue') },
 
-  // Unknown routes go to /start, but valid subpages remain on refresh
-  { path: '/:pathMatch(.*)*', redirect: '/start' },
+  // Unknown routes go to root, but valid subpages remain on refresh
+  { path: '/:pathMatch(.*)*', redirect: '/' },
   { path: '/test', name: 'test', component: () => import('../components/NorthernLights.vue') },
 ]
 

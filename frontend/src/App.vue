@@ -1,10 +1,10 @@
 <template>
-  <div class="app-root min-h-screen text-foreground" @click="handleClickOutside">
+  <div class="app-root min-h-screen text-foreground" :class="{ 'intro-active': showIntro, 'content-visible': contentVisible }" @click="handleClickOutside">
     <div class="site-bg" aria-hidden="true" />
     <div class="bg-mark" aria-hidden="true" />
 
-    <!-- Flash Intro overlay: shown on /start and /home; keyed to route for replay -->
-    <FlashIntro v-if="showIntro" @complete="handleIntroComplete" :key="route.fullPath" />
+    <!-- Global Intro overlay (fades out after playing) -->
+    <Intro v-if="showIntro" />
 
     <!-- Hamburger Button -->
     <header>
@@ -58,7 +58,7 @@
 import { computed, ref, onMounted, watch } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import Footer from './components/layout/Footer.vue'
-import FlashIntro from './components/FlashIntro.vue'
+import Intro from './components/Intro.vue'
 import { useThemeStore } from './stores/theme'
 import flagDe from '@/assets/Pictures/flag-de.webp'
 import flagEn from '@/assets/Pictures/flag-us.webp'
@@ -73,6 +73,11 @@ const currentLang = computed(() => {
   const n = String(route.name || '')
   if (n.startsWith('de-')) return 'de'
   if (n.startsWith('en-')) return 'en'
+  // Unified routes like '/' or '/blog': consult preferred_lang
+  try {
+    const pref = localStorage.getItem('preferred_lang')
+    if (pref === 'de' || pref === 'en') return pref
+  } catch (e) {}
   // Fallback: heuristisch
   return route.path.startsWith('/start') ? 'de' : 'en'
 })
@@ -80,20 +85,20 @@ const currentLang = computed(() => {
 const menuItems = computed(() => {
   if (currentLang.value === 'en') {
     return [
-      { to: '/home', label: 'Home' },
+      { to: '/', label: 'Home' },
       { to: '/aboutme', label: 'About me' },
       { to: '/gallery', label: 'Gallery' },
-      { to: '/blog/eng', label: 'Blog' },
+      { to: '/blog', label: 'Blog' },
       { to: '/projects', label: 'Projects' },
       { to: '/contact', label: 'Contact' },
       { to: '/service', label: 'Services' },
     ]
   }
   return [
-    { to: '/start', label: 'Startseite' },
+    { to: '/', label: 'Startseite' },
     { to: '/uebermich', label: 'Über mich' },
     { to: '/gallerie', label: 'Galerie' },
-    { to: '/blog/de', label: 'Blog' },
+    { to: '/blog', label: 'Blog' },
     { to: '/projekte', label: 'Projekte' },
     { to: '/kontakt', label: 'Kontakt' },
     { to: '/leistungen', label: 'Leistungen' },
@@ -107,21 +112,76 @@ function setAccent(c) {
 onMounted(() => {
   // apply stored accent on first load
   store.setAccent(store.accent)
+  // Initialize preferred language from hostname if not set yet
+  try {
+    const key = 'preferred_lang'
+    const existing = localStorage.getItem(key)
+    if (!existing && typeof window !== 'undefined') {
+      const host = String(window.location.hostname || '').toLowerCase()
+      let inferred = 'de'
+      if (host.includes('specialcode.de')) inferred = 'en'
+      if (host.includes('spezialcode.de')) inferred = 'de'
+      localStorage.setItem(key, inferred)
+      // notify dynamic wrappers to re-render
+      window.dispatchEvent(new Event('preferred_lang_changed'))
+    }
+  } catch (e) { /* noop */ }
 })
 
-// Intro visibility logic: show on every visit to the home routes
+// Intro visibility logic: show only once per hour on routes with meta.showIntro
 const showIntro = ref(false)
+const contentVisible = ref(false) // becomes true when page content should start fading in
+const INTRO_KEY = 'intro_last_seen_ms'
+const INTRO_COOLDOWN_MS = 60 * 60 * 1000 // 1 hour
+
+function shouldShowIntroNow(r) {
+  if (!(r.meta && r.meta.showIntro)) return false
+  // In development, always show on root for quick iteration
+  if (import.meta.env && import.meta.env.DEV) {
+    return r.path === '/' || r.path === '/home' || r.name === 'home' || r.name === 'de-home' || r.name === 'en-home'
+  }
+  try {
+    const last = parseInt(localStorage.getItem(INTRO_KEY) || '0', 10)
+    const now = Date.now()
+    if (!last || now - last > INTRO_COOLDOWN_MS) return true
+    return false
+  } catch (e) { return true }
+}
 
 function updateIntroVisibility(r) {
-  const shouldShow = !!(r.meta && r.meta.showIntro)
-  showIntro.value = shouldShow
+  showIntro.value = shouldShowIntroNow(r)
 }
 
 watch(() => route.fullPath, () => updateIntroVisibility(route), { immediate: true })
 
 function handleIntroComplete(){
+  try { localStorage.setItem(INTRO_KEY, String(Date.now())) } catch (e) {}
   showIntro.value = false
 }
+
+// When intro becomes visible, automatically clear it after its fade timeline
+let __introTimer = null
+let __contentTimer = null
+watch(showIntro, (visible) => {
+  if (visible) {
+    if (__introTimer) clearTimeout(__introTimer)
+    if (__contentTimer) clearTimeout(__contentTimer)
+    contentVisible.value = false
+    // 3.6s delay until overlay fade starts + 1.8s fade duration = 5400ms total
+    __contentTimer = setTimeout(() => {
+      contentVisible.value = true
+      __contentTimer = null
+    }, 3600)
+    __introTimer = setTimeout(() => {
+      handleIntroComplete()
+      __introTimer = null
+    }, 5400)
+  } else {
+    if (__introTimer) { clearTimeout(__introTimer); __introTimer = null }
+    if (__contentTimer) { clearTimeout(__contentTimer); __contentTimer = null }
+    contentVisible.value = false
+  }
+})
 
 function handleClickOutside(e){
   const nav = document.getElementById('navMenu')
@@ -133,7 +193,6 @@ function handleClickOutside(e){
 function switchLang(lang){
   const name = String(route.name || '')
   const map = {
-    'de-home': 'en-home', 'en-home': 'de-home',
     'de-about': 'en-about', 'en-about': 'de-about',
     'de-gallery': 'en-gallery', 'en-gallery': 'de-gallery',
     'de-blog': 'en-blog', 'en-blog': 'de-blog',
@@ -143,8 +202,30 @@ function switchLang(lang){
     'de-impressum': 'en-publisher', 'en-publisher': 'de-impressum',
     'de-datenschutz': 'en-privacy', 'en-privacy': 'de-datenschutz',
   }
-  const target = map[name] || (lang==='de' ? 'de-home' : 'en-home')
-  router.push({ name: target })
+  try { localStorage.setItem('preferred_lang', lang) } catch (e) {}
+  // notify wrappers to re-evaluate selection
+  try { window.dispatchEvent(new Event('preferred_lang_changed')) } catch (e) {}
+
+  // Unified home route
+  if (name === 'home' || route.path === '/' || route.path === '/home') {
+    router.replace('/')
+    isMenuOpen.value = false
+    return
+  }
+  // Unified blog route
+  if (name === 'blog' || route.path === '/blog' || name === 'de-blog' || name === 'en-blog') {
+    router.replace('/blog')
+    isMenuOpen.value = false
+    return
+  }
+
+  const target = map[name]
+  if (target) {
+    router.push({ name: target })
+  } else {
+    // fallback to home
+    router.replace('/')
+  }
   isMenuOpen.value = false
 }
 </script>
@@ -198,4 +279,8 @@ function switchLang(lang){
 @media (min-width:1024px) and (max-height: 700px){
   .app-main{ padding-top: .75rem !important; padding-bottom: .5rem !important; }
 }
+
+/* While Intro is active, prepare content and control fade with content-visible toggle */
+.app-root.intro-active .app-main { opacity: 0; pointer-events: none; transition: opacity 1.8s ease-in-out; }
+.app-root.intro-active.content-visible .app-main { opacity: 1; pointer-events: auto; }
 </style>
