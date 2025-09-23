@@ -1,22 +1,31 @@
-name: Deploy to GH Pages2
+name: Deploy v2 to GH Pages and FTP
 
 on:
   push:
     branches:
       - v2
 
-jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
+permissions:
+  contents: write
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - name: Install 🔧
-        run: npm install
+      - name: Setup Node 🔧
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: ./frontend/package-lock.json
+
+      - name: Install dependencies 📦
+        run: npm ci
         working-directory: ./frontend
 
       - name: Build 🏗️
@@ -25,10 +34,74 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Deploy to GH Pages2 🚀
+      - name: Upload build artifact ⬆️
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: ./frontend/dist
+
+  deploy_pages:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact ⬇️
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: ./dist
+
+      - name: Deploy to gh-pagesv2 🚀
         if: ${{ github.event_name != 'pull_request' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/dist
+          publish_dir: ./dist
           publish_branch: gh-pagesv2
+
+  ftp_spezialcode:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact ⬇️
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: ./dist
+
+      - name: Deploy to spezialcode.de via FTP 🌐
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: spezialcode.de
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          server-dir: /
+          local-dir: ./dist
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
+
+  ftp_specialcode:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifact ⬇️
+        uses: actions/download-artifact@v4
+        with:
+          name: web-dist
+          path: ./dist
+
+      - name: Deploy to specialcode.de via FTP 🌐
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: specialcode.de
+          username: ${{ secrets.FTP_USERNAME_2 }}
+          password: ${{ secrets.FTP_PASSWORD_2 }}
+          protocol: ftps
+          server-dir: /
+          local-dir: ./dist
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
