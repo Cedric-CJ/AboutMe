@@ -72,12 +72,12 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: hosting226601.ae8b8.netcup.net
-          port: 990
+          port: 21
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftps-implicit
+          protocol: ftps
           timeout: 120000
-          server-dir: /html/
+          server-dir: /
           local-dir: ./dist/
           exclude: |
             **/.git*
@@ -98,12 +98,12 @@ jobs:
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: hosting226601.ae8b8.netcup.net
-          port: 990
+          port: 21
           username: ${{ secrets.FTP_USERNAME_2 }}
           password: ${{ secrets.FTP_PASSWORD_2 }}
-          protocol: ftps-implicit
+          protocol: ftps
           timeout: 120000
-          server-dir: /html/
+          server-dir: /
           local-dir: ./dist/
           exclude: |
             **/.git*
