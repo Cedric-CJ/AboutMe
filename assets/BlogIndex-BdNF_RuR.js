@@ -1,0 +1,1 @@
+import r from"./Blog-DFyd8Jjc.js";import t from"./BlogEn-Ddsy1qvV.js";import{i as n,j as a,o as c,k as l}from"./index-B4E98vEt.js";const _={__name:"BlogIndex",setup(p){const o=n(()=>{try{return localStorage.getItem("preferred_lang")==="en"?t:r}catch{return r}});return(e,s)=>(c(),a(l(o.value)))}};export{_ as default};
