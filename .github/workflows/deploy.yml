@@ -28,17 +28,30 @@ jobs:
         run: npm ci
         working-directory: ./frontend
 
-      - name: Build 🏗️
-        run: npm run build
+      - name: Build for GitHub Pages 🏗️
+        run: npm run build -- --outDir dist-gh
+        working-directory: ./frontend
+        env:
+          NODE_ENV: production
+          DEPLOY_TARGET: gh-pages
+
+      - name: Build for FTP 🏗️
+        run: npm run build -- --outDir dist-ftp
         working-directory: ./frontend
         env:
           NODE_ENV: production
 
-      - name: Upload build artifact ⬆️
+      - name: Upload GH Pages artifact ⬆️
         uses: actions/upload-artifact@v4
         with:
-          name: web-dist
-          path: ./frontend/dist
+          name: web-dist-gh
+          path: ./frontend/dist-gh
+
+      - name: Upload FTP artifact ⬆️
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist-ftp
+          path: ./frontend/dist-ftp
 
   deploy_pages:
     needs: build
@@ -47,7 +60,7 @@ jobs:
       - name: Download build artifact ⬇️
         uses: actions/download-artifact@v4
         with:
-          name: web-dist
+          name: web-dist-gh
           path: ./dist
 
       - name: Deploy to gh-pagesv2 🚀
@@ -65,7 +78,7 @@ jobs:
       - name: Download build artifact ⬇️
         uses: actions/download-artifact@v4
         with:
-          name: web-dist
+          name: web-dist-ftp
           path: ./dist
 
       - name: Deploy to spezialcode.de via FTP 🌐
@@ -77,7 +90,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           timeout: 120000
-          server-dir: /
+          server-dir: /httpdocs/
           local-dir: ./dist/
           exclude: |
             **/.git*
@@ -91,7 +104,7 @@ jobs:
       - name: Download build artifact ⬇️
         uses: actions/download-artifact@v4
         with:
-          name: web-dist
+          name: web-dist-ftp
           path: ./dist
 
       - name: Deploy to specialcode.de via FTP 🌐
@@ -103,7 +116,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD_2 }}
           protocol: ftps
           timeout: 120000
-          server-dir: /
+          server-dir: /httpdocs/
           local-dir: ./dist/
           exclude: |
             **/.git*

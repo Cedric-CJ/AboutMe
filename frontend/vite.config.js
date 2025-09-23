@@ -5,7 +5,8 @@ import path from 'path'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: '/AboutMe/',
+  // Use '/AboutMe/' on GitHub Pages, root '/' for FTP/other deployments
+  base: process.env.DEPLOY_TARGET === 'gh-pages' ? '/AboutMe/' : '/',
   resolve: {
     alias: {
       '@': path.resolve(process.cwd(), 'src')
