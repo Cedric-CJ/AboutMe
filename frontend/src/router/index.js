@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 
 const routes = [
   // Root redirects to /start (DE home)
@@ -32,8 +32,14 @@ const routes = [
   { path: '/test', name: 'test', component: () => import('../components/NorthernLights.vue') },
 ]
 
+// Decide history mode based on Vite's BASE_URL injected at build time
+// - On GH Pages we build with base '/AboutMe/' -> use history mode
+// - On FTP we build with base '/' -> use hash mode to avoid server 404 on refresh
+const usingHistory = import.meta.env?.BASE_URL === '/AboutMe/'
+
 const router = createRouter({
-  history: createWebHistory(),
+  // Use clean history on GitHub Pages, hash mode on FTP to avoid 404 on refresh
+  history: usingHistory ? createWebHistory(import.meta.env.BASE_URL) : createWebHashHistory(),
   routes
 })
 
