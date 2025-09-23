@@ -66,6 +66,11 @@ jobs:
       - name: Create 404.html for SPA routing on GH Pages
         run: cp ./dist/index.html ./dist/404.html
 
+      - name: Create robots.txt (disallow all) for GH Pages
+        run: |
+          echo "User-agent: *" > ./dist/robots.txt
+          echo "Disallow: /" >> ./dist/robots.txt
+
       - name: Deploy to gh-pagesv2 🚀
         if: ${{ github.event_name != 'pull_request' }}
         uses: peaceiris/actions-gh-pages@v3

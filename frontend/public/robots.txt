@@ -1,0 +1,19 @@
+# robots.txt for specialcode.de and spezialcode.de
+# Default policy: allow crawling, but block legal/privacy pages and certain blog media/json
+
+User-agent: *
+# Disallow legal/privacy pages (DE and EN)
+Disallow: /impressum
+Disallow: /datenschutz
+Disallow: /Privacy
+
+# Disallow Blog JSON and large media in /Blog/ (case-sensitive path as deployed)
+Disallow: /Blog/*.json
+Disallow: /Blog/*.mp4
+Disallow: /Blog/*.gif
+
+# Allow everything else
+Allow: /
+
+# No sitemap currently
+# Sitemap: https://specialcode.de/sitemap.xml
