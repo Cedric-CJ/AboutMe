@@ -71,12 +71,12 @@ jobs:
       - name: Deploy to spezialcode.de via FTP 🌐
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: spezialcode.de
+          server: hosting226601.ae8b8.netcup.net
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           server-dir: /
-          local-dir: ./dist
+          local-dir: ./dist/
           exclude: |
             **/.git*
             **/.github/**
@@ -95,12 +95,12 @@ jobs:
       - name: Deploy to specialcode.de via FTP 🌐
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: specialcode.de
+          server: hosting226601.ae8b8.netcup.net
           username: ${{ secrets.FTP_USERNAME_2 }}
           password: ${{ secrets.FTP_PASSWORD_2 }}
           protocol: ftps
           server-dir: /
-          local-dir: ./dist
+          local-dir: ./dist/
           exclude: |
             **/.git*
             **/.github/**
