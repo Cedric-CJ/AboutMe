@@ -57,7 +57,7 @@ import discordLight from '@/assets/icons/discord-light.svg'
 
 const isDark = ref(false)
 const form = ref({ name:'', email:'', subject:'', message:'' })
-function openEmail(){ window.location.href = 'mailto:cedric.jon.arnhold+AboutMeAdministration@gmail.com' }
+function openEmail(){ window.location.href = 'mailto:info@spezialcode.de' }
 function handleMouseMove(event){
   const cards = document.querySelectorAll('.card')
   cards.forEach(card => {

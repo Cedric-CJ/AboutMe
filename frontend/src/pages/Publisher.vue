@@ -8,7 +8,7 @@
       Allee der Kosmonauten 202<br>
       12685 Berlin<br>
       Tel: <a class="text-ice" href="tel:+4915785550053">01578 5550053</a><br>
-      E-Mail: <a class="text-ice" href="mailto:cedric.jon.arnhold@gmail.com">cedric.jon.arnhold@gmail.com</a>
+      E-Mail: <a class="text-ice" href="mailto:info@spezialcode.de">info@spezialcode.de</a>
     </p>
 
     <h2 class="text-white font-medium mt-6 mb-2">Betreiber und Domaininhaber</h2>
@@ -19,7 +19,7 @@
     </p>
 
     <h2 class="text-white font-medium mt-6 mb-2">Hosting</h2>
-    <p>Diese Webseite wird bei <a class="text-ice" href="https://pages.github.com/" target="_blank" rel="noreferrer">GitHub Pages</a> gehostet.</p>
+    <p>Diese Website wird bei der <strong>netcup GmbH</strong>, Daimlerstraße 25, 76185 Karlsruhe, Deutschland, betrieben. Serverstandort: <strong>Nürnberg (Deutschland)</strong>.</p>
     <p>Der Quellcode ist auf <a class="text-ice" href="https://github.com/Cedric-CJ/AboutMe" target="_blank" rel="noreferrer">GitHub</a> verfügbar.</p>
 
     <h2 class="text-white font-medium mt-6 mb-2">Urheberrecht</h2>

@@ -28,7 +28,7 @@ const routes = [
   { path: '/projects', name: 'en-projects', component: () => import('../pages/ProjectsEn.vue') },
   { path: '/contact', name: 'en-contact', component: () => import('../pages/ContactEn.vue') },
   { path: '/service', name: 'en-services', component: () => import('../pages/ServicesEn.vue') },
-  { path: '/Privacy', name: 'en-privacy', component: () => import('../pages/PrivacyEn.vue') },
+  { path: '/privacy', name: 'en-privacy', component: () => import('../pages/PrivacyEn.vue'), alias: ['/Privacy'] },
   { path: '/publisher', name: 'en-publisher', component: () => import('../pages/PublisherEn.vue') },
 
   // Unknown routes go to root, but valid subpages remain on refresh

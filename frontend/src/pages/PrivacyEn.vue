@@ -38,30 +38,29 @@
     <p><strong>2. Hosting</strong></p>
     <p><strong>We host the content of our website with the following provider:</strong></p>
 
-    <p><strong>GitHub Pages</strong></p>
+    <p><strong>netcup GmbH</strong></p>
     <p>
-      GitHub Pages is a service provided by GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA
-      ("GitHub"). When you visit our website, GitHub automatically collects certain data such as your IP address, the
-      browser type used and the operating system. For more information, please refer to the
-      <a class="text-ice" href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noreferrer">GitHub Privacy Statement</a>.
+      Hosting provider: netcup GmbH, Daimlerstraße 25, 76185 Karlsruhe, Germany. Server location: Nuremberg (Germany).
+      netcup processes technical access data as a processor in the course of providing and securing the web hosting service.
     </p>
-    <p>
-      The use of GitHub Pages is based on Art. 6(1)(f) GDPR, as we have a legitimate interest in the most reliable
-      presentation of our website. Data processing is carried out exclusively by GitHub and includes the collection of
-      technical data such as internet browser, operating system, or time of the page visit. Consent is not required in
-      this context, as we ourselves do not collect or store any personal data.
+    <p><strong>Legal basis:</strong> Art. 6(1)(f) GDPR (legitimate interest in the secure and reliable operation of the website).
+      Where inquiries are sent (e.g., by email), Art. 6(1)(b) GDPR (contract/contract initiation) may apply.</p>
+    <p><strong>Server log files at netcup (Webhosting 2000):</strong> The following data are logged, among others: remote IP address,
+      remote identity/remote user (if provided), date/time, request duration, first line of the request (method/path/protocol),
+      status code, amount of data transferred, referrer, user agent. <em>Retention:</em> generally up to 14 days (e.g., for attack mitigation, troubleshooting);
+      in case of an attack, temporary storage may occur for defense.
     </p>
 
     <p><strong>3. General notes and mandatory information</strong></p>
 
     <p><strong>Data protection</strong></p>
     <p>
-      The operators of these pages take the protection of your personal data very seriously. We do not collect personal
-      data ourselves. The collection and processing of technical data is carried out exclusively by our hosting provider
-      GitHub Pages and is subject to the legal data protection regulations and this privacy policy.
+      We take the protection of your personal data very seriously. We do not collect personal data for analytics or marketing purposes
+      and do not use cookies/trackers on this website.
     </p>
     <p>
-      Since our website does not use cookies or other tracking technologies, no personal data is collected by us.
+      Technical access data (see "Server log files" above) are processed by our hosting provider netcup to ensure operation and security of the systems.
+      We do not merge these technical data with other data sources.
     </p>
     <p>
       Please note that data transmission over the internet (e.g., communication by email) may have security gaps.
@@ -77,7 +76,16 @@
       Allee der Kosmonauten 202<br>
       12685 Berlin, Germany<br>
       Tel: <a class="text-ice" href="tel:+4915785550053">+49 1578 5550053</a><br>
-      Email: <a class="text-ice" href="mailto:cedric.jon.arnhold@gmail.com">cedric.jon.arnhold@gmail.com</a>
+      Email: <a class="text-ice" href="mailto:info@specialcode.de">info@specialcode.de</a>
+    </p>
+
+    <p><strong>External resources/third-party providers</strong></p>
+    <p>
+      This website loads fonts and libraries from external sources, including Google Fonts (fonts.googleapis.com, fonts.gstatic.com),
+      jsDelivr (cdn.jsdelivr.net), Cloudflare CDNJS (cdnjs.cloudflare.com), unpkg (unpkg.com), and an external image/texture source.
+      In doing so, connections to servers of these providers (partly outside the EU) may be established and IP addresses transmitted.
+      Legal basis: Art. 6(1)(f) GDPR (legitimate interest in a stable and performant presentation). You can object by blocking external
+      sources in your browser or not visiting the page. Alternatively, all resources could be hosted locally.
     </p>
 
     <p><strong>4. Open Source Notice</strong></p>

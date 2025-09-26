@@ -22,15 +22,16 @@
     <p><strong>2. Hosting</strong></p>
     <p><strong>Wir hosten die Inhalte unserer Website bei folgendem Anbieter:</strong></p>
 
-    <p><strong>GitHub Pages</strong></p>
-    <p>GitHub Pages ist ein Dienst von GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA („GitHub“). Beim Besuch unserer Website erfasst GitHub automatisch bestimmte Daten, wie beispielsweise Ihre IP-Adresse, den verwendeten Browsertyp und das Betriebssystem. Weitere Informationen finden Sie in der <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noreferrer">Datenschutzerklärung von GitHub</a>.</p>
-    <p>Die Verwendung von GitHub Pages erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO, da wir ein berechtigtes Interesse an einer möglichst zuverlässigen Darstellung unserer Website haben. Die Verarbeitung der Daten erfolgt ausschließlich durch GitHub und umfasst die Erhebung technischer Daten wie z. B. Internetbrowser, Betriebssystem oder Uhrzeit des Seitenaufrufs. Eine Einwilligung ist in diesem Zusammenhang nicht erforderlich, da wir selbst keine personenbezogenen Daten erheben oder speichern.</p>
+    <p><strong>netcup GmbH</strong></p>
+    <p>Hosting-Dienstleister: netcup GmbH, Daimlerstraße 25, 76185 Karlsruhe, Deutschland. Serverstandort: Nürnberg (Deutschland). netcup verarbeitet technische Zugriffsdaten im Rahmen der Bereitstellung und Sicherheit des Webhostings als Auftragsverarbeiter.</p>
+    <p><strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einem sicheren und zuverlässigen Betrieb der Website). Soweit Anfragen übermittelt werden (z. B. per E‑Mail), kann Art. 6 Abs. 1 lit. b DSGVO (Vertrag/Vertragsanbahnung) einschlägig sein.</p>
+    <p><strong>Server-Logfiles bei netcup (Webhosting 2000):</strong> Es werden u. a. folgende Daten protokolliert: Remote‑IP‑Adresse, ggf. Remote‑Identität/Remote‑User, Datum/Uhrzeit, Dauer des Requests, erste Zeile des Requests (Methode/Pfad/Protokoll), Statuscode, übertragene Datenmenge, Referrer, User‑Agent. <em>Speicherdauer:</em> in der Regel bis zu 14 Tage (z. B. zur Angriffsabwehr, Störungsanalyse); im Angriffsfall kann eine vorübergehende Speicherung zur Abwehr erfolgen.</p>
 
     <p><strong>3. Allgemeine Hinweise und Pflichtinformationen</strong></p>
 
     <p><strong>Datenschutz</strong></p>
-    <p>Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir erheben selbst keine personenbezogenen Daten. Die Erfassung und Verarbeitung technischer Daten erfolgt ausschließlich durch unseren Hosting-Dienstleister GitHub Pages und unterliegt den gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.</p>
-    <p>Da unsere Website keine Cookies oder andere Tracking-Technologien verwendet, werden keinerlei personenbezogene Daten durch uns gesammelt.</p>
+    <p>Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir erheben auf dieser Website keine personenbezogenen Daten zu Analyse- oder Marketingzwecken und setzen keine Cookies/Tracker ein.</p>
+    <p>Technische Zugriffsdaten (s. o. „Server‑Logfiles“) werden durch unseren Hosting‑Anbieter netcup verarbeitet, um den Betrieb und die Sicherheit der Systeme zu gewährleisten. Eine Zusammenführung dieser technischen Daten mit anderen Datenquellen durch uns erfolgt nicht.</p>
     <p>Wir weisen darauf hin, dass die Datenübertragung im Internet (z. B. bei der Kommunikation per E-Mail) Sicherheitslücken aufweisen kann. Ein lückenloser Schutz der Daten vor dem Zugriff durch Dritte ist nicht möglich.</p>
 
     <p><strong>Hinweis zur verantwortlichen Stelle</strong></p>
@@ -40,7 +41,13 @@
       Allee der Kosmonauten 202<br>
       12685 Berlin<br>
       Tel: <a href="tel:+4915785550053">015785550053</a><br>
-      E-Mail: <a href="mailto:cedric.jon.arnhold@gmail.com">cedric.jon.arnhold@gmail.com</a>
+      E‑Mail: <a href="mailto:info@spezialcode.de">info@spezialcode.de</a>
+    </p>
+
+    <p><strong>Externe Ressourcen/Drittanbieter</strong></p>
+    <p>
+      Auf dieser Website werden Schriftarten und Bibliotheken aus externen Quellen geladen, u. a. Google Fonts (fonts.googleapis.com, fonts.gstatic.com), jsDelivr (cdn.jsdelivr.net), Cloudflare CDNJS (cdnjs.cloudflare.com), unpkg (unpkg.com) sowie eine externe Bild-/Texturquelle. Hierbei können technisch bedingt Verbindungen zu Servern dieser Anbieter (teils außerhalb der EU) aufgebaut und IP‑Adressen übermittelt werden.
+      Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer stabilen, performanten Darstellung). Sie können dieser Nutzung widersprechen, indem Sie die Seite nicht aufrufen oder in Ihrem Browser das Laden externer Quellen unterbinden. Alternativ könnten alle Ressourcen lokal gehostet werden.
     </p>
 
     <p><strong>4. Open Source Hinweis</strong></p>

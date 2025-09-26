@@ -9,15 +9,29 @@
       </div>
     </div>
   </footer>
- </template>
+</template>
 <script setup>
 import { RouterLink, useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 
 const route = useRoute()
-const isEnglish = computed(() => route.fullPath.startsWith('/en'))
 
-const labels = computed(() => isEnglish.value ? ({
+// force recompute when preferred_lang changes
+const __langTick = ref(0)
+
+const currentLang = computed(() => {
+  void __langTick.value
+  const n = String(route.name || '')
+  if (n.startsWith('de-')) return 'de'
+  if (n.startsWith('en-')) return 'en'
+  try {
+    const pref = localStorage.getItem('preferred_lang')
+    if (pref === 'de' || pref === 'en') return pref
+  } catch (e) {}
+  return 'de'
+})
+
+const labels = computed(() => currentLang.value === 'en' ? ({
   publisher: 'Publisher',
   privacy: 'Privacy'
 }) : ({
@@ -25,11 +39,21 @@ const labels = computed(() => isEnglish.value ? ({
   privacy: 'Datenschutz'
 }))
 
-const links = computed(() => isEnglish.value ? ({
+const links = computed(() => currentLang.value === 'en' ? ({
   publisher: '/publisher',
   privacy: '/privacy'
 }) : ({
   publisher: '/impressum',
   privacy: '/datenschutz'
 }))
+
+// React to preferred_lang changes without reload
+let onLangChanged
+onMounted(() => {
+  onLangChanged = () => { __langTick.value++ }
+  window.addEventListener('preferred_lang_changed', onLangChanged)
+})
+onBeforeUnmount(() => {
+  if (onLangChanged) window.removeEventListener('preferred_lang_changed', onLangChanged)
+})
 </script>

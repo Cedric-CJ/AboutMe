@@ -255,7 +255,8 @@ function chooseIntroForegroundFromAccent() {
 /* Animation calls moved into onMounted() */
 
 export default {
-  setup() {
+  emits: ['complete'],
+  setup(props, { emit }) {
     const isVisible = ref(true)
     onMounted(() => {
       // ensure readable text regardless of accent
@@ -281,6 +282,7 @@ export default {
             onComplete: () => { 
               isVisible.value = false 
               document.body.style.overflow = prevOverflow
+              try { emit('complete') } catch (e) {}
             }
           })
           // Optionally enable background if desired:
@@ -288,10 +290,22 @@ export default {
         } catch (e) {
           // eslint-disable-next-line no-console
           console.warn('Intro animation failed to start:', e)
+          // Fallback: end intro quickly
+          setTimeout(() => { 
+            isVisible.value = false
+            document.body.style.overflow = prevOverflow
+            try { emit('complete') } catch (err) {}
+          }, 1200)
         }
       } else {
         // eslint-disable-next-line no-console
         console.warn('Intro dependencies missing: ensure GSAP v2 and lodash are loaded')
+        // End intro quickly if deps missing
+        setTimeout(() => { 
+          isVisible.value = false
+          document.body.style.overflow = prevOverflow
+          try { emit('complete') } catch (e) {}
+        }, 1200)
       }
     })
     return { isVisible }

@@ -4,7 +4,7 @@
     <div class="bg-mark" aria-hidden="true" />
 
     <!-- Global Intro overlay (fades out after playing) -->
-    <Intro v-if="showIntro" />
+    <Intro v-if="showIntro" @complete="handleIntroComplete" />
 
     <!-- Hamburger Button -->
     <header>
@@ -30,16 +30,16 @@
           </p>
 
           <div class="accent-selector mt-6">
-            <p class="text-sm text-zinc-400">Akzentfarbe wählen</p>
+            <p class="text-sm text-zinc-400">{{ accentLabel }}</p>
             <div class="mt-3 grid grid-cols-5 gap-2">
               <button v-for="c in colors" :key="c" :style="{background:c}" class="h-8 rounded-md border border-white/20" @click="setAccent(c)" />
             </div>
           </div>
         </div>
         <div class="footer-links mt-6 text-sm text-zinc-400">
-          <RouterLink to="/impressum" class="small-link highlight-link">Impressum</RouterLink>
+          <RouterLink :to="legalLinks.publisher" class="small-link highlight-link">{{ legalLabels.publisher }}</RouterLink>
           |
-          <RouterLink to="/datenschutz" class="small-link highlight-link">Datenschutz</RouterLink>
+          <RouterLink :to="legalLinks.privacy" class="small-link highlight-link">{{ legalLabels.privacy }}</RouterLink>
         </div>
       </nav>
     </header>
@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import Footer from './components/layout/Footer.vue'
 import Intro from './components/Intro.vue'
@@ -69,7 +69,12 @@ const colors = ['#FF3030', '#0042ff', '#228B22', '#7c3aed', '#12b3a6']
 const isMenuOpen = ref(false)
 const route = useRoute()
 const router = useRouter()
+// Reactive tick to force recompute when preferred_lang changes
+const __langTick = ref(0)
+
 const currentLang = computed(() => {
+  // consume tick
+  void __langTick.value
   const n = String(route.name || '')
   if (n.startsWith('de-')) return 'de'
   if (n.startsWith('en-')) return 'en'
@@ -105,6 +110,10 @@ const menuItems = computed(() => {
   ]
 })
 
+const accentLabel = computed(() => currentLang.value === 'en' ? 'Choose accent color' : 'Akzentfarbe wählen')
+const legalLabels = computed(() => currentLang.value === 'en' ? ({ publisher: 'Publisher', privacy: 'Privacy' }) : ({ publisher: 'Impressum', privacy: 'Datenschutz' }))
+const legalLinks = computed(() => currentLang.value === 'en' ? ({ publisher: '/publisher', privacy: '/privacy' }) : ({ publisher: '/impressum', privacy: '/datenschutz' }))
+
 function setAccent(c) {
   store.setAccent(c)
 }
@@ -126,26 +135,39 @@ onMounted(() => {
       window.dispatchEvent(new Event('preferred_lang_changed'))
     }
   } catch (e) { /* noop */ }
+  // Evaluate intro visibility immediately on first mount (all routes)
+  try { Promise.resolve().then(() => updateIntroVisibility(route)) } catch (e) { updateIntroVisibility(route) }
+
+  // React to preferred language changes without page reload
+  const onLangChanged = () => { __langTick.value++ }
+  window.addEventListener('preferred_lang_changed', onLangChanged)
+  // stash for cleanup
+  ;(window.__app_onLangChangedHandlers ||= []).push(onLangChanged)
 })
 
-// Intro visibility logic: show only once per hour on routes with meta.showIntro
+onBeforeUnmount(() => {
+  const handlers = window.__app_onLangChangedHandlers || []
+  handlers.forEach(h => window.removeEventListener('preferred_lang_changed', h))
+  window.__app_onLangChangedHandlers = []
+})
+
+// Intro visibility logic: show on ALL routes if no recent cookie, else suppress
 const showIntro = ref(false)
 const contentVisible = ref(false) // becomes true when page content should start fading in
 const INTRO_KEY = 'intro_last_seen_ms'
 const INTRO_COOLDOWN_MS = 60 * 60 * 1000 // 1 hour
+// Note: session gating removed per requirement to show on all pages if cookie missing/expired
 
 function shouldShowIntroNow(r) {
-  if (!(r.meta && r.meta.showIntro)) return false
-  // In development, always show on root for quick iteration
-  if (import.meta.env && import.meta.env.DEV) {
-    return r.path === '/' || r.path === '/home' || r.name === 'home' || r.name === 'de-home' || r.name === 'en-home'
-  }
   try {
     const last = parseInt(localStorage.getItem(INTRO_KEY) || '0', 10)
     const now = Date.now()
-    if (!last || now - last > INTRO_COOLDOWN_MS) return true
-    return false
-  } catch (e) { return true }
+    if (!last) return true // no cookie: play intro on all pages
+    if (now - last > INTRO_COOLDOWN_MS) return true // older than 1h: play
+    return false // within 1h: suppress
+  } catch (e) {
+    return true
+  }
 }
 
 function updateIntroVisibility(r) {
@@ -176,6 +198,8 @@ watch(showIntro, (visible) => {
       handleIntroComplete()
       __introTimer = null
     }, 5400)
+    // Safety guard: ensure completion after max 8s even if animation/timers glitch
+    setTimeout(() => { if (showIntro.value) handleIntroComplete() }, 8000)
   } else {
     if (__introTimer) { clearTimeout(__introTimer); __introTimer = null }
     if (__contentTimer) { clearTimeout(__contentTimer); __contentTimer = null }
