@@ -1,16 +1,29 @@
 <template>
   <section>
-    <h2 class="text-white text-2xl font-semibold">Hi, ich bin <span ref="twRef" class="typewriter-text"></span></h2>
+    <h2 class="text-white text-2xl font-semibold">
+      {{ lang === 'en' ? "Hi, I'm" : 'Hi, ich bin' }} <span ref="twRef" class="typewriter-text"></span>
+    </h2>
     <div class="mt-6 grid md:grid-cols-3 gap-6">
       <div class="glass-card md:col-span-2 p-6 text-center">
         <div class="text-zinc-300 space-y-4 max-w-none">
-          <p class="text-justify">
-            Ich heiße Cedric Arnhold, bin {{ age }} Jahre alt und studiere Wirtschaftsinformatik an der HTW Berlin. Neben dem Studium setze ich gerne Ideen in funktionierende Projekte um – so wie diese Webseite. Während meines Pflichtpraktikums im BMDV konnte ich erste Erfahrungen in der Systemadministration sammeln.
-          </p>
-          <p class="text-justify">
-            Aktuell arbeite ich daran, einen eigenen Online-Shop aufzubauen und tauche dabei tiefer in die Welt von WordPress ein. Parallel bereite ich mich auf Zertifizierungen im Bereich Server-Infrastruktur und Backup-Umgebungen vor, um meine beruflichen Perspektiven weiter zu stärken.
-            Darüber hinaus betreue ich die Webseiten meines <a href="https://mz24.net/" target="_blank" rel="noopener" class="accent-link">Vaters</a> und meiner <a href="https://buntpapieratelier.de/" target="_blank" rel="noopener" class="accent-link">Freundin</a>. Auf der Seite <RouterLink to="/blog/de" class="accent-link">Blog</RouterLink> werde ich künftig mehr über meine Projekte und Learnings teilen.
-          </p>
+          <template v-if="lang === 'de'">
+            <p class="text-justify">
+              Ich heiße Cedric Arnhold, bin {{ age }} Jahre alt und studiere Wirtschaftsinformatik an der HTW Berlin. Neben dem Studium setze ich gerne Ideen in funktionierende Projekte um – so wie diese Webseite. Während meines Pflichtpraktikums im BMDV konnte ich erste Erfahrungen in der Systemadministration sammeln.
+            </p>
+            <p class="text-justify">
+              Aktuell arbeite ich daran, einen eigenen Online-Shop aufzubauen und tauche dabei tiefer in die Welt von WordPress ein. Parallel bereite ich mich auf Zertifizierungen im Bereich Server-Infrastruktur und Backup-Umgebungen vor, um meine beruflichen Perspektiven weiter zu stärken.
+              Darüber hinaus betreue ich die Webseiten meines <a href="https://mz24.net/" target="_blank" rel="noopener" class="accent-link">Vaters</a> und meiner <a href="https://buntpapieratelier.de/" target="_blank" rel="noopener" class="accent-link">Freundin</a>. Auf der Seite <RouterLink to="/blog" class="accent-link">Blog</RouterLink> werde ich künftig mehr über meine Projekte und Learnings teilen.
+            </p>
+          </template>
+          <template v-else>
+            <p class="text-justify">
+              My name is Cedric Arnhold, I'm {{ age }} years old, and I'm studying Business Informatics at HTW Berlin. Besides my studies, I enjoy turning ideas into functional projects – like this website. During my mandatory internship at the Federal Ministry for Digital and Transport (BMDV), I was able to gain my first experience in system administration.
+            </p>
+            <p class="text-justify">
+              I'm currently working on building my own online store and delving deeper into the world of WordPress. At the same time, I'm preparing for certifications in server infrastructure and backup environments to further strengthen my career prospects.
+              I also manage my <a href="https://mz24.net/" target="_blank" rel="noopener" class="accent-link">father's</a> and my <a href="https://buntpapieratelier.de/" target="_blank" rel="noopener" class="accent-link">girlfriend's</a> websites. I'll be sharing more about my projects and learnings on the <RouterLink to="/blog" class="accent-link">Blog</RouterLink> page in the future.
+            </p>
+          </template>
         </div>
       </div>
       <div class="glass-card p-6 flex items-center justify-center">
@@ -20,7 +33,7 @@
 
     <!-- Skills Cloud -->
     <div class="skills-cloud glass-card mt-8 p-4 relative overflow-hidden">
-      <h3 class="text-white font-medium mb-3">Meine Fähigkeiten</h3>
+      <h3 class="text-white font-medium mb-3">{{ lang === 'en' ? 'My Skills' : 'Meine Fähigkeiten' }}</h3>
       <div class="relative w-full h-[40vh]">
         <span v-for="(skill, i) in skills" :key="i" class="skill" :style="generateStyle()">{{ skill }}</span>
       </div>
@@ -28,7 +41,7 @@
 
     <!-- Timeline -->
     <div class="timeline mt-12">
-      <h3 class="text-white font-medium mb-4">Mein Lebenslauf</h3>
+      <h3 class="text-white font-medium mb-4">{{ lang === 'en' ? 'Resume' : 'Mein Lebenslauf' }}</h3>
       <ul>
         <li v-for="ev in events" :key="ev.year">
           <div>
@@ -47,7 +60,7 @@
 </template>
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 // Compute age based on birthday 2003-04-02
 const birthDate = new Date('2003-04-02T00:00:00')
@@ -59,9 +72,20 @@ const age = computed(() => {
   return a
 })
 
-const skills = ref([
-  'JavaScript','Vue','Python','HTML','Web Development','CSS','SQL','React','Java','Spring Boot','Docker','PostgreSQL','Oracle','Flutter','Render','Dart','Typescript'
-])
+const skills = ref(['JavaScript','Vue','Python','HTML','Web Development','CSS','SQL','React','Java','Spring Boot','Docker','PostgreSQL','Oracle','Flutter','Render','Dart','Typescript'])
+
+// Determine language: prefer route name prefix, else localStorage('preferred_lang'), fallback 'en'
+const route = useRoute()
+const lang = computed(() => {
+  const n = String(route.name || '')
+  if (n.startsWith('de-')) return 'de'
+  if (n.startsWith('en-')) return 'en'
+  try {
+    const pref = localStorage.getItem('preferred_lang')
+    if (pref === 'de' || pref === 'en') return pref
+  } catch (e) {}
+  return 'en'
+})
 
 function generateStyle(){
   const safeX = Math.random()*70
@@ -86,7 +110,7 @@ function generateStyle(){
   return { animation: `${name} ${dur}s infinite ease-in-out ${delay}s`, color, opacity:0, zIndex: Math.round(z) }
 }
 
-const events = ref([
+const eventsDe = [
   {
     year: 2026,
     title: 'Bachelor of Science - Wirtschaftsinformatik',
@@ -123,11 +147,52 @@ const events = ref([
     description: 'Fünf freiwillige Praktika in Steuerberatung. Tiefe Einblicke in Beratungsprozesse erhalten.',
     tags: ['Buchhaltung', 'Belegprüfung', 'DATEV-Einblicke', 'Mandantenkommunikation']
   }
-])
+]
+const eventsEn = [
+  {
+    year: 2026,
+    title: 'Bachelor of Science – Business Informatics (HTW Berlin)',
+    description: 'Expected Bachelor graduation at the University of Applied Sciences (HTW) Berlin.',
+    tags: ['Data Analysis', 'Systems Architecture', 'Software Engineering', 'Project Work']
+  },
+  {
+    year: 2024,
+    title: 'Mandatory Internship – BMDV (Dept. Z33)',
+    description: 'Dec 2024 – Mar 2025 | Practical work in operating servers & IT infrastructure; first experience in system administration.',
+    tags: ['Windows Server', 'Active Directory', 'Networking & Monitoring', 'Scripting', 'Documentation', 'Ticketing']
+  },
+  {
+    year: 2022,
+    title: 'Working Student at Kaufland',
+    description: 'June 2022 – August 2024.',
+    tags: ['Process Optimisation', 'Customer Service', 'Teamwork', 'Reliability']
+  },
+  {
+    year: 2022,
+    title: 'A‑levels (Abitur)',
+    description: 'Ernst‑Haeckel‑School Berlin | Final grade 2.8 (Math/History).',
+    tags: ['Mathematics', 'Analytical Thinking', 'Presentation', 'Time Management']
+  },
+  {
+    year: 2018,
+    title: 'Internship – Tax Office Marzahn‑Hellersdorf',
+    description: 'Experience in office routines and negotiations.',
+    tags: ['Record Handling', 'Office Organisation', 'Communication', 'Accuracy']
+  },
+  {
+    year: 2016,
+    title: 'Internships – Dr. Albrecht & Plogmaker GbR',
+    description: 'Five voluntary internships providing insights into tax consulting.',
+    tags: ['Bookkeeping', 'Voucher Auditing', 'DATEV Basics', 'Client Communication']
+  }
+]
+const events = computed(() => lang.value === 'en' ? eventsEn : eventsDe)
 
 onMounted(() => {
-  // Typewriter effect
-  const words = ['ENTWICKLER', 'DESIGNER', 'TECH-FREAK']
+  // Typewriter effect (per language)
+  const words = lang.value === 'en'
+    ? ['DEVELOPER', 'DESIGNER', 'TECH-FREAK']
+    : ['ENTWICKLER', 'DESIGNER', 'TECH-FREAK']
   const speed = 100
   const pauseAfterWord = 1000
   const eraseSpeed = 50

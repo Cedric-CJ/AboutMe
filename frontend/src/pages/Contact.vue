@@ -1,11 +1,11 @@
 <template>
   <section class="page-auto-contrast min-h-[100vh] flex flex-col items-center justify-center">
-    <h2 class="text-white text-3xl font-semibold mb-8">Kontakt</h2>
+    <h2 class="text-white text-3xl font-semibold mb-8">{{ lang==='en' ? 'Contact' : 'Kontakt' }}</h2>
     <div class="cards" @mousemove="handleMouseMove">
       <button class="card" @click="openEmail">
         <div class="card-content">
-          <img :src="isDark ? emailDark : emailLight" alt="E-Mail" class="icon" />
-          <span>E-Mail</span>
+          <img :src="isDark ? emailDark : emailLight" :alt="lang==='en' ? 'Email' : 'E-Mail'" class="icon" />
+          <span>{{ lang==='en' ? 'Email' : 'E-Mail' }}</span>
         </div>
       </button>
       <a href="https://github.com/Cedric-CJ" target="_blank" rel="noreferrer" class="card">
@@ -28,24 +28,25 @@
       </a>
     </div>
     <div class="glass-card mt-6 w-full max-w-2xl p-5">
-      <h3 class="text-white text-xl font-semibold mb-4">Anfrage stellen</h3>
+      <h3 class="text-white text-xl font-semibold mb-4">{{ lang==='en' ? 'Send an inquiry' : 'Anfrage stellen' }}</h3>
       <form @submit.prevent="submitInquiry" class="grid grid-cols-1 gap-3">
         <div class="grid md:grid-cols-2 gap-3">
-          <input v-model="form.name" type="text" placeholder="Dein Name" class="input" required />
-          <input v-model="form.email" type="email" placeholder="E-Mail" class="input" required />
+          <input v-model="form.name" type="text" :placeholder="lang==='en' ? 'Your name' : 'Dein Name'" class="input" required />
+          <input v-model="form.email" type="email" :placeholder="lang==='en' ? 'Email' : 'E-Mail'" class="input" required />
         </div>
-        <input v-model="form.subject" type="text" placeholder="Betreff" class="input" required />
-        <textarea v-model="form.message" placeholder="Nachricht" class="input min-h-32" required></textarea>
+        <input v-model="form.subject" type="text" :placeholder="lang==='en' ? 'Subject' : 'Betreff'" class="input" required />
+        <textarea v-model="form.message" :placeholder="lang==='en' ? 'Message' : 'Nachricht'" class="input min-h-32" required></textarea>
         <div class="flex gap-2 justify-end">
-          <button type="reset" class="glass-btn-secondary px-4 py-2 rounded" @click="resetForm">Zurücksetzen</button>
-          <button type="submit" class="glass-btn px-4 py-2 rounded">Senden</button>
+          <button type="reset" class="glass-btn-secondary px-4 py-2 rounded" @click="resetForm">{{ lang==='en' ? 'Reset' : 'Zurücksetzen' }}</button>
+          <button type="submit" class="glass-btn px-4 py-2 rounded">{{ lang==='en' ? 'Send' : 'Senden' }}</button>
         </div>
       </form>
     </div>
   </section>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import emailDark from '@/assets/icons/email-dark.png'
 import emailLight from '@/assets/icons/email-light.png'
 import githubDark from '@/assets/icons/github-dark.svg'
@@ -57,7 +58,24 @@ import discordLight from '@/assets/icons/discord-light.svg'
 
 const isDark = ref(false)
 const form = ref({ name:'', email:'', subject:'', message:'' })
-function openEmail(){ window.location.href = 'mailto:info@spezialcode.de' }
+
+// Language detection (route name prefix or preferred_lang)
+const route = useRoute()
+const lang = computed(() => {
+  const n = String(route.name || '')
+  if (n.startsWith('de-')) return 'de'
+  if (n.startsWith('en-')) return 'en'
+  try {
+    const pref = localStorage.getItem('preferred_lang')
+    if (pref === 'de' || pref === 'en') return pref
+  } catch (e) {}
+  return 'de'
+})
+
+function openEmail(){
+  const addr = lang.value === 'en' ? 'info@specialcode.de' : 'info@spezialcode.de'
+  window.location.href = `mailto:${addr}`
+}
 function handleMouseMove(event){
   const cards = document.querySelectorAll('.card')
   cards.forEach(card => {

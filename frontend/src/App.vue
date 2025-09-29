@@ -41,6 +41,14 @@
           |
           <RouterLink :to="legalLinks.privacy" class="small-link highlight-link">{{ legalLabels.privacy }}</RouterLink>
         </div>
+        <!-- GitHub Stats Carousel -->
+        <div class="gh-carousel">
+          <button class="gh-arrow left" @click="prevGh" aria-label="Previous">‹</button>
+          <a href="https://gh-stats-gen.vercel.app/" target="_blank" rel="noopener" class="gh-frame">
+            <img :alt="ghStats[ghIdx].alt" :src="ghStats[ghIdx].src" loading="lazy" />
+          </a>
+          <button class="gh-arrow right" @click="nextGh" aria-label="Next">›</button>
+        </div>
       </nav>
     </header>
 
@@ -48,6 +56,7 @@
       <RouterView />
     </main>
 
+    <Coockiebanner :lang="currentLang" />
     <Footer />
     <div class="glass-overlay" :class="{ active: isMenuOpen }" @click="isMenuOpen=false"></div>
   </div>
@@ -59,6 +68,7 @@ import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import Footer from './components/layout/Footer.vue'
 import Intro from './components/Intro.vue'
+import Coockiebanner from './components/layout/Coockiebanner.vue'
 import { useThemeStore } from './stores/theme'
 import flagDe from '@/assets/Pictures/flag-de.webp'
 import flagEn from '@/assets/Pictures/flag-us.webp'
@@ -113,6 +123,25 @@ const menuItems = computed(() => {
 const accentLabel = computed(() => currentLang.value === 'en' ? 'Choose accent color' : 'Akzentfarbe wählen')
 const legalLabels = computed(() => currentLang.value === 'en' ? ({ publisher: 'Publisher', privacy: 'Privacy' }) : ({ publisher: 'Impressum', privacy: 'Datenschutz' }))
 const legalLinks = computed(() => currentLang.value === 'en' ? ({ publisher: '/publisher', privacy: '/privacy' }) : ({ publisher: '/impressum', privacy: '/datenschutz' }))
+
+// GitHub stats carousel data and controls
+const ghStats = [
+  {
+    alt: "Cedric-CJ's Stats",
+    src: 'https://github-readme-stats.vercel.app/api?username=Cedric-CJ&theme=great-gatsby&show_icons=true&hide_border=true&count_private=true'
+  },
+  {
+    alt: "Cedric-CJ's Streak",
+    src: 'https://github-readme-streak-stats.herokuapp.com/?user=Cedric-CJ&theme=great-gatsby&hide_border=true'
+  },
+  {
+    alt: "Cedric-CJ's Top Languages",
+    src: 'https://github-readme-stats.vercel.app/api/top-langs/?username=Cedric-CJ&theme=great-gatsby&show_icons=true&hide_border=true&layout=compact'
+  }
+]
+const ghIdx = ref(0)
+function nextGh(){ ghIdx.value = (ghIdx.value + 1) % ghStats.length }
+function prevGh(){ ghIdx.value = (ghIdx.value + ghStats.length - 1) % ghStats.length }
 
 function setAccent(c) {
   store.setAccent(c)
@@ -290,6 +319,45 @@ function switchLang(lang){
 .lang-switch { position: fixed; top: 1.5rem; right: 2rem; z-index: 301 }
 .lang-switch img { width: 40px; height: auto; cursor: pointer; opacity: .95; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
 .lang-switch img:hover { opacity: 1 }
+
+/* GitHub stats layout */
+.gh-stats { 
+  margin-top: 12px; 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px; 
+  align-items: start;
+}
+.gh-stats a { display: block; width: 100%; }
+.gh-stats img { width: 100%; max-width: 100%; height: auto; display: block; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.15); }
+
+/* GitHub stats carousel styles */
+.gh-carousel { margin-top: 12px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; }
+.gh-frame { 
+  display: grid; 
+  place-items: center; 
+  width: 100%; 
+  height: 180px; /* fixed height to avoid layout shift between images */
+  border-radius: 10px; 
+  overflow: hidden; 
+  border: 0;}
+.gh-frame img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: contain; 
+  object-position: center; 
+  display: block; 
+}
+.gh-arrow { 
+  appearance:none; border:none; cursor:pointer; 
+  height: 36px; width: 36px; border-radius: 999px; 
+  background: rgba(0,0,0,.35); color: var(--accent-raw, #12b3a6);
+  border: 1px solid rgba(255,255,255,.2);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 22px; line-height: 1; 
+}
+.gh-arrow:hover { filter: brightness(1.05) }
+.gh-arrow:active { transform: scale(.98) }
 
 @media (max-width: 640px){
   #navMenu { width: 85vw; max-width: none; }

@@ -1,12 +1,14 @@
 <template>
   <div class="page-auto-contrast max-w-6xl mx-auto px-4 pt-10 pb-20">
     <div class="ice-hero">
-      <h2 class="text-white text-2xl font-semibold">Leistungen</h2>
+      <h2 class="text-white text-2xl font-semibold">{{ lang === 'en' ? 'Services' : 'Leistungen' }}</h2>
       <div class="mt-2 text-cyan-200 text-sm bg-cyan-500/10 border border-cyan-300/20 rounded px-3 py-2 inline-block">
-        Alle Dienstleistungen sind auf Anfrage. Preise verstehen sich als Richtwerte. Bis jetzt nur mit externen Mailclients möglich.
+        {{ lang === 'en'
+          ? 'All services are on request. Select multiple tags to filter to the most relevant services. Prices are indicative starting points.'
+          : 'Alle Dienstleistungen sind auf Anfrage. Preise verstehen sich als Richtwerte. Mehrfachauswahl über Tags möglich.' }}
       </div>
       <div class="mt-4 flex gap-2 flex-wrap items-center">
-        <input v-model="query" type="text" placeholder="Suchen nach Titel/Tag" class="bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 w-64 px-3 py-2 rounded-md" />
+        <input v-model="query" type="text" :placeholder="lang==='en' ? 'Search by title/tag' : 'Suchen nach Titel/Tag'" class="bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 w-64 px-3 py-2 rounded-md" />
         <button v-for="t in allTags" :key="t" @click="toggleTag(t)" :class="['tagchip', { active: selectedTags.includes(t) }]">{{ t }}</button>
       </div>
     </div>
@@ -17,7 +19,7 @@
           <span>{{ p.title }}</span>
           <div class="flex items-center gap-2">
             <span class="text-cyan-300 whitespace-nowrap">{{ formatPriceWithContext(p) }}</span>
-            <button @click="showInfo(p)" class="info-icon" title="Mehr Informationen">
+            <button @click="showInfo(p)" class="info-icon" :title="lang==='en' ? 'More information' : 'Mehr Informationen'">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 16v-4"/>
@@ -31,7 +33,7 @@
           <span v-for="t in (p.tags || [])" :key="t" class="text-[11px] px-2 py-1 rounded-full bg-white/10 text-white border border-white/15">{{ t }}</span>
         </div>
         <div class="mt-4">
-          <button class="glass-btn px-3 py-2 rounded-md w-full" @click="openInquiry(p)">Anfrage stellen</button>
+          <button class="glass-btn px-3 py-2 rounded-md w-full" @click="openInquiry(p)">{{ lang==='en' ? 'Make inquiry' : 'Anfrage stellen' }}</button>
         </div>
       </div>
     </div>
@@ -40,7 +42,7 @@
     <div v-if="showInquiryOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div class="glass-card glass-modal p-6 max-w-3xl w-full max-h-[95vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-white text-lg font-semibold">Anfrage stellen</h3>
+          <h3 class="text-white text-lg font-semibold">{{ lang==='en' ? 'Make Inquiry' : 'Anfrage stellen' }}</h3>
           <button @click="closeInquiry" class="text-zinc-400 hover:text-white">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
@@ -50,7 +52,7 @@
         </div>
         
         <div class="mb-4">
-          <label class="block text-white text-sm font-medium mb-2">Leistung auswählen</label>
+          <label class="block text-white text-sm font-medium mb-2">{{ lang==='en' ? 'Select a service' : 'Leistung auswählen' }}</label>
           <select v-model="selectedProductId" class="glass-select w-full px-3 py-2 rounded-md">
             <option v-for="opt in products" :key="opt.id" :value="opt.id">
               {{ sanitizeTitle(opt.title) }} — {{ formatPriceWithContext(opt) }}
@@ -60,28 +62,28 @@
         
         <form @submit.prevent="submitInquiry" class="space-y-4">
           <div>
-            <label class="block text-white text-sm font-medium mb-2">Name *</label>
-            <input v-model="inquiry.name" type="text" required class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md" placeholder="Ihr Name" />
+            <label class="block text-white text-sm font-medium mb-2">{{ lang==='en' ? 'Name *' : 'Name *' }}</label>
+            <input v-model="inquiry.name" type="text" required class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md" :placeholder="lang==='en' ? 'Your name' : 'Ihr Name'" />
           </div>
           
           <div>
-            <label class="block text-white text-sm font-medium mb-2">E-Mail *</label>
-            <input v-model="inquiry.email" type="email" required class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md" placeholder="ihre@email.de" />
+            <label class="block text-white text-sm font-medium mb-2">{{ lang==='en' ? 'Email *' : 'E-Mail *' }}</label>
+            <input v-model="inquiry.email" type="email" required class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md" :placeholder="lang==='en' ? 'your@email.com' : 'ihre@email.de'" />
           </div>
           
           <div>
-            <label class="block text-white text-sm font-medium mb-2">Telefon (optional)</label>
-            <input v-model="inquiry.phone" type="tel" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md" placeholder="+49 123 456789" />
+            <label class="block text-white text-sm font-medium mb-2">{{ lang==='en' ? 'Phone (optional)' : 'Telefon (optional)' }}</label>
+            <input v-model="inquiry.phone" type="tel" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md" :placeholder="lang==='en' ? '+1 234 567890' : '+49 123 456789'" />
           </div>
           
           <div>
-            <label class="block text-white text-sm font-medium mb-2">Nachricht *</label>
-            <textarea v-model="inquiry.message" required rows="8" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md resize-none min-h-[200px]" placeholder="Beschreiben Sie Ihr Projekt oder Ihre Anfrage..."></textarea>
+            <label class="block text-white text-sm font-medium mb-2">{{ lang==='en' ? 'Message *' : 'Nachricht *' }}</label>
+            <textarea v-model="inquiry.message" required rows="8" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md resize-none min-h-[200px]" :placeholder="lang==='en' ? 'Describe your project or inquiry...' : 'Beschreiben Sie Ihr Projekt oder Ihre Anfrage...'"></textarea>
           </div>
           
           <div class="flex gap-2">
-            <button type="submit" class="glass-btn px-4 py-2 rounded-md flex-1">Anfrage senden</button>
-            <button type="button" @click="closeInquiry" class="glass-btn-secondary px-4 py-2 rounded-md">Abbrechen</button>
+            <button type="submit" class="glass-btn px-4 py-2 rounded-md flex-1">{{ lang==='en' ? 'Send inquiry' : 'Anfrage senden' }}</button>
+            <button type="button" @click="closeInquiry" class="glass-btn-secondary px-4 py-2 rounded-md">{{ lang==='en' ? 'Cancel' : 'Abbrechen' }}</button>
           </div>
         </form>
       </div>
@@ -105,19 +107,33 @@
           <p class="text-zinc-300">{{ selectedProduct.description }}</p>
           
           <div class="bg-white/5 rounded p-3 border border-white/10">
-            <h4 class="text-white font-medium mb-2">Was ist enthalten:</h4>
+            <h4 class="text-white font-medium mb-2">{{ lang==='en' ? "What's included:" : 'Was ist enthalten:' }}</h4>
             <ul class="text-zinc-300 text-sm space-y-1">
-              <li v-if="selectedProduct.id === 'beratung'">• Persönliches Gespräch (60 Min.)<br>• Analyse Ihrer aktuellen Situation<br>• Konkrete Handlungsempfehlungen<br>• Schriftliche Zusammenfassung</li>
-              <li v-else-if="selectedProduct.id === 'modernisieren'">• Technische Analyse der bestehenden Seite<br>• Modernes, responsives Design<br>• Performance-Optimierung<br>• SEO-Grundlagen<br>• Testing & Launch</li>
-              <li v-else-if="selectedProduct.id === 'sonderwuensche'">• Individuelle Beratung<br>• Maßgeschneiderte Lösung<br>• Preis nach Aufwand<br>• Transparente Kostenschätzung</li>
-              <li v-else-if="selectedProduct.id === 'web-von-grund-auf'">• Konzeption & Planung<br>• Individuelles Design<br>• Responsive Entwicklung<br>• CMS-Integration<br>• Hosting-Setup<br>• 3 Monate Support</li>
-              <li v-else-if="selectedProduct.id === 'performance-seo'">• Lighthouse-Audit<br>• Core Web Vitals Analyse<br>• SEO-Check<br>• Detaillierter Bericht<br>• Priorisierter Maßnahmenplan</li>
-              <li v-else-if="selectedProduct.id === 'wartung-monitoring'">• Regelmäßige Updates<br>• Automatische Backups<br>• Security-Monitoring<br>• Uptime-Überwachung<br>• Support bei Problemen</li>
-              <li v-else-if="selectedProduct.id === 'hosting-mail-setup'">• Domain-Konfiguration<br>• SSL-Zertifikat<br>• E-Mail-Setup<br>• DNS-Verwaltung<br>• Grundkonfiguration</li>
+              <li v-if="selectedProduct.id === 'consulting'">{{ lang==='en'
+                ? '• Personal consultation (60 min.)<br>• Analysis of your current situation<br>• Concrete recommendations<br>• Written summary'
+                : '• Persönliches Gespräch (60 Min.)<br>• Analyse Ihrer aktuellen Situation<br>• Konkrete Handlungsempfehlungen<br>• Schriftliche Zusammenfassung' }}</li>
+              <li v-else-if="selectedProduct.id === 'modernise'">{{ lang==='en'
+                ? '• Technical analysis of existing site<br>• Modern, responsive design<br>• Performance optimization<br>• SEO basics<br>• Testing & launch'
+                : '• Technische Analyse der bestehenden Seite<br>• Modernes, responsives Design<br>• Performance-Optimierung<br>• SEO-Grundlagen<br>• Testing & Launch' }}</li>
+              <li v-else-if="selectedProduct.id === 'custom'">{{ lang==='en'
+                ? '• Individual consultation<br>• Tailored solution<br>• Price based on effort<br>• Transparent cost estimate'
+                : '• Individuelle Beratung<br>• Maßgeschneiderte Lösung<br>• Preis nach Aufwand<br>• Transparente Kostenschätzung' }}</li>
+              <li v-else-if="selectedProduct.id === 'site-from-scratch'">{{ lang==='en'
+                ? '• Concept & planning<br>• Individual design<br>• Responsive development<br>• CMS integration<br>• Hosting setup<br>• 3 months support'
+                : '• Konzeption & Planung<br>• Individuelles Design<br>• Responsive Entwicklung<br>• CMS-Integration<br>• Hosting-Setup<br>• 3 Monate Support' }}</li>
+              <li v-else-if="selectedProduct.id === 'performance-seo'">{{ lang==='en'
+                ? '• Lighthouse audit<br>• Core Web Vitals analysis<br>• SEO check<br>• Detailed report<br>• Prioritized action plan'
+                : '• Lighthouse-Audit<br>• Core Web Vitals Analyse<br>• SEO-Check<br>• Detaillierter Bericht<br>• Priorisierter Maßnahmenplan' }}</li>
+              <li v-else-if="selectedProduct.id === 'maintenance-monitoring'">{{ lang==='en'
+                ? '• Regular updates<br>• Automatic backups<br>• Security monitoring<br>• Uptime monitoring<br>• Support for issues'
+                : '• Regelmäßige Updates<br>• Automatische Backups<br>• Security-Monitoring<br>• Uptime-Überwachung<br>• Support bei Problemen' }}</li>
+              <li v-else-if="selectedProduct.id === 'hosting-mail-setup'">{{ lang==='en'
+                ? '• Domain configuration<br>• SSL certificate<br>• Email setup<br>• DNS management<br>• Basic configuration'
+                : '• Domain-Konfiguration<br>• SSL-Zertifikat<br>• E-Mail-Setup<br>• DNS-Verwaltung<br>• Grundkonfiguration' }}</li>
             </ul>
           </div>
           
-          <button @click="openInquiryFromInfo" class="glass-btn w-full px-4 py-2 rounded-md">Jetzt anfragen</button>
+          <button @click="openInquiryFromInfo" class="glass-btn w-full px-4 py-2 rounded-md">{{ lang==='en' ? 'Inquire now' : 'Jetzt anfragen' }}</button>
         </div>
       </div>
     </div>
@@ -126,19 +142,43 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-const demoProducts = [
-  { id: 'beratung', title: 'Beratung', description: 'Individuelle Beratung rund um Web, Hosting und Modernisierung.', price_cents: 9900, currency: 'EUR', tags: ['Service'], active: true },
-  { id: 'modernisieren', title: 'Seite modernisieren', description: 'Bestehende Webseite in modernes Design und bessere Performance überführen.', price_cents: 24900, currency: 'EUR', tags: ['Service'], active: true },
-  { id: 'sonderwuensche', title: 'Sonderwünsche', description: 'Individuelle Features und Speziallösungen nach Absprache.', price_cents: 0, currency: 'EUR', tags: ['Service'], active: true },
-  { id: 'web-von-grund-auf', title: 'Webseite von Grund auf', description: 'Planung, Design, Umsetzung & Hosting-Einrichtung – alles aus einer Hand.', price_cents: 89900, currency: 'EUR', tags: ['Projekt','Web'], active: true },
+// Language detection (route name prefix or preferred_lang)
+const route = useRoute()
+const lang = computed(() => {
+  const n = String(route.name || '')
+  if (n.startsWith('de-')) return 'de'
+  if (n.startsWith('en-')) return 'en'
+  try {
+    const pref = localStorage.getItem('preferred_lang')
+    if (pref === 'de' || pref === 'en') return pref
+  } catch (e) {}
+  return 'de'
+})
+
+// Products with canonical IDs; titles/descriptions localized per language
+const demoProductsDe = [
+  { id: 'consulting', title: 'Beratung', description: 'Individuelle Beratung rund um Web, Hosting und Modernisierung.', price_cents: 9900, currency: 'EUR', tags: ['Service'], active: true },
+  { id: 'modernise', title: 'Seite modernisieren', description: 'Bestehende Webseite in modernes Design und bessere Performance überführen.', price_cents: 24900, currency: 'EUR', tags: ['Service'], active: true },
+  { id: 'custom', title: 'Sonderwünsche', description: 'Individuelle Features und Speziallösungen nach Absprache.', price_cents: 0, currency: 'EUR', tags: ['Service'], active: true },
+  { id: 'site-from-scratch', title: 'Webseite von Grund auf', description: 'Planung, Design, Umsetzung & Hosting-Einrichtung – alles aus einer Hand.', price_cents: 89900, currency: 'EUR', tags: ['Projekt','Web'], active: true },
   { id: 'performance-seo', title: 'Performance-/SEO-Check', description: 'Core Web Vitals, Lighthouse, Bildoptimierung, Caching, Accessibility – Bericht & Maßnahmenplan.', price_cents: 14900, currency: 'EUR', tags: ['Audit','SEO','Performance'], active: true },
-  { id: 'wartung-monitoring', title: 'Wartung & Monitoring', description: 'Updates, Backups, Security-Checks, Uptime-Monitoring und kleinere Fixes.', price_cents: 5900, currency: 'EUR', tags: ['Wartung'], active: true },
+  { id: 'maintenance-monitoring', title: 'Wartung & Monitoring', description: 'Updates, Backups, Security-Checks, Uptime-Monitoring und kleinere Fixes.', price_cents: 5900, currency: 'EUR', tags: ['Wartung'], active: true },
   { id: 'hosting-mail-setup', title: 'Hosting-/Mail-Setup', description: 'Domain, DNS, SSL, Mail (z. B. mit eigenen Subdomains), grundlegende Server-Konfiguration.', price_cents: 12900, currency: 'EUR', tags: ['Setup','Server'], active: true }
+]
+const demoProductsEn = [
+  { id: 'consulting', title: 'Consulting', description: 'Individual consulting around web, hosting and modernisation.', price_cents: 9900, currency: 'EUR', tags: ['Service'], active: true },
+  { id: 'modernise', title: 'Modernise a website', description: 'Upgrade an existing website to a modern design and better performance.', price_cents: 24900, currency: 'EUR', tags: ['Service'], active: true },
+  { id: 'custom', title: 'Custom features', description: 'Individual features and special solutions on request.', price_cents: 0, currency: 'EUR', tags: ['Service'], active: true },
+  { id: 'site-from-scratch', title: 'Website from scratch (from)', description: 'Planning, design, implementation & hosting setup – all from one source.', price_cents: 89900, currency: 'EUR', tags: ['Project','Web'], active: true },
+  { id: 'performance-seo', title: 'Performance/SEO check (from)', description: 'Core Web Vitals, Lighthouse, image optimisation, caching, accessibility – report & action plan.', price_cents: 14900, currency: 'EUR', tags: ['Audit','SEO','Performance'], active: true },
+  { id: 'maintenance-monitoring', title: 'Maintenance & monitoring (from/month)', description: 'Updates, backups, security checks, uptime monitoring and minor fixes.', price_cents: 5900, currency: 'EUR', tags: ['Maintenance'], active: true },
+  { id: 'hosting-mail-setup', title: 'Hosting/Mail setup (from)', description: 'Domain, DNS, SSL, mail (e.g. with custom subdomains), basic server configuration.', price_cents: 12900, currency: 'EUR', tags: ['Setup','Server'], active: true }
 ]
 
 const query = ref('')
-const products = ref(demoProducts)
+const products = computed(() => (lang.value === 'en' ? demoProductsEn : demoProductsDe))
 const selectedTags = ref([])
 const showInquiryOverlay = ref(false)
 const showInfoModal = ref(false)
@@ -152,20 +192,20 @@ const inquiry = ref({
 })
 
 onMounted(async () => {
-  // Inhalte sind nur zur Auswahl, Beauftragung erfolgt nach Rücksprache
+  // Showcase only; engagements happen after direct contact
 })
 
 function formatPrice(cents) {
-  if (cents === 0) return 'Preis auf Anfrage'
+  if (cents === 0) return lang.value === 'en' ? 'Price on request' : 'Preis auf Anfrage'
   const euro = (cents / 100).toFixed(0)
-  return `(ab) ${euro} €`
+  return lang.value === 'en' ? `(from) ${euro} €` : `(ab) ${euro} €`
 }
 
 function formatPriceWithContext(p) {
   if (!p) return ''
   const base = formatPrice(p.price_cents)
   // Append per-month marker for maintenance plan
-  if (p.id === 'wartung-monitoring') return `${base}\u00A0p.M.`
+  if (p.id === 'maintenance-monitoring') return `${base}\u00A0${lang.value==='en' ? 'p.m.' : 'p.M.'}`
   return base
 }
 
@@ -191,7 +231,9 @@ const filtered = computed(() => products.value.filter(p => {
 function openInquiry(product) {
   selectedProduct.value = product
   selectedProductId.value = product?.id || null
-  inquiry.value.message = `Hallo Cedric,\n\nich interessiere mich für \"${sanitizeTitle(product.title)}\".\n\nKurz zu meinem Projekt/meiner Anfrage:\n`
+  inquiry.value.message = lang.value === 'en'
+    ? `Hello Cedric,\n\nI'm interested in \"${sanitizeTitle(product.title)}\".\n\nA quick note about my project/inquiry:\n`
+    : `Hallo Cedric,\n\nich interessiere mich für \"${sanitizeTitle(product.title)}\".\n\nKurz zu meinem Projekt/meiner Anfrage:\n`
   showInquiryOverlay.value = true
 }
 
@@ -223,21 +265,25 @@ const inquirySelectedProduct = computed(() => {
 
 const emailSubject = computed(() => {
   const p = inquirySelectedProduct.value
-  return `Anfrage: ${p ? sanitizeTitle(p.title) : 'Allgemeine Anfrage'}`
+  return lang.value === 'en'
+    ? `Inquiry: ${p ? sanitizeTitle(p.title) : 'General inquiry'}`
+    : `Anfrage: ${p ? sanitizeTitle(p.title) : 'Allgemeine Anfrage'}`
 })
 
 // Keep the inquiry text in sync with dropdown selection (only if template header is intact)
 function updateInquiryTemplateService() {
   const p = inquirySelectedProduct.value
   if (!p) return
-  const header = 'Hallo Cedric,'
-  const marker = 'Kurz zu meinem Projekt/meiner Anfrage:'
+  const header = lang.value === 'en' ? 'Hello Cedric,' : 'Hallo Cedric,'
+  const marker = lang.value === 'en' ? 'A quick note about my project/inquiry:' : 'Kurz zu meinem Projekt/meiner Anfrage:'
   const msg = inquiry.value.message || ''
   if (msg.startsWith(header)) {
     // Split by marker to preserve everything the user wrote after it
     const parts = msg.split(marker)
     const tail = parts.length > 1 ? parts.slice(1).join(marker) : '\n'
-    inquiry.value.message = `${header}\n\nich interessiere mich für \"${sanitizeTitle(p.title)}\".\n\n${marker}\n${tail.trimStart()}`
+    inquiry.value.message = lang.value === 'en'
+      ? `${header}\n\nI'm interested in \"${sanitizeTitle(p.title)}\".\n\n${marker}\n${tail.trimStart()}`
+      : `${header}\n\nich interessiere mich für \"${sanitizeTitle(p.title)}\".\n\n${marker}\n${tail.trimStart()}`
   }
 }
 
@@ -248,8 +294,10 @@ watch(selectedProductId, () => {
 function submitInquiry() {
   const p = inquirySelectedProduct.value
   const subject = emailSubject.value
-  const body = `Name: ${inquiry.value.name}\nE-Mail: ${inquiry.value.email}\nTelefon: ${inquiry.value.phone || 'Nicht angegeben'}\n\nService: ${p ? sanitizeTitle(p.title) : 'Nicht spezifiziert'}\nPreis: ${p ? formatPriceWithContext(p) : 'N/A'}\n\nNachricht an Cedric:\n${inquiry.value.message}`
-  
+  const body = lang.value === 'en'
+    ? `Name: ${inquiry.value.name}\nEmail: ${inquiry.value.email}\nPhone: ${inquiry.value.phone || 'Not provided'}\n\nService: ${p ? sanitizeTitle(p.title) : 'Not specified'}\nPrice: ${p ? formatPriceWithContext(p) : 'N/A'}\n\nMessage for Cedric:\n${inquiry.value.message}`
+    : `Name: ${inquiry.value.name}\nE-Mail: ${inquiry.value.email}\nTelefon: ${inquiry.value.phone || 'Nicht angegeben'}\n\nService: ${p ? sanitizeTitle(p.title) : 'Nicht spezifiziert'}\nPreis: ${p ? formatPriceWithContext(p) : 'N/A'}\n\nNachricht an Cedric:\n${inquiry.value.message}`
+
   const mailtoLink = `mailto:cedric.jon.arnhold@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   window.open(mailtoLink, '_blank')
   

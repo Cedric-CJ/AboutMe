@@ -4,7 +4,7 @@
       <h1 class="page-title text-center">Blog</h1>
     </section>
     <div v-if="isMediaError" class="adblock-warning">
-      <p>Es konnten nicht alle Medien geladen werden. Eventuell blockiert ein AdBlocker die Medien.</p>
+      <p>{{ lang==='en' ? 'Some media could not be loaded. An ad blocker might be blocking videos.' : 'Es konnten nicht alle Medien geladen werden. Eventuell blockiert ein AdBlocker die Medien.' }}</p>
     </div>
     <div class="blog-container">
       <div v-for="(blog, index) in blogs" :key="index" class="blog-card glass-card">
@@ -28,7 +28,7 @@
                 <template v-if="section.video">
                   <video controls class="blog-video" :class="getImageClass(section.imagePosition)">
                     <source :src="section.videoObjectUrl || section.video" type="video/mp4" />
-                    Dein Browser unterstützt keine Video Tags.
+                    {{ lang==='en' ? 'Your browser does not support the video tag.' : 'Dein Browser unterstützt keine Video Tags.' }}
                   </video>
                 </template>
                 <template v-else-if="section.image">
@@ -52,7 +52,23 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+// reactive tick to force recompute on preferred_lang change
+const __langTick = ref(0)
+const lang = computed(() => {
+  void __langTick.value
+  const n = String(route.name || '')
+  if (n.startsWith('de-')) return 'de'
+  if (n.startsWith('en-')) return 'en'
+  try {
+    const pref = localStorage.getItem('preferred_lang')
+    if (pref === 'de' || pref === 'en') return pref
+  } catch (e) {}
+  return 'de'
+})
 
 const blogs = ref([])
 const open = ref([])
@@ -97,9 +113,9 @@ function makeSummary(b){
   }catch{return ''}
 }
 
-onMounted(async () => {
+async function loadBlogs(){
   try {
-    const res = await fetch('/BlogsDe.json')
+    const res = await fetch(lang.value === 'en' ? '/BlogsEng.json' : '/BlogsDe.json')
     const data = await res.json()
     blogs.value = data.map(b => ({
       ...b,
@@ -114,7 +130,11 @@ onMounted(async () => {
     open.value = data.map(() => false)
     blogs.value.forEach(blog => blog.sections.forEach(fetchVideo))
   } catch (e) { /* ignore */ }
-})
+}
+
+function onLangChanged(){ __langTick.value++; loadBlogs() }
+onMounted(() => { try { window.addEventListener('preferred_lang_changed', onLangChanged) } catch (e) {} ; loadBlogs() })
+onBeforeUnmount(() => { try { window.removeEventListener('preferred_lang_changed', onLangChanged) } catch (e) {} })
 function toggle(i){ open.value[i] = !open.value[i] }
 
 // Smooth height transitions for collapsible sections

@@ -1,6 +1,6 @@
 <template>
   <section class="page-auto-contrast">
-    <h2 class="text-white text-2xl font-semibold">Meine Projekte</h2>
+    <h2 class="text-white text-2xl font-semibold">{{ lang==='en' ? 'My Projects' : 'Meine Projekte' }}</h2>
     <div class="projects-cards mt-6">
       <div v-for="(p, i) in projects" :key="i" class="project-card glass-card">
         <div class="project-head" @click="toggle(i)">
@@ -38,11 +38,24 @@
   </section>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const lang = computed(() => {
+  const n = String(route.name || '')
+  if (n.startsWith('de-')) return 'de'
+  if (n.startsWith('en-')) return 'en'
+  try {
+    const pref = localStorage.getItem('preferred_lang')
+    if (pref === 'de' || pref === 'en') return pref
+  } catch (e) {}
+  return 'de'
+})
 
 const open = ref([])
 
-const projects = ref([
+const projectsDe = [
   {
     name: 'Virtuelles Haustier',
     link: 'https://virtual-pet-bcky.onrender.com/',
@@ -59,8 +72,27 @@ const projects = ref([
     short: 'Modernisierung der Webseite mit neuer Galerie und Vorher/Nachher.',
     description: 'Modernisierung der Webseite meines Vaters mit aktualisierten Datenschutz- und Impressumsseiten, einer dynamischeren Gestaltung und einer verbesserten Galerie mit Bild-Durchschaltung und Vorher-Nachher-Slider für einen modernen Look. Die Seite wurde so konzipiert, dass sie benutzerfreundlicher und optisch ansprechender ist, mit intuitiven Navigationselementen und verbesserter Ladezeit.'
   }
-])
-open.value = projects.value.map(() => false)
+]
+const projectsEn = [
+  {
+    name: 'Virtual Pet',
+    link: 'https://virtual-pet-bcky.onrender.com/',
+    github: 'https://github.com/Cedric-CJ/virtual-pet',
+    technologies: ['Vue','JavaScript','HTML','CSS','Docker','Typescript','SQL-DB','React','REST'],
+    short: 'University project with user accounts, two pets and care/play.',
+    description: 'A university project featuring user registration/login and management of a virtual pet where the user can choose between two pets, name them, and feed, care or play with them. The pets\' needs are shown via status bars; lack of care may result in the pet\'s death so a new one must be created. A high score lists the top pets.\n\n*Currently not functional as the database is no longer active.*',
+  },
+  {
+    name: 'Metal Master Website',
+    link: 'https://mz24.net/',
+    github: 'https://github.com/Cedric-CJ/MZ24',
+    technologies: ['HTML','CSS','JavaScript','Vue'],
+    short: 'Modernised website with new gallery and before/after slider.',
+    description: 'Modernisation of my father\'s website with updated privacy/imprint pages, a more dynamic layout and an improved gallery with image switching and a before/after slider for a modern look. The site is designed to be more user-friendly and visually appealing with intuitive navigation and improved load times.'
+  }
+]
+const projects = computed(() => (lang.value === 'en' ? projectsEn : projectsDe))
+open.value = (projects.value || []).map(() => false)
 function toggle(i){ open.value[i] = !open.value[i] }
 
 // Smooth height transitions for collapsible project details
