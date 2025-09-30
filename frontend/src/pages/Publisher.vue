@@ -22,9 +22,9 @@
       <h2 class="text-white font-medium mt-6 mb-2">Copyright</h2>
       <p>Unless otherwise indicated, the content (texts, images, graphics, styles) is protected by copyright. Copying or use – including excerpts – is only permitted with prior approval. Trademarks and trade names mentioned are subject to the rights of their respective owners.</p>
       <h2 class="text-white font-medium mt-6 mb-2">Disclaimer</h2>
-      <p>The information provided has been compiled with care. No guarantee is made for timeliness, accuracy, completeness or quality. Liability claims are excluded unless intent or gross negligence is proven. The operator reserves the right to change or remove content without notice.</p>
+      <p>I have compiled the information with care. I make no guarantee for timeliness, accuracy, completeness or quality. Liability claims are excluded unless intent or gross negligence on my part is proven. I reserve the right to change or remove content without notice.</p>
       <h2 class="text-white font-medium mt-6 mb-2">References and Links</h2>
-      <p>For external pages to which references are made, the respective operators are solely responsible. At the time of linking, no illegal content was recognizable.</p>
+      <p>For external pages to which I link, the respective operators are solely responsible. At the time I created the links, no illegal content was recognizable to me.</p>
       <p class="mt-6 text-xs text-zinc-400">Last updated: {{ new Date().toLocaleDateString('en-GB') }}</p>
     </template>
     <template v-else>
@@ -49,9 +49,9 @@
       <h2 class="text-white font-medium mt-6 mb-2">Urheberrecht</h2>
       <p>Falls nicht anders angegeben, unterliegen Inhalte (Texte, Bilder, Grafiken, Styles) dem Urheberrecht. Eine Vervielfältigung oder Verwendung – auch auszugsweise – ist nur nach vorheriger Genehmigung gestattet. Genannte Marken- und Warenzeichen unterliegen den Rechten der jeweiligen Eigentümer.</p>
       <h2 class="text-white font-medium mt-6 mb-2">Haftungsausschluss</h2>
-      <p>Die bereitgestellten Informationen wurden mit Sorgfalt erstellt. Eine Gewähr für Aktualität, Korrektheit, Vollständigkeit oder Qualität wird nicht übernommen. Haftungsansprüche sind ausgeschlossen, sofern kein vorsätzliches oder grob fahrlässiges Verschulden vorliegt. Der Betreiber behält sich vor, Inhalte ohne Ankündigung zu ändern oder zu entfernen.</p>
+      <p>Ich habe die bereitgestellten Informationen mit Sorgfalt erstellt. Ich übernehme keine Gewähr für Aktualität, Korrektheit, Vollständigkeit oder Qualität. Haftungsansprüche sind ausgeschlossen, sofern kein vorsätzliches oder grob fahrlässiges Verschulden meinerseits vorliegt. Ich behalte mir vor, Inhalte ohne Ankündigung zu ändern oder zu entfernen.</p>
       <h2 class="text-white font-medium mt-6 mb-2">Verweise und Links</h2>
-      <p>Für Inhalte externer Seiten, auf die verwiesen wird, sind ausschließlich deren Betreiber verantwortlich. Zum Zeitpunkt der Verlinkung waren keine rechtswidrigen Inhalte erkennbar.</p>
+      <p>Für Inhalte externer Seiten, auf die ich verlinke, sind ausschließlich deren Betreiber verantwortlich. Zum Zeitpunkt der Verlinkung waren für mich keine rechtswidrigen Inhalte erkennbar.</p>
       <p class="mt-6 text-xs text-zinc-400">Letzte Aktualisierung: {{ new Date().toLocaleDateString('de-DE') }}</p>
     </template>
   </section>
