@@ -84,10 +84,7 @@
           <div class="flex gap-2">
             <button
               type="submit"
-              class="glass-btn px-4 py-2 rounded-md flex-1 g-recaptcha"
-              :data-sitekey="SITE_KEY"
-              data-callback="onSubmitServices"
-              data-action="submit"
+              class="glass-btn px-4 py-2 rounded-md flex-1"
               :disabled="isSubmitting"
             >
               {{ isSubmitting ? (lang==='en' ? 'Sending…' : 'Sende…') : (lang==='en' ? 'Send inquiry' : 'Anfrage senden') }}
@@ -166,7 +163,7 @@ const lang = computed(() => {
   return 'de'
 })
 
-function onSubmitServices(){ if (!isSubmitting.value) submitInquiry() }
+// Programmatic reCAPTCHA execution is handled in submitInquiry()
 
 // Products with canonical IDs; titles/descriptions localized per language
 const demoProductsDe = [
@@ -203,7 +200,7 @@ const inquiry = ref({
 })
 
 // reCAPTCHA + API config/state
-const SITE_KEY = '6LfEZOArAAAAAJQSDu4dxnGsq_9w6LVL4JbKvtU4' // reCAPTCHA Enterprise site key
+const SITE_KEY = '6LefTOArAAAAAEam42ts9ZORABrCiUa1hTi8ZGtp' // reCAPTCHA Enterprise site key
 const API_URL = import.meta.env?.VITE_INQUIRY_API || '/api/inquiry'
 const isSubmitting = ref(false)
 const submitError = ref('')
@@ -219,8 +216,7 @@ onMounted(async () => {
       document.head.appendChild(s)
     }
   }catch{}
-  // expose callback for data-callback attribute
-  try{ window.onSubmitServices = onSubmitServices }catch{}
+  // no v2-style callbacks; submission triggers token programmatically
   // show badge only on this page
   setRecaptchaBadgeVisible(true)
 })

@@ -41,10 +41,7 @@
           <!-- reCAPTCHA-enabled button (Enterprise executes programmatically in submitInquiry) -->
           <button
             type="submit"
-            class="glass-btn px-4 py-2 rounded g-recaptcha"
-            :data-sitekey="SITE_KEY"
-            data-callback="onSubmit"
-            data-action="submit"
+            class="glass-btn px-4 py-2 rounded"
             :disabled="isSubmitting"
           >
             {{ isSubmitting ? (lang==='en' ? 'Sending…' : 'Sende…') : (lang==='en' ? 'Send' : 'Senden') }}
@@ -55,7 +52,7 @@
   </section>
  </template>
  <script setup>
- import { ref, onMounted, onBeforeUnmount, onActivated, onDeactivated, computed } from 'vue'
+ import { ref, onMounted, computed } from 'vue'
  import { useRoute } from 'vue-router'
  import emailDark from '@/assets/icons/email-dark.png'
  import emailLight from '@/assets/icons/email-light.png'
@@ -72,7 +69,7 @@
  const submitError = ref('')
  const submitSuccess = ref(false)
 
- const SITE_KEY = '6LfEZOArAAAAAJQSDu4dxnGsq_9w6LVL4JbKvtU4'
+ const SITE_KEY = '6LefTOArAAAAAEam42ts9ZORABrCiUa1hTi8ZGtp'
  const API_URL = import.meta.env?.VITE_INQUIRY_API || '/api/inquiry'
 
  // Language detection (route name prefix or preferred_lang)
@@ -116,11 +113,8 @@
        document.head.appendChild(s)
      }
    } catch {}
-   // expose callback for data-callback attribute
-   try { window.onSubmit = onSubmit } catch {}
-})
- // reCAPTCHA button callback
- function onSubmit(){ if (!isSubmitting.value) submitInquiry() }
+ })
+
  async function submitInquiry(){
    submitError.value = ''
    submitSuccess.value = false

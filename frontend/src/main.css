@@ -97,30 +97,8 @@ body { @apply bg-background text-foreground; font-family: 'Acme', system-ui, -ap
 }
 
 /* Per-page auto-contrast helpers */
-.page-auto-contrast h1,
 .page-auto-contrast h2,
 .page-auto-contrast h3,
 .page-auto-contrast h4 { text-shadow: 0 1px 2px rgba(0,0,0,.55) }
 .page-auto-contrast p,
 .page-auto-contrast li { text-shadow: 0 1px 2px rgba(0,0,0,.45) }
-/* reCAPTCHA badge positioning and scaling */
-.grecaptcha-badge {
-  bottom: 2vh !important; /* ~5vh höher, damit Footer sie nicht abschneidet */
-  right: 0 !important;
-  z-index: 150 !important;
-}
-
-/* Verhindert horizontales Überlaufen auf kleinen Screens */
-@media (max-width: 480px) {
-  .grecaptcha-badge {
-    transform: scale(0.86);      /* etwas kleiner */
-    transform-origin: right bottom;
-    bottom: 2vh !important;
-  }
-}
-
-@media (max-width: 360px) {
-  .grecaptcha-badge {
-    transform: scale(0.8);
-  }
-}
