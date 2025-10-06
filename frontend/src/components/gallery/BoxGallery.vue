@@ -2,7 +2,7 @@
   <div class="BoxGallery">
     <div class="box" v-for="(box, index) in localizedBoxes" :key="index">
       <div class="placeholder">
-        <img :src="box.image" :alt="box.label" />
+        <img :src="box.image" :alt="box.label" loading="lazy" decoding="async" class="lazy-img" @load="($event.target && $event.target.setAttribute('data-loaded','true'))" />
       </div>
       <span>{{ box.label }}</span>
     </div>
@@ -68,6 +68,9 @@ export default {
   object-fit: cover;
   display: block;
 }
+/* LQIP */
+.placeholder img.lazy-img{ filter: blur(12px); transform: scale(1.02); background:#0b0b0b }
+.placeholder img.lazy-img[data-loaded="true"]{ filter:none; transform:none; transition: filter .3s ease, transform .3s ease }
 
 .box > span {
   position: absolute; 

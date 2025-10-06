@@ -54,7 +54,7 @@
   </div>
 </template>
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import SlideGallery from '../components/gallery/SlideGallery.vue'
 import CardGallery from '../components/gallery/CardGallery.vue'
@@ -77,6 +77,16 @@ const lang = computed(() => {
   } catch (e) {}
   return 'de'
 })
+
+// Close any open gallery overlay with ESC
+function onKeydown(e){
+  if (e.key === 'Escape' && selected.value){
+    e.preventDefault()
+    close()
+  }
+}
+onMounted(() => { try{ window.addEventListener('keydown', onKeydown) }catch{} })
+onBeforeUnmount(() => { try{ window.removeEventListener('keydown', onKeydown) }catch{} })
 
 const selected = ref(null)
 const detailOpen = ref(false)

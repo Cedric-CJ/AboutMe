@@ -38,7 +38,17 @@
         <textarea v-model="form.message" :placeholder="lang==='en' ? 'Message' : 'Nachricht'" class="input min-h-32" required></textarea>
         <div class="flex gap-2 justify-end">
           <button type="reset" class="glass-btn-secondary px-4 py-2 rounded" @click="resetForm">{{ lang==='en' ? 'Reset' : 'Zurücksetzen' }}</button>
-          <button type="submit" class="glass-btn px-4 py-2 rounded">{{ lang==='en' ? 'Send' : 'Senden' }}</button>
+          <!-- reCAPTCHA-enabled button (Enterprise executes programmatically in submitInquiry) -->
+          <button
+            type="submit"
+            class="glass-btn px-4 py-2 rounded g-recaptcha"
+            :data-sitekey="SITE_KEY"
+            data-callback="onSubmit"
+            data-action="submit"
+            :disabled="isSubmitting"
+          >
+            {{ isSubmitting ? (lang==='en' ? 'Sending…' : 'Sende…') : (lang==='en' ? 'Send' : 'Senden') }}
+          </button>
         </div>
       </form>
     </div>
@@ -58,6 +68,12 @@ import discordLight from '@/assets/icons/discord-light.svg'
 
 const isDark = ref(false)
 const form = ref({ name:'', email:'', subject:'', message:'' })
+const isSubmitting = ref(false)
+const submitError = ref('')
+const submitSuccess = ref(false)
+
+const SITE_KEY = '6LfEZOArAAAAAJQSDu4dxnGsq_9w6LVL4JbKvtU4' // reCAPTCHA Enterprise site key
+const API_URL = import.meta.env?.VITE_INQUIRY_API || '/api/inquiry'
 
 // Language detection (route name prefix or preferred_lang)
 const route = useRoute()
@@ -90,10 +106,63 @@ onMounted(() => {
   const m = window.matchMedia('(prefers-color-scheme: dark)')
   isDark.value = m.matches
   m.addEventListener('change', e => isDark.value = e.matches)
+  // ensure reCAPTCHA enterprise script is loaded
+  try {
+    if (!(window.grecaptcha && window.grecaptcha.enterprise)) {
+      const s = document.createElement('script')
+      s.src = 'https://www.google.com/recaptcha/enterprise.js?render=' + encodeURIComponent(SITE_KEY)
+      s.async = true
+      document.head.appendChild(s)
+    }
+  } catch {}
+  // expose callback for data-callback attribute
+  try { window.onSubmit = onSubmit } catch {}
 })
-function submitInquiry(){
-  console.log('Inquiry:', form.value)
-  // TODO: integrate with backend endpoint e.g. POST /api/inquiry
+// reCAPTCHA button callback
+function onSubmit(){ if (!isSubmitting.value) submitInquiry() }
+async function submitInquiry(){
+  submitError.value = ''
+  submitSuccess.value = false
+  isSubmitting.value = true
+  try{
+    // obtain reCAPTCHA enterprise token
+    const token = await new Promise((resolve, reject) => {
+      try{
+        window.grecaptcha?.enterprise?.ready(async () => {
+          try{
+            const t = await window.grecaptcha.enterprise.execute(SITE_KEY, { action: 'LOGIN' })
+            resolve(t)
+          }catch(err){ reject(err) }
+        })
+      }catch(err){ reject(err) }
+    })
+
+    const payload = {
+      name: form.value.name,
+      email: form.value.email,
+      subject: form.value.subject,
+      phone: '',
+      message: form.value.message,
+      source: 'contact',
+      service_id: null,
+      recaptcha_token: token
+    }
+
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      credentials: 'omit'
+    })
+    if (!res.ok) throw new Error('Request failed: ' + res.status)
+    submitSuccess.value = true
+    resetForm()
+  }catch(err){
+    submitError.value = String(err?.message || err || 'Unknown error')
+    console.error('Submit failed', err)
+  }finally{
+    isSubmitting.value = false
+  }
 }
 function resetForm(){ form.value = { name:'', email:'', subject:'', message:'' } }
 </script>

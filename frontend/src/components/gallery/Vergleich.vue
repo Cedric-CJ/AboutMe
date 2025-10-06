@@ -12,7 +12,7 @@
               @dragend="onThumbDragEnd"
             >
               <div class="image-wrapper">
-                <img :src="image.url" :alt="image.title" />
+                <img :src="image.url" :alt="image.title" loading="lazy" decoding="async" class="lazy-img" @load="($event.target && $event.target.setAttribute('data-loaded','true'))" />
                 <a v-if="image.link" class="source-badge" :href="image.link" target="_blank" rel="noopener noreferrer" @click.stop>
                   Quelle ↗
                 </a>
@@ -25,7 +25,7 @@
           <transition name="fade-zoom" mode="out-in">
             <div v-if="showSingle" key="single" class="single-section">
               <div class="single-container">
-                <img :src="singleUrl" alt="Bild" />
+                <img :src="singleUrl" alt="Bild" loading="lazy" decoding="async" class="lazy-img" @load="($event.target && $event.target.setAttribute('data-loaded','true'))" />
               </div>
             </div>
             <div v-else key="compare" class="comparison-section">
@@ -55,11 +55,11 @@
                   <div class="drop-highlight left" :class="{ active: dragOverSide==='left' }" aria-hidden="true"></div>
                   <div class="drop-highlight right" :class="{ active: dragOverSide==='right' }" aria-hidden="true"></div>
                   <div class="before-image">
-                    <img :src="beforeUrl" :alt="isEn ? 'Before' : 'Vorher'" :style="{ transform: `scale(${beforeScale})` }" />
+                    <img :src="beforeUrl" :alt="isEn ? 'Before' : 'Vorher'" :style="{ transform: `scale(${beforeScale})` }" loading="lazy" decoding="async" class="lazy-img" @load="($event.target && $event.target.setAttribute('data-loaded','true'))" />
                     <div class="label">{{ isEn ? 'Before' : 'Vorher' }}</div>
                   </div>
                   <div class="after-image" :style="{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }">
-                    <img :src="afterUrl" :alt="isEn ? 'After' : 'Nachher'" :style="{ transform: `scale(${afterScale})` }" />
+                    <img :src="afterUrl" :alt="isEn ? 'After' : 'Nachher'" :style="{ transform: `scale(${afterScale})` }" loading="lazy" decoding="async" class="lazy-img" @load="($event.target && $event.target.setAttribute('data-loaded','true'))" />
                     <div class="label">{{ isEn ? 'After' : 'Nachher' }}</div>
                   </div>
                   <div 

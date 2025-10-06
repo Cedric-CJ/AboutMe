@@ -6,7 +6,7 @@
           <div class="swiper-wrapper" :style="{ transform: `translateX(-${100*currentSlide}%)` }">
             <div v-for="(image, i) in slides" :key="i" class="swiper-slide">
               <div class="image-container" :style="{ height: containerHeight + 'px' }">
-                <img :src="image.url" :alt="image.title" />
+                <img :src="image.url" :alt="image.title" loading="lazy" decoding="async" class="lazy-img" @load="($event.target && $event.target.setAttribute('data-loaded','true'))" />
                 <div class="image-overlay">
                   <div class="image-info">
                     <h3>{{ image.title }}</h3>
@@ -31,7 +31,7 @@
               :class="{ active: currentSlide === i }"
               @click="goToSlide(i)"
             >
-              <img :src="image.url" :alt="image.title" />
+              <img :src="image.url" :alt="image.title" loading="lazy" decoding="async" class="lazy-img" @load="($event.target && $event.target.setAttribute('data-loaded','true'))" />
               <div class="thumb-overlay">
                 <span>👁</span>
               </div>
@@ -133,6 +133,12 @@ onBeforeUnmount(() => {
 .image-container { width: 100%; position: relative; display:flex; align-items:center; justify-content:center; background:#000; }
 /* Show full image without cropping (force contain by giving container a height) */
 .image-container img { width: 100%; height: 100%; object-fit: contain; display:block }
+/* LQIP */
+.image-container img.lazy-img{ filter: blur(12px); transform: scale(1.01); background:#0b0b0b }
+.image-container img.lazy-img[data-loaded="true"]{ filter:none; transform:none; transition: filter .3s ease, transform .3s ease }
+/* LQIP */
+.image-container img.lazy-img{ filter: blur(12px); transform: scale(1.01); background:#0b0b0b }
+.image-container img.lazy-img[data-loaded="true"]{ filter:none; transform:none; transition: filter .3s ease, transform .3s ease }
 .image-overlay { position: absolute; bottom: 64px; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 24px 20px 16px; opacity: 0; transition: opacity 0.3s ease; }
 .swiper-slide:hover .image-overlay { opacity: 1; }
 .image-info h3 { font-size: 2em; margin: 0 0 10px 0; font-weight: 700; }
@@ -147,6 +153,10 @@ onBeforeUnmount(() => {
 .thumbnail { position: relative; width: 68px; height: 50px; cursor: pointer; border-radius: 8px; overflow: hidden; transition: all 0.3s ease; border: 2px solid transparent; }
 .thumbnail.active { border-color: #12b3a6; transform: scale(1.1); }
 .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+.thumbnail img.lazy-img{ filter: blur(10px); transform: scale(1.02); background:#0b0b0b }
+.thumbnail img.lazy-img[data-loaded="true"]{ filter:none; transform:none; transition: filter .25s ease, transform .25s ease }
+.thumbnail img.lazy-img{ filter: blur(10px); transform: scale(1.02); background:#0b0b0b }
+.thumbnail img.lazy-img[data-loaded="true"]{ filter:none; transform:none; transition: filter .25s ease, transform .25s ease }
 .thumb-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
 .thumbnail:hover .thumb-overlay { opacity: 1; }
 /* Hide potential scrollbars across browsers */

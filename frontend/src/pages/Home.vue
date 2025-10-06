@@ -4,7 +4,7 @@
       <div class="hero-grid">
         <div class="hero-copy">
           <h1 class="name">Cedric Arnhold</h1>
-          <p class="tagline">{{ lang === 'en' ? 'Redefining IT with AI' : 'Mit KI die IT-Welt neu definieren' }}</p>
+          <p class="tagline">{{ lang === 'en' ? 'Custom web and automation solutions across Germany.' : 'Individuelle Web- und Automatisierungslösungen für Unternehmen in ganz Deutschland.' }}</p>
           <p class="intro">
             <template v-if="lang==='en'">
               I'm Cedric, studying Business Informatics in Berlin and building projects I enjoy — from websites and small tools to server setups. Here you’ll find a selection of my work, a gallery, blog posts and ways to get in touch.
@@ -38,12 +38,14 @@
             <h3 class="text-white font-semibold">{{ lang==='en' ? 'Highlights' : 'Highlights' }}</h3>
           </div>
           <ul class="text-zinc-300 text-sm space-y-1">
-            <li v-if="lang!=='en'">• Sauberes Glass-UI mit variabler Akzentfarbe</li>
-            <li v-else>• Clean Glass-UI with variable accent color</li>
-            <li v-if="lang!=='en'">• Reaktionsschnelle Micro-Animationen</li>
-            <li v-else>• Responsive micro-animations</li>
-            <li v-if="lang!=='en'">• Klares Informationsdesign für Tech-Profile</li>
-            <li v-else>• Clear information design for tech profiles</li>
+            <li v-if="lang!=='en'">• Individuelle Websites und Landingpages</li>
+            <li v-else>• Custom websites and landing pages</li>
+            <li v-if="lang!=='en'">• Automatisierungen für Vertrieb/Backoffice</li>
+            <li v-else>• Business automations for sales/back office</li>
+            <li v-if="lang!=='en'">• Hosting, Deployment & Monitoring</li>
+            <li v-else>• Hosting, deployment & monitoring</li>
+            <li v-if="lang!=='en'">• Wartung und Weiterentwicklung nach Bedarf</li>
+            <li v-else>• Maintenance and continuous improvement</li>
           </ul>
         </div>
         <div class="glass-card p-4">

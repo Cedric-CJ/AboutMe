@@ -2,7 +2,7 @@
   <div class="modern-gallery-1">
     <div class="gallery-grid">
       <div v-for="(image, i) in slides" :key="i" class="img-box" @click="selectImage(i)">
-        <img :src="image.url" :alt="image.title" />
+        <img :src="image.url" :alt="image.title" loading="lazy" decoding="async" class="lazy-img" @load="($event.target && $event.target.setAttribute('data-loaded','true'))" />
         <div class="overlay">
           <div class="caption">
             <p class="title">{{ image.title }}</p>
@@ -63,6 +63,8 @@ function selectImage(index) {
   cursor: pointer;
   border-radius: 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  content-visibility: auto;
+  contain-intrinsic-size: 250px 350px;
 }
 
 .img-box img {
@@ -71,6 +73,9 @@ function selectImage(index) {
   object-fit: cover;
   transition: transform 0.4s ease;
 }
+/* LQIP */
+.img-box img.lazy-img{ filter: blur(12px); transform: scale(1.02); background:#0b0b0b }
+.img-box img.lazy-img[data-loaded="true"]{ filter:none; transform:none; transition: filter .3s ease, transform .3s ease }
 
 .overlay {
   position: absolute;

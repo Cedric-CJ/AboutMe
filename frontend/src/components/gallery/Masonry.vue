@@ -2,7 +2,14 @@
   <div class="modern-gallery-2">
     <div class="gallery-container">
       <div v-for="(image, i) in slides" :key="i" class="gallery-item" @click="openLightbox(i)">
-        <img :src="image.url" :alt="image.title" />
+        <img
+          :src="image.url"
+          :alt="image.title"
+          loading="lazy"
+          decoding="async"
+          class="lazy-img"
+          @load="($event.target && $event.target.setAttribute('data-loaded','true'))"
+        />
         <div class="item-overlay">{{ image.title }}</div>
       </div>
     </div>
@@ -24,7 +31,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -68,6 +75,20 @@ function openLightbox(index) {
 function closeLightbox() {
   lightboxOpen.value = false
 }
+
+function onKeydown(e){
+  if (e.key === 'Escape' && lightboxOpen.value) {
+    e.preventDefault()
+    closeLightbox()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', onKeydown)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onKeydown)
+})
 </script>
 
 <style scoped>
@@ -94,6 +115,8 @@ function closeLightbox() {
   cursor: pointer;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  content-visibility: auto;
+  contain-intrinsic-size: 200px 200px;
 }
 
 .gallery-item:nth-child(6n + 1) { grid-column: span 2; grid-row: span 2; }
@@ -107,6 +130,10 @@ function closeLightbox() {
   object-fit: cover;
   transition: all 0.5s ease;
 }
+
+/* LQIP blur until loaded */
+.gallery-item img.lazy-img { filter: blur(14px); transform: scale(1.02); background:#0b0b0b }
+.gallery-item img.lazy-img[data-loaded="true"] { filter: none; transform: none; transition: filter .3s ease, transform .3s ease }
 
 .item-overlay {
   position: absolute;

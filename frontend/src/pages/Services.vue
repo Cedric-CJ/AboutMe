@@ -82,7 +82,16 @@
           </div>
           
           <div class="flex gap-2">
-            <button type="submit" class="glass-btn px-4 py-2 rounded-md flex-1">{{ lang==='en' ? 'Send inquiry' : 'Anfrage senden' }}</button>
+            <button
+              type="submit"
+              class="glass-btn px-4 py-2 rounded-md flex-1 g-recaptcha"
+              :data-sitekey="SITE_KEY"
+              data-callback="onSubmitServices"
+              data-action="submit"
+              :disabled="isSubmitting"
+            >
+              {{ isSubmitting ? (lang==='en' ? 'Sending…' : 'Sende…') : (lang==='en' ? 'Send inquiry' : 'Anfrage senden') }}
+            </button>
             <button type="button" @click="closeInquiry" class="glass-btn-secondary px-4 py-2 rounded-md">{{ lang==='en' ? 'Cancel' : 'Abbrechen' }}</button>
           </div>
         </form>
@@ -157,6 +166,8 @@ const lang = computed(() => {
   return 'de'
 })
 
+function onSubmitServices(){ if (!isSubmitting.value) submitInquiry() }
+
 // Products with canonical IDs; titles/descriptions localized per language
 const demoProductsDe = [
   { id: 'consulting', title: 'Beratung', description: 'Individuelle Beratung rund um Web, Hosting und Modernisierung.', price_cents: 9900, currency: 'EUR', tags: ['Service'], active: true },
@@ -191,8 +202,25 @@ const inquiry = ref({
   message: ''
 })
 
+// reCAPTCHA + API config/state
+const SITE_KEY = '6LfEZOArAAAAAJQSDu4dxnGsq_9w6LVL4JbKvtU4' // reCAPTCHA Enterprise site key
+const API_URL = import.meta.env?.VITE_INQUIRY_API || '/api/inquiry'
+const isSubmitting = ref(false)
+const submitError = ref('')
+const submitSuccess = ref(false)
+
 onMounted(async () => {
-  // Showcase only; engagements happen after direct contact
+  // load recaptcha enterprise script if not present
+  try{
+    if (!(window.grecaptcha && window.grecaptcha.enterprise)){
+      const s = document.createElement('script')
+      s.src = 'https://www.google.com/recaptcha/enterprise.js?render=' + encodeURIComponent(SITE_KEY)
+      s.async = true
+      document.head.appendChild(s)
+    }
+  }catch{}
+  // expose callback for data-callback attribute
+  try{ window.onSubmitServices = onSubmitServices }catch{}
 })
 
 function formatPrice(cents) {
@@ -291,17 +319,50 @@ watch(selectedProductId, () => {
   if (showInquiryOverlay.value) updateInquiryTemplateService()
 })
 
-function submitInquiry() {
-  const p = inquirySelectedProduct.value
-  const subject = emailSubject.value
-  const body = lang.value === 'en'
-    ? `Name: ${inquiry.value.name}\nEmail: ${inquiry.value.email}\nPhone: ${inquiry.value.phone || 'Not provided'}\n\nService: ${p ? sanitizeTitle(p.title) : 'Not specified'}\nPrice: ${p ? formatPriceWithContext(p) : 'N/A'}\n\nMessage for Cedric:\n${inquiry.value.message}`
-    : `Name: ${inquiry.value.name}\nE-Mail: ${inquiry.value.email}\nTelefon: ${inquiry.value.phone || 'Nicht angegeben'}\n\nService: ${p ? sanitizeTitle(p.title) : 'Nicht spezifiziert'}\nPreis: ${p ? formatPriceWithContext(p) : 'N/A'}\n\nNachricht an Cedric:\n${inquiry.value.message}`
+async function submitInquiry() {
+  submitError.value = ''
+  submitSuccess.value = false
+  isSubmitting.value = true
+  try{
+    // reCAPTCHA token
+    const token = await new Promise((resolve, reject) => {
+      try{
+        window.grecaptcha?.enterprise?.ready(async () => {
+          try{
+            const t = await window.grecaptcha.enterprise.execute(SITE_KEY, { action: 'LOGIN' })
+            resolve(t)
+          }catch(err){ reject(err) }
+        })
+      }catch(err){ reject(err) }
+    })
 
-  const mailtoLink = `mailto:cedric.jon.arnhold@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-  window.open(mailtoLink, '_blank')
-  
-  closeInquiry()
+    const p = inquirySelectedProduct.value
+    const payload = {
+      name: inquiry.value.name,
+      email: inquiry.value.email,
+      phone: inquiry.value.phone,
+      subject: emailSubject.value,
+      message: inquiry.value.message,
+      source: 'services',
+      service_id: p ? p.id : null,
+      recaptcha_token: token
+    }
+
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      credentials: 'omit'
+    })
+    if (!res.ok) throw new Error('Request failed: ' + res.status)
+    submitSuccess.value = true
+    closeInquiry()
+  }catch(err){
+    submitError.value = String(err?.message || err || 'Unknown error')
+    console.error('Services inquiry failed', err)
+  }finally{
+    isSubmitting.value = false
+  }
 }
 </script>
 

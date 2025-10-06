@@ -2,7 +2,7 @@
   <div class="CardGallery">
     <div class="card" v-for="card in localizedCards" :key="card.caption">
       <div class="card__image">
-        <img :src="card.image" :alt="card.caption" />
+        <img :src="card.image" :alt="card.caption" loading="lazy" decoding="async" class="lazy-img" @load="($event.target && $event.target.setAttribute('data-loaded','true'))" />
       </div>
       <div class="card__head">{{ card.caption }}</div>
     </div>
@@ -48,4 +48,7 @@ export default {
 .CardGallery .card .card__image { width:100%; height:100%; transition:all 1s; filter:grayscale(100%); display:flex; justify-content:center; align-items:center; background:#ccc; }
 .CardGallery .card:not(:nth-child(5)) { margin-right:1em; }
 .CardGallery .card .card__image img { width:100%; height:100%; object-fit:cover; }
+/* LQIP */
+.CardGallery .card .card__image img.lazy-img{ filter: blur(12px); transform: scale(1.02); background:#0b0b0b }
+.CardGallery .card .card__image img.lazy-img[data-loaded="true"]{ filter:none; transform:none; transition: filter .3s ease, transform .3s ease }
 </style>
