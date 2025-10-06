@@ -1,5 +1,5 @@
 <template>
-  <section class="page-auto-contrast min-h-[100vh] flex flex-col items-center justify-center">
+  <section class="page-auto-contrast contact-page min-h-[85vh] flex flex-col items-center justify-center">
     <h2 class="text-white text-3xl font-semibold mb-8">{{ lang==='en' ? 'Contact' : 'Kontakt' }}</h2>
     <div class="cards" @mousemove="handleMouseMove">
       <button class="card" @click="openEmail">
@@ -53,119 +53,120 @@
       </form>
     </div>
   </section>
-</template>
-<script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import emailDark from '@/assets/icons/email-dark.png'
-import emailLight from '@/assets/icons/email-light.png'
-import githubDark from '@/assets/icons/github-dark.svg'
-import githubLight from '@/assets/icons/github-light.svg'
-import linkedinDark from '@/assets/icons/linkedin-dark.svg'
-import linkedinLight from '@/assets/icons/linkedin-light.svg'
-import discordDark from '@/assets/icons/discord-dark.svg'
-import discordLight from '@/assets/icons/discord-light.svg'
+ </template>
+ <script setup>
+ import { ref, onMounted, onBeforeUnmount, onActivated, onDeactivated, computed } from 'vue'
+ import { useRoute } from 'vue-router'
+ import emailDark from '@/assets/icons/email-dark.png'
+ import emailLight from '@/assets/icons/email-light.png'
+ import githubDark from '@/assets/icons/github-dark.svg'
+ import githubLight from '@/assets/icons/github-light.svg'
+ import linkedinDark from '@/assets/icons/linkedin-dark.svg'
+ import linkedinLight from '@/assets/icons/linkedin-light.svg'
+ import discordDark from '@/assets/icons/discord-dark.svg'
+ import discordLight from '@/assets/icons/discord-light.svg'
 
-const isDark = ref(false)
-const form = ref({ name:'', email:'', subject:'', message:'' })
-const isSubmitting = ref(false)
-const submitError = ref('')
-const submitSuccess = ref(false)
+ const isDark = ref(false)
+ const form = ref({ name:'', email:'', subject:'', message:'' })
+ const isSubmitting = ref(false)
+ const submitError = ref('')
+ const submitSuccess = ref(false)
 
-const SITE_KEY = '6LfEZOArAAAAAJQSDu4dxnGsq_9w6LVL4JbKvtU4' // reCAPTCHA Enterprise site key
-const API_URL = import.meta.env?.VITE_INQUIRY_API || '/api/inquiry'
+ const SITE_KEY = '6LfEZOArAAAAAJQSDu4dxnGsq_9w6LVL4JbKvtU4'
+ const API_URL = import.meta.env?.VITE_INQUIRY_API || '/api/inquiry'
 
-// Language detection (route name prefix or preferred_lang)
-const route = useRoute()
-const lang = computed(() => {
-  const n = String(route.name || '')
-  if (n.startsWith('de-')) return 'de'
-  if (n.startsWith('en-')) return 'en'
-  try {
-    const pref = localStorage.getItem('preferred_lang')
-    if (pref === 'de' || pref === 'en') return pref
-  } catch (e) {}
-  return 'de'
+ // Language detection (route name prefix or preferred_lang)
+ const route = useRoute()
+ const lang = computed(() => {
+   const n = String(route.name || '')
+   if (n.startsWith('de-')) return 'de'
+   if (n.startsWith('en-')) return 'en'
+   try {
+     const pref = localStorage.getItem('preferred_lang')
+     if (pref === 'de' || pref === 'en') return pref
+   } catch (e) {}
+   return 'de'
+ })
+
+ function openEmail(){
+   const addr = lang.value === 'en' ? 'info@specialcode.de' : 'info@spezialcode.de'
+   window.location.href = `mailto:${addr}`
+ }
+ function handleMouseMove(event){
+   const cards = document.querySelectorAll('.card')
+   cards.forEach(card => {
+     const rect = card.getBoundingClientRect()
+     const x = event.clientX - rect.left
+     const y = event.clientY - rect.top
+     card.style.setProperty('--xPos', `${x}px`)
+     card.style.setProperty('--yPos', `${y}px`)
+   })
+ }
+
+ onMounted(() => {
+   const m = window.matchMedia('(prefers-color-scheme: dark)')
+   isDark.value = m.matches
+   m.addEventListener('change', e => isDark.value = e.matches)
+   // ensure reCAPTCHA enterprise script is loaded
+   try {
+     if (!(window.grecaptcha && window.grecaptcha.enterprise)) {
+       const s = document.createElement('script')
+       s.src = 'https://www.google.com/recaptcha/enterprise.js?render=' + encodeURIComponent(SITE_KEY)
+       s.async = true
+       document.head.appendChild(s)
+     }
+   } catch {}
+   // expose callback for data-callback attribute
+   try { window.onSubmit = onSubmit } catch {}
 })
+ // reCAPTCHA button callback
+ function onSubmit(){ if (!isSubmitting.value) submitInquiry() }
+ async function submitInquiry(){
+   submitError.value = ''
+   submitSuccess.value = false
+   isSubmitting.value = true
+   try{
+     // obtain reCAPTCHA enterprise token
+     const token = await new Promise((resolve, reject) => {
+       try{
+         window.grecaptcha?.enterprise?.ready(async () => {
+           try{
+             const t = await window.grecaptcha.enterprise.execute(SITE_KEY, { action: 'submit' })
+             resolve(t)
+           }catch(err){ reject(err) }
+         })
+       }catch(err){ reject(err) }
+     })
 
-function openEmail(){
-  const addr = lang.value === 'en' ? 'info@specialcode.de' : 'info@spezialcode.de'
-  window.location.href = `mailto:${addr}`
-}
-function handleMouseMove(event){
-  const cards = document.querySelectorAll('.card')
-  cards.forEach(card => {
-    const rect = card.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-    card.style.setProperty('--xPos', `${x}px`)
-    card.style.setProperty('--yPos', `${y}px`)
-  })
-}
-onMounted(() => {
-  const m = window.matchMedia('(prefers-color-scheme: dark)')
-  isDark.value = m.matches
-  m.addEventListener('change', e => isDark.value = e.matches)
-  // ensure reCAPTCHA enterprise script is loaded
-  try {
-    if (!(window.grecaptcha && window.grecaptcha.enterprise)) {
-      const s = document.createElement('script')
-      s.src = 'https://www.google.com/recaptcha/enterprise.js?render=' + encodeURIComponent(SITE_KEY)
-      s.async = true
-      document.head.appendChild(s)
-    }
-  } catch {}
-  // expose callback for data-callback attribute
-  try { window.onSubmit = onSubmit } catch {}
-})
-// reCAPTCHA button callback
-function onSubmit(){ if (!isSubmitting.value) submitInquiry() }
-async function submitInquiry(){
-  submitError.value = ''
-  submitSuccess.value = false
-  isSubmitting.value = true
-  try{
-    // obtain reCAPTCHA enterprise token
-    const token = await new Promise((resolve, reject) => {
-      try{
-        window.grecaptcha?.enterprise?.ready(async () => {
-          try{
-            const t = await window.grecaptcha.enterprise.execute(SITE_KEY, { action: 'LOGIN' })
-            resolve(t)
-          }catch(err){ reject(err) }
-        })
-      }catch(err){ reject(err) }
-    })
+     const payload = {
+       name: form.value.name,
+       email: form.value.email,
+       subject: form.value.subject,
+       phone: '',
+       message: form.value.message,
+       source: 'contact',
+       service_id: null,
+       recaptcha_token: token
+     }
 
-    const payload = {
-      name: form.value.name,
-      email: form.value.email,
-      subject: form.value.subject,
-      phone: '',
-      message: form.value.message,
-      source: 'contact',
-      service_id: null,
-      recaptcha_token: token
-    }
-
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      credentials: 'omit'
-    })
-    if (!res.ok) throw new Error('Request failed: ' + res.status)
-    submitSuccess.value = true
-    resetForm()
-  }catch(err){
-    submitError.value = String(err?.message || err || 'Unknown error')
-    console.error('Submit failed', err)
-  }finally{
-    isSubmitting.value = false
-  }
-}
-function resetForm(){ form.value = { name:'', email:'', subject:'', message:'' } }
-</script>
+     const res = await fetch(API_URL, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify(payload),
+       credentials: 'omit'
+     })
+     if (!res.ok) throw new Error('Request failed: ' + res.status)
+     submitSuccess.value = true
+     resetForm()
+   }catch(err){
+     submitError.value = String(err?.message || err || 'Unknown error')
+     console.error('Submit failed', err)
+   }finally{
+     isSubmitting.value = false
+   }
+ }
+ function resetForm(){ form.value = { name:'', email:'', subject:'', message:'' } }
+ </script>
 <style scoped>
 .cards{ display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:16px }
 @media(min-width:640px){ .cards{ grid-template-columns: repeat(4,minmax(0,1fr)) } }

@@ -150,7 +150,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 // Language detection (route name prefix or preferred_lang)
@@ -221,7 +221,22 @@ onMounted(async () => {
   }catch{}
   // expose callback for data-callback attribute
   try{ window.onSubmitServices = onSubmitServices }catch{}
+  // show badge only on this page
+  setRecaptchaBadgeVisible(true)
 })
+
+onBeforeUnmount(() => { setRecaptchaBadgeVisible(false) })
+
+function setRecaptchaBadgeVisible(visible){
+  try{
+    const el = document.querySelector('.grecaptcha-badge')
+    if (el){ el.style.visibility = visible ? 'visible' : 'hidden' }
+    else if (visible){
+      // if not yet mounted, retry shortly
+      setTimeout(() => setRecaptchaBadgeVisible(true), 400)
+    }
+  }catch{}
+}
 
 function formatPrice(cents) {
   if (cents === 0) return lang.value === 'en' ? 'Price on request' : 'Preis auf Anfrage'
@@ -329,7 +344,7 @@ async function submitInquiry() {
       try{
         window.grecaptcha?.enterprise?.ready(async () => {
           try{
-            const t = await window.grecaptcha.enterprise.execute(SITE_KEY, { action: 'LOGIN' })
+            const t = await window.grecaptcha.enterprise.execute(SITE_KEY, { action: 'submit' })
             resolve(t)
           }catch(err){ reject(err) }
         })
