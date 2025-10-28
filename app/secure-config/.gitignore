@@ -4,7 +4,7 @@
 *.json
 *.txt
 mail.secrets.php
-.htaccess_backup
+.htaccess*
 
 # Allow the README to stay committed.
 !README.md

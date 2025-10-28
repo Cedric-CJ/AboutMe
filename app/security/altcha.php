@@ -9,7 +9,7 @@ declare(strict_types=1);
  */
 
 // Environment-Loader
-function getEnv($key, $default = null) {
+function altchaEnv($key, $default = null) {
   static $vars = null;
   if ($vars === null) {
     $vars = [];
@@ -78,7 +78,7 @@ function altchaRandomInt(int $min, int $max): int {
 }
 
 function generateAltchaChallenge(): array {
-  $secret = getEnv('ALTCHA_SECRET_KEY');
+  $secret = altchaEnv('ALTCHA_SECRET_KEY');
   if (!$secret) {
     throw new RuntimeException('ALTCHA_SECRET_KEY not set in .env');
   }
@@ -115,7 +115,7 @@ function generateAltchaChallenge(): array {
  * @return bool True wenn valid
  */
 function verifyAltcha(string $payload): bool {
-  $secret = getEnv('ALTCHA_SECRET_KEY');
+  $secret = altchaEnv('ALTCHA_SECRET_KEY');
   if (!$secret) {
     return false;
   }
