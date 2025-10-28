@@ -50,8 +50,9 @@ const props = defineProps({
 
 const isHovering = ref(false)
 const keepOpen = ref(false)
+const forceClosed = ref(false)
 let closeTimer = null
-const isOpen = computed(() => isHovering.value || keepOpen.value)
+const isOpen = computed(() => !forceClosed.value && (isHovering.value || keepOpen.value))
 
 // Compute language from prop, then fall back to preferred_lang localStorage, else 'en'
 // tick to force recompute on preferred_lang_changed
@@ -82,6 +83,11 @@ onBeforeUnmount(() => {
 })
 // Manage delayed close on mouse leave (3s)
 watch(isHovering, (h) => {
+  // If we're forcing it closed, ignore hover-driven open/close changes
+  if (forceClosed.value) {
+    if (closeTimer) { clearTimeout(closeTimer); closeTimer = null }
+    return
+  }
   if (h) {
     keepOpen.value = false
     if (closeTimer) { clearTimeout(closeTimer); closeTimer = null }
@@ -98,13 +104,16 @@ function clearLocal(){
     localStorage.removeItem('accent')
     localStorage.removeItem('intro_last_seen_ms')
   }catch{/* ignore */}
+  // Let the app decide how to react (navigate to home and/or show intro)
+  try { window.dispatchEvent(new Event('local_storage_cleared')) } catch {/* ignore */}
+  // Close the banner immediately for clean UX, even if still hovered
   try{
-    const g = (typeof globalThis !== 'undefined') ? globalThis : (typeof window !== 'undefined' ? window : null)
-    if (g && g.location && typeof g.location.reload === 'function') {
-      g.location.reload()
-    } else if (g && g.history && typeof g.history.go === 'function') {
-      g.history.go(0)
-    }
+    forceClosed.value = true
+    if (closeTimer) { clearTimeout(closeTimer); closeTimer = null }
+    keepOpen.value = false
+    isHovering.value = false
+    // keep it closed briefly to avoid reopening due to residual hover/mousemove
+    setTimeout(() => { forceClosed.value = false }, 2000)
   }catch{/* ignore */}
 }
 

@@ -172,12 +172,33 @@ onMounted(() => {
   window.addEventListener('preferred_lang_changed', onLangChanged)
   // stash for cleanup
   ;(window.__app_onLangChangedHandlers ||= []).push(onLangChanged)
+
+  // React to local storage clear action from cookie banner
+  const onLocalCleared = () => {
+    try {
+      // if not on homepage, navigate there to meet intro route condition
+      if (!(route?.name === 'home' || route?.path === '/')) {
+        router.replace('/')
+      } else {
+        // already on home: recompute intro visibility immediately
+        updateIntroVisibility(route)
+      }
+    } catch (e) {
+      // fallback: try to recompute anyway
+      try { updateIntroVisibility(route) } catch {}
+    }
+  }
+  window.addEventListener('local_storage_cleared', onLocalCleared)
+  ;(window.__app_onLocalClearedHandlers ||= []).push(onLocalCleared)
 })
 
 onBeforeUnmount(() => {
   const handlers = window.__app_onLangChangedHandlers || []
   handlers.forEach(h => window.removeEventListener('preferred_lang_changed', h))
   window.__app_onLangChangedHandlers = []
+  const lcHandlers = window.__app_onLocalClearedHandlers || []
+  lcHandlers.forEach(h => window.removeEventListener('local_storage_cleared', h))
+  window.__app_onLocalClearedHandlers = []
 })
 
 // Intro visibility logic: show on ALL routes if no recent cookie, else suppress
@@ -189,9 +210,13 @@ const INTRO_COOLDOWN_MS = 60 * 60 * 1000 // 1 hour
 
 function shouldShowIntroNow(r) {
   try {
+    // Check if this route has the showIntro meta flag
+    const shouldShowOnThisRoute = r?.meta?.showIntro === true || r?.name === 'home' || r?.path === '/'
+    if (!shouldShowOnThisRoute) return false // Only show on homepage
+    
     const last = parseInt(localStorage.getItem(INTRO_KEY) || '0', 10)
     const now = Date.now()
-    if (!last) return true // no cookie: play intro on all pages
+    if (!last) return true // no cookie: play intro on homepage
     if (now - last > INTRO_COOLDOWN_MS) return true // older than 1h: play
     return false // within 1h: suppress
   } catch (e) {

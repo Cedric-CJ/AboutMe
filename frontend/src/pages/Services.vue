@@ -81,11 +81,26 @@
             <textarea v-model="inquiry.message" required rows="8" class="w-full bg-white/5 border border-white/10 text-white placeholder:text-zinc-500 px-3 py-2 rounded-md resize-none min-h-[200px]" :placeholder="lang==='en' ? 'Describe your project or inquiry...' : 'Beschreiben Sie Ihr Projekt oder Ihre Anfrage...'"></textarea>
           </div>
           
+          <!-- ALTCHA Widget -->
+          <AltchaWidget 
+            ref="altchaWidget"
+            :api-url="API_URL.replace('/inquiry', '/challenge')"
+            @verified="onAltchaVerified"
+            @error="onAltchaError"
+          />
+          
+          <div v-if="submitError" class="error-message">
+            {{ submitError }}
+          </div>
+          <div v-if="submitSuccess" class="success-message">
+            {{ lang==='en' ? 'Your inquiry has been sent successfully!' : 'Ihre Anfrage wurde erfolgreich gesendet!' }}
+          </div>
+          
           <div class="flex gap-2">
             <button
               type="submit"
               class="glass-btn px-4 py-2 rounded-md flex-1"
-              :disabled="isSubmitting"
+              :disabled="isSubmitting || !altchaVerified"
             >
               {{ isSubmitting ? (lang==='en' ? 'Sending…' : 'Sende…') : (lang==='en' ? 'Send inquiry' : 'Anfrage senden') }}
             </button>
@@ -143,12 +158,31 @@
         </div>
       </div>
     </div>
+    
+    <!-- Backend Maintenance Popup -->
+    <BackendInProzess 
+      :show="showBackendPopup"
+      :form-data="{
+        name: inquiry.name,
+        email: inquiry.email,
+        phone: inquiry.phone,
+        subject: emailSubject,
+        message: inquiry.message,
+        service: inquirySelectedProduct?.title || ''
+      }"
+      :lang="lang"
+      :company-email="lang === 'en' ? 'info@specialcode.de' : 'info@spezialcode.de'"
+      @close="showBackendPopup = false"
+      @email-opened="onEmailFallbackUsed"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import AltchaWidget from '@/components/AltchaWidget.vue'
+import BackendInProzess from '@/components/BackendInProzess.vue'
 
 // Language detection (route name prefix or preferred_lang)
 const route = useRoute()
@@ -163,7 +197,7 @@ const lang = computed(() => {
   return 'de'
 })
 
-// Programmatic reCAPTCHA execution is handled in submitInquiry()
+// ALTCHA verification is handled via AltchaWidget component
 
 // Products with canonical IDs; titles/descriptions localized per language
 const demoProductsDe = [
@@ -199,39 +233,28 @@ const inquiry = ref({
   message: ''
 })
 
-// reCAPTCHA + API config/state
-const SITE_KEY = '6LefTOArAAAAAEam42ts9ZORABrCiUa1hTi8ZGtp' // reCAPTCHA Enterprise site key
-const API_URL = import.meta.env?.VITE_INQUIRY_API || '/api/inquiry'
+// ALTCHA + API config/state
+const API_URL = import.meta.env?.VITE_INQUIRY_API || 'http://localhost:3000/api/inquiry'
 const isSubmitting = ref(false)
 const submitError = ref('')
 const submitSuccess = ref(false)
+const altchaWidget = ref(null)
+const altchaVerified = ref(false)
+const showBackendPopup = ref(false)
 
-onMounted(async () => {
-  // load recaptcha enterprise script if not present
-  try{
-    if (!(window.grecaptcha && window.grecaptcha.enterprise)){
-      const s = document.createElement('script')
-      s.src = 'https://www.google.com/recaptcha/enterprise.js?render=' + encodeURIComponent(SITE_KEY)
-      s.async = true
-      document.head.appendChild(s)
-    }
-  }catch{}
-  // no v2-style callbacks; submission triggers token programmatically
-  // show badge only on this page
-  setRecaptchaBadgeVisible(true)
-})
+// Backend Status - set to true when backend is ready, false to show popup
+const BACKEND_ACTIVE = import.meta.env?.VITE_BACKEND_ACTIVE === 'true' || false
 
-onBeforeUnmount(() => { setRecaptchaBadgeVisible(false) })
+function onAltchaVerified(payload) {
+  altchaVerified.value = true
+  submitError.value = ''
+}
 
-function setRecaptchaBadgeVisible(visible){
-  try{
-    const el = document.querySelector('.grecaptcha-badge')
-    if (el){ el.style.visibility = visible ? 'visible' : 'hidden' }
-    else if (visible){
-      // if not yet mounted, retry shortly
-      setTimeout(() => setRecaptchaBadgeVisible(true), 400)
-    }
-  }catch{}
+function onAltchaError(error) {
+  altchaVerified.value = false
+  submitError.value = lang.value === 'en' 
+    ? 'Verification failed. Please try again.' 
+    : 'Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.'
 }
 
 function formatPrice(cents) {
@@ -280,6 +303,12 @@ function closeInquiry() {
   showInquiryOverlay.value = false
   selectedProduct.value = null
   inquiry.value = { name: '', email: '', phone: '', message: '' }
+  altchaVerified.value = false
+  submitSuccess.value = false
+  submitError.value = ''
+  if (altchaWidget.value) {
+    altchaWidget.value.reset()
+  }
 }
 
 function showInfo(product) {
@@ -333,20 +362,25 @@ watch(selectedProductId, () => {
 async function submitInquiry() {
   submitError.value = ''
   submitSuccess.value = false
+  
+  // Check if backend is active
+  if (!BACKEND_ACTIVE) {
+    showBackendPopup.value = true
+    return
+  }
+  
+  // Check ALTCHA verification
+  if (!altchaWidget.value || !altchaWidget.value.isVerified()) {
+    submitError.value = lang.value === 'en'
+      ? 'Please complete the verification first.'
+      : 'Bitte schließen Sie zuerst die Verifizierung ab.'
+    return
+  }
+  
   isSubmitting.value = true
   try{
-    // reCAPTCHA token
-    const token = await new Promise((resolve, reject) => {
-      try{
-        window.grecaptcha?.enterprise?.ready(async () => {
-          try{
-            const t = await window.grecaptcha.enterprise.execute(SITE_KEY, { action: 'submit' })
-            resolve(t)
-          }catch(err){ reject(err) }
-        })
-      }catch(err){ reject(err) }
-    })
-
+    const altchaPayload = altchaWidget.value.getPayload()
+    
     const p = inquirySelectedProduct.value
     const payload = {
       name: inquiry.value.name,
@@ -356,24 +390,51 @@ async function submitInquiry() {
       message: inquiry.value.message,
       source: 'services',
       service_id: p ? p.id : null,
-      recaptcha_token: token
+      altcha: altchaPayload
     }
 
     const res = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      credentials: 'omit'
+      body: JSON.stringify(payload)
     })
-    if (!res.ok) throw new Error('Request failed: ' + res.status)
+    
+    const data = await res.json()
+    
+    if (!res.ok) {
+      // If backend is not reachable, show fallback popup
+      if (res.status === 0 || res.status >= 500) {
+        showBackendPopup.value = true
+        return
+      }
+      throw new Error(data.error || 'Request failed: ' + res.status)
+    }
+    
     submitSuccess.value = true
-    closeInquiry()
+    setTimeout(() => {
+      closeInquiry()
+    }, 3000)
   }catch(err){
+    // Check if it's a network error (backend not reachable)
+    if (err.message.includes('Failed to fetch') || err.message.includes('Network')) {
+      showBackendPopup.value = true
+      isSubmitting.value = false
+      return
+    }
     submitError.value = String(err?.message || err || 'Unknown error')
     console.error('Services inquiry failed', err)
   }finally{
     isSubmitting.value = false
   }
+}
+
+function onEmailFallbackUsed() {
+  // Log when user uses email fallback
+  console.log('User used email fallback from services')
+  // Reset inquiry after email is opened
+  setTimeout(() => {
+    closeInquiry()
+  }, 1000)
 }
 </script>
 
@@ -433,4 +494,8 @@ async function submitInquiry() {
   scrollbar-width: none; /* Firefox */
 }
 .glass-modal::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Error and success messages */
+.error-message{ padding:10px 12px; background: rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); border-radius:8px; color:#ef4444; font-size:14px; margin-top:8px }
+.success-message{ padding:10px 12px; background: rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.3); border-radius:8px; color:#22c55e; font-size:14px; margin-top:8px }
 </style>
