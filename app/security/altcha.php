@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 declare(strict_types=1);
 
 /**
@@ -132,16 +132,16 @@ function generateAltchaChallenge(): array {
     throw new RuntimeException('ALTCHA_SECRET_KEY not set in .env');
   }
   
-  // Salt generieren (zufÃ¤llige Zeichenkette)
+  // Salt generieren (zufÃƒÂ¤llige Zeichenkette)
   $salt = bin2hex(altchaRandomBytes(16));
   
-  // ZufÃ¤llige Zahl fÃ¼r den Challenge
-  $number = altchaRandomInt(10000, 999999);
+  // ZufÃƒÂ¤llige Zahl fÃƒÂ¼r den Challenge
+  $number = altchaRandomInt(0, 99999);
   
   // Challenge berechnen: HMAC-SHA256 von Salt + Number
   $challenge = hash_hmac('sha256', $salt . $number, $secret);
   
-  // Signature generieren (fÃ¼r spÃ¤tere Verifizierung)
+  // Signature generieren (fÃƒÂ¼r spÃƒÂ¤tere Verifizierung)
   $signature = hash_hmac('sha256', json_encode([
     'algorithm' => 'SHA-256',
     'challenge' => $challenge,
@@ -158,7 +158,7 @@ function generateAltchaChallenge(): array {
 }
 
 /**
- * Verifiziert eine ALTCHA-LÃ¶sung
+ * Verifiziert eine ALTCHA-LÃƒÂ¶sung
  * 
  * @param string $payload Base64-encoded JSON payload
  * @return bool True wenn valid
@@ -180,7 +180,7 @@ function verifyAltcha(string $payload): bool {
     return false;
   }
   
-  // Pflichtfelder prÃ¼fen
+  // Pflichtfelder prÃƒÂ¼fen
   $required = ['algorithm', 'challenge', 'number', 'salt', 'signature'];
   foreach ($required as $field) {
     if (!isset($data[$field])) {
@@ -188,12 +188,12 @@ function verifyAltcha(string $payload): bool {
     }
   }
   
-  // Nur SHA-256 unterstÃ¼tzt
+  // Nur SHA-256 unterstÃƒÂ¼tzt
   if ($data['algorithm'] !== 'SHA-256') {
     return false;
   }
   
-  // LÃ¶sung verifizieren: hash(salt + number) muss challenge ergeben
+  // LÃƒÂ¶sung verifizieren: hash(salt + number) muss challenge ergeben
   $expectedChallenge = hash_hmac('sha256', $data['salt'] . $data['number'], $secret);
   if (!hash_equals($expectedChallenge, $data['challenge'])) {
     return false;
@@ -214,3 +214,4 @@ function verifyAltcha(string $payload): bool {
   
   return true;
 }
+

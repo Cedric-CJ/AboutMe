@@ -55,10 +55,10 @@ const i18n = computed(() => {
   if (props.lang === 'de') {
     return {
       verificationFailed: 'Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.',
-      verificationFailedLater: 'Verifizierung fehlgeschlagen. Bitte versuchen Sie es spÃ¤ter erneut.',
+      verificationFailedLater: 'Verifizierung fehlgeschlagen. Bitte versuchen Sie es spaeter erneut.',
       verificationExpired: 'Verifizierung abgelaufen. Bitte erneut versuchen.',
-      verifying: 'ÃœberprÃ¼fung lÃ¤uft â€¦',
-      verifyingWait: 'ÃœberprÃ¼fung lÃ¤uft â€¦ bitte warten.',
+      verifying: 'Überprüfung läuft ...',
+      verifyingWait: 'Überprüfung läuft ... bitte warten.',
       genericError: 'Ein Fehler ist aufgetreten.'
     };
   }
@@ -74,16 +74,16 @@ const i18n = computed(() => {
 
 const widgetStrings = computed(() => {
   if (props.lang === 'de') {
-    const aria = 'ALTCHA Webseite (Ã¶ffnet sich in neuem Fenster)';
+    const aria = 'ALTCHA Webseite (oeffnet sich in neuem Fenster)';
     return JSON.stringify({
       ariaLinkLabel: aria,
-      error: i18n.value.verificationFailedLater,
-      expired: i18n.value.verificationExpired,
-      footer: `GeschÃ¼tzt von <a href="https://altcha.org" target="_blank" aria-label="${aria}">ALTCHA</a>`,
+      error: 'Verifizierung fehlgeschlagen. Bitte erneut versuchen.',
+      expired: 'Verifizierung abgelaufen. Bitte erneut versuchen.',
+      footer: `Geschuetzt von <a href="https://altcha.org" target="_blank" aria-label="${aria}">ALTCHA</a>`,
       label: 'Ich bin kein Roboter',
       verified: 'Verifiziert',
-      verifying: i18n.value.verifying,
-      waitAlert: i18n.value.verifyingWait
+      verifying: 'Überprüfung läuft ...',
+      waitAlert: 'Überprüfung läuft ... bitte warten.'
     });
   }
   return undefined;
@@ -210,4 +210,3 @@ altcha-widget {
 :deep(altcha-widget .altcha-status) { display: none !important; }
 :deep(altcha-widget .altcha-message) { display: none !important; }
 </style>
-
