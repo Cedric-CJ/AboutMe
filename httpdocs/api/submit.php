@@ -13,7 +13,7 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
     'https://www.spezialcode.de',
     'http://localhost:5173',   // Vite Dev Server
     'http://127.0.0.1:5173',   // Vite Dev Server (alternative)
-    'http://localhost:3000'    // Alte Node.js Dev Server (falls noch im Einsatz)
+    'https://cedric-cj.github.io/AboutMe'    //GitHub Pages
   ];
   if (in_array($_SERVER['HTTP_ORIGIN'], $allowed, true)) {
     header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);

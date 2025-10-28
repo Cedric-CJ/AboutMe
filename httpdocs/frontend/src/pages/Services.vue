@@ -84,7 +84,7 @@
           <!-- ALTCHA Widget -->
           <AltchaWidget 
             ref="altchaWidget"
-            :api-url="API_URL.replace('/submit.php', '/challenge.php')"
+            :api-url="CHALLENGE_URL"
             :lang="lang"
             @verified="onAltchaVerified"
             @error="onAltchaError"
@@ -235,7 +235,27 @@ const inquiry = ref({
 })
 
 // ALTCHA + API config/state
-const API_URL = import.meta.env?.VITE_INQUIRY_API || 'http://127.0.0.1:8000/api/submit.php'
+const API_URL = (() => {
+  const envUrl = import.meta.env?.VITE_INQUIRY_API
+  if (envUrl && envUrl.trim() !== '') {
+    return envUrl
+  }
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    const origin = window.location.origin.replace(/\/$/, '')
+    return `${origin}/api/submit.php`
+  }
+  return '/api/submit.php'
+})()
+
+const CHALLENGE_URL = (() => {
+  if (API_URL.includes('submit.php')) {
+    return API_URL.replace('submit.php', 'challenge.php')
+  }
+  if (API_URL.endsWith('/submit')) {
+    return API_URL.slice(0, -('/submit'.length)) + '/challenge'
+  }
+  return '/api/challenge.php'
+})()
 const isSubmitting = ref(false)
 const submitError = ref('')
 const submitSuccess = ref(false)

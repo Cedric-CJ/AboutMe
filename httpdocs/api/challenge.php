@@ -12,6 +12,7 @@ $allowed = [
   'https://www.spezialcode.de',
   'http://localhost:5173', // Vite Dev Server
   'http://127.0.0.1:5173', // Vite Dev Server (alternative)
+  'https://cedric-cj.github.io/AboutMe'    //GitHub Pages
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
