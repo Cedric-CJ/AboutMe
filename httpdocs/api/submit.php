@@ -82,7 +82,11 @@ $candidates = [
   __DIR__ . '/../../app',   // account-root/app
 ];
 foreach ($candidates as $c) {
-  if (is_dir($c)) { $APP_DIR = $c; break; }
+  $resolved = @realpath($c);
+  if ($resolved !== false && @is_dir($resolved)) {
+    $APP_DIR = $resolved;
+    break;
+  }
 }
 if ($APP_DIR === null) {
   http_response_code(500);

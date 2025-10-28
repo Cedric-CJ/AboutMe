@@ -1,4 +1,4 @@
-name: Deploy v2 to GH Pages and FTP
+﻿name: Deploy v2 to GH Pages and FTP
 
 on:
   push:
@@ -12,61 +12,86 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           persist-credentials: false
 
-      - name: Setup Node 🔧
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: npm
           cache-dependency-path: ./httpdocs/frontend/package-lock.json
 
-      - name: Install dependencies 📦
+      - name: Install dependencies
         run: npm ci
         working-directory: ./httpdocs/frontend
 
-      - name: Build for GitHub Pages 🏗️
+      - name: Build for GitHub Pages
         run: npm run build -- --outDir dist-gh
         working-directory: ./httpdocs/frontend
         env:
           NODE_ENV: production
           DEPLOY_TARGET: gh-pages
 
-      - name: Build for FTP 🏗️
+      - name: Build for FTP
         run: npm run build -- --outDir dist-ftp
         working-directory: ./httpdocs/frontend
         env:
           NODE_ENV: production
 
-      - name: Upload GH Pages artifact ⬆️
+      - name: Upload GH Pages artifact
         uses: actions/upload-artifact@v4
         with:
           name: web-dist-gh
           path: ./httpdocs/frontend/dist-gh
 
-      - name: Prepare FTP webroot (frontend + api) 📦
+      - name: Prepare FTP webroot (frontend + api + sanitized app)
         run: |
+          set -eux
           mkdir -p webroot
-          cp -r ./httpdocs/frontend/dist-ftp/* ./webroot/
-          mkdir -p ./webroot/api
-          cp -r ./httpdocs/api/* ./webroot/api/
 
-      - name: Upload FTP webroot artifact ⬆️
+          # Frontend build output
+          rsync -a --delete ./httpdocs/frontend/dist-ftp/ ./webroot/
+
+          # Public API scripts
+          mkdir -p ./webroot/api
+          rsync -a --delete ./httpdocs/api/ ./webroot/api/
+
+          # Backend helper files (exclude secrets)
+          mkdir -p ./webroot/app
+          rsync -a --delete \
+            --exclude 'logs/' \
+            --exclude 'logs/*' \
+            --exclude '.git/' \
+            --exclude '.gitignore' \
+            --exclude '.env' \
+            --exclude '.env.*' \
+            --exclude '*.env' \
+            --exclude '*.env.*' \
+            ./app/ ./webroot/app/
+
+          cat <<'EOF' > ./webroot/app/.htaccess
+# Protect backend helper directory from direct access
+Options -Indexes
+Require all denied
+<FilesMatch "(?i)\\.(php|phar|inc|env|json|lock|ini|log|txt)$">
+  Require all denied
+</FilesMatch>
+EOF
+
+      - name: Upload FTP webroot artifact
         uses: actions/upload-artifact@v4
         with:
           name: webroot-dist
           path: ./webroot
 
-      # Backend deployment removed per request; only frontend + /api are deployed
-
   deploy_pages:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download build artifact ⬇️
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: web-dist-gh
@@ -77,10 +102,10 @@ jobs:
 
       - name: Create robots.txt (disallow all) for GH Pages
         run: |
-          echo "User-agent: *" > ./dist/robots.txt
-          echo "Disallow: /" >> ./dist/robots.txt
+          echo 'User-agent: *' > ./dist/robots.txt
+          echo 'Disallow: /' >> ./dist/robots.txt
 
-      - name: Deploy to gh-pagesv2 🚀
+      - name: Deploy to gh-pagesv2
         if: ${{ github.event_name != 'pull_request' }}
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -92,13 +117,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download webroot artifact ⬇️
+      - name: Download webroot artifact
         uses: actions/download-artifact@v4
         with:
           name: webroot-dist
           path: ./webroot
 
-      - name: Deploy to spezialcode.de via FTP 🌐
+      - name: Deploy to spezialcode.de via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: hosting226601.ae8b8.netcup.net
@@ -114,6 +139,7 @@ jobs:
             **/.github/**
             **/node_modules/**
             **/.env
+            **/.env.*
             **/*.env
             **/*.env.*
             **/logs/**
@@ -122,13 +148,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download webroot artifact ⬇️
+      - name: Download webroot artifact
         uses: actions/download-artifact@v4
         with:
           name: webroot-dist
           path: ./webroot
 
-      - name: Deploy to specialcode.de via FTP 🌐
+      - name: Deploy to specialcode.de via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: hosting226601.ae8b8.netcup.net
@@ -144,6 +170,7 @@ jobs:
             **/.github/**
             **/node_modules/**
             **/.env
+            **/.env.*
             **/*.env
             **/*.env.*
             **/logs/**

@@ -19,9 +19,9 @@ $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 $host   = $_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? '');
 
 // Debug-Header zur Diagnose (nur für Entwicklung unkritisch)
-header('X-Debug-CORS', 'challenge.php');
-header('X-Debug-Origin', (string)$origin);
-header('X-Debug-Host', (string)$host);
+header('X-Debug-CORS: challenge.php');
+header('X-Debug-Origin: ' . (string)$origin);
+header('X-Debug-Host: ' . (string)$host);
 
 // Echo Origin zurück wenn erlaubt
 if ($origin && in_array($origin, $allowed, true)) {
@@ -60,7 +60,11 @@ $candidates = [
   __DIR__ . '/../../app',   // account-root/app
 ];
 foreach ($candidates as $c) {
-  if (is_dir($c)) { $APP_DIR = $c; break; }
+  $resolved = @realpath($c);
+  if ($resolved !== false && @is_dir($resolved)) {
+    $APP_DIR = $resolved;
+    break;
+  }
 }
 if ($APP_DIR === null) {
   http_response_code(500);
