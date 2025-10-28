@@ -8,6 +8,48 @@ declare(strict_types=1);
  * https://altcha.org/docs/api/
  */
 
+function altchaDecodeValue($value) {
+  if (!is_string($value)) {
+    return $value;
+  }
+  $prefix = 'base64:';
+  if (strncmp($value, $prefix, strlen($prefix)) === 0) {
+    $decoded = base64_decode(substr($value, strlen($prefix)), true);
+    if ($decoded !== false) {
+      return $decoded;
+    }
+  }
+  return $value;
+}
+
+function altchaLoadSecureConfig(): array {
+  static $cache = null;
+  if ($cache !== null) {
+    return $cache;
+  }
+  $cache = [];
+  $files = [
+    __DIR__ . '/../secure-config/mail.secrets.php',
+    __DIR__ . '/../../secure-config/mail.secrets.php',
+  ];
+  foreach ($files as $file) {
+    if (!is_readable($file)) {
+      continue;
+    }
+    $data = include $file;
+    if (!is_array($data)) {
+      continue;
+    }
+    foreach ($data as $k => $v) {
+      if (!is_string($k)) {
+        continue;
+      }
+      $cache[$k] = altchaDecodeValue($v);
+    }
+  }
+  return $cache;
+}
+
 // Environment-Loader
 function altchaEnv($key, $default = null) {
   static $vars = null;
@@ -29,9 +71,14 @@ function altchaEnv($key, $default = null) {
             $k = substr($k, 3);
           }
           $v = trim($parts[1]);
-          if ($k !== '') $vars[$k] = $v;
+          if ($k !== '') {
+            $vars[$k] = altchaDecodeValue($v);
+          }
         }
       }
+    }
+    foreach (altchaLoadSecureConfig() as $k => $v) {
+      $vars[$k] = $v;
     }
   }
   if (array_key_exists($key, $vars)) {
@@ -39,7 +86,9 @@ function altchaEnv($key, $default = null) {
   }
   // Fallback to process environment variables
   $env = getenv($key);
-  if ($env !== false) return $env;
+  if ($env !== false) {
+    return altchaDecodeValue($env);
+  }
   return $default;
 }
 
