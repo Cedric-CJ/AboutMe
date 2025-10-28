@@ -72,14 +72,64 @@ jobs:
             --exclude '*.env.*' \
             ./app/ ./webroot/app/
 
+          # Harden Apache/PHP behaviour inside httpdocs
+          cat <<'EOF' > ./webroot/.htaccess
+          Options -Indexes
+          ServerSignature Off
+
+          <IfModule mod_headers.c>
+            Header always set X-Content-Type-Options "nosniff"
+            Header always set X-Frame-Options "DENY"
+            Header always set Referrer-Policy "same-origin"
+            Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+            Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+          </IfModule>
+
+          <FilesMatch "(?i)\.(env|ini|log|sql|sqlite|yml|yaml|json|lock|md|sh|bat|ps1|phar)$">
+            Require all denied
+          </FilesMatch>
+
+          <IfModule mod_rewrite.c>
+            RewriteEngine On
+
+            # Block direct access to backend helper directories
+            RewriteRule ^(app|vendor)/ - [F,L]
+
+            # Let SPA routes fall back to index.html while leaving /api alone
+            RewriteCond %{REQUEST_URI} !^/api/ [NC]
+            RewriteCond %{REQUEST_FILENAME} !-f
+            RewriteCond %{REQUEST_FILENAME} !-d
+            RewriteRule ^ index.html [L]
+          </IfModule>
+          EOF
+
+          cat <<'EOF' > ./webroot/api/.htaccess
+          Options -Indexes
+          ServerSignature Off
+
+          <FilesMatch "(?i)\.(env|ini|log|sql|sqlite|yml|yaml|json|lock|md|phar)$">
+            Require all denied
+          </FilesMatch>
+
+          <LimitExcept GET POST OPTIONS>
+            Require all denied
+          </LimitExcept>
+
+          <IfModule mod_rewrite.c>
+            RewriteEngine On
+            RewriteCond %{REQUEST_FILENAME} !-f
+            RewriteRule ^([A-Za-z0-9_-]+)/?$ $1.php [L]
+          </IfModule>
+          EOF
+
           cat <<'EOF' > ./webroot/app/.htaccess
-# Protect backend helper directory from direct access
-Options -Indexes
-Require all denied
-<FilesMatch "(?i)\\.(php|phar|inc|env|json|lock|ini|log|txt)$">
-  Require all denied
-</FilesMatch>
-EOF
+          # Protect backend helper directory from direct web access (PHP-only include area)
+          Options -Indexes
+          Require all denied
+          <FilesMatch "(?i)\.(php|phar|inc|env|json|lock|ini|log|txt|sql|sqlite)$">
+            Require all denied
+          </FilesMatch>
+          EOF
 
       - name: Upload FTP webroot artifact
         uses: actions/upload-artifact@v4
