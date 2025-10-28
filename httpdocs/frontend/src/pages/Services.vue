@@ -240,11 +240,13 @@ const API_URL = (() => {
   if (envUrl && envUrl.trim() !== '') {
     return envUrl
   }
-  if (typeof window !== 'undefined' && window.location?.origin) {
-    const origin = window.location.origin.replace(/\/$/, '')
-    return `${origin}/api/submit.php`
+  if (typeof window !== 'undefined') {
+    const origin = window.location.origin ?? ''
+    if (/https?:\/\/(localhost|127\.0\.0\.1)/i.test(origin)) {
+      return 'http://127.0.0.1:8000/api/submit.php'
+    }
   }
-  return '/api/submit.php'
+  return '/api/submit'
 })()
 
 const CHALLENGE_URL = (() => {
@@ -254,7 +256,10 @@ const CHALLENGE_URL = (() => {
   if (API_URL.endsWith('/submit')) {
     return API_URL.slice(0, -('/submit'.length)) + '/challenge'
   }
-  return '/api/challenge.php'
+  if (API_URL.endsWith('/submit/')) {
+    return API_URL.slice(0, -('/submit/'.length)) + '/challenge'
+  }
+  return '/api/challenge'
 })()
 const isSubmitting = ref(false)
 const submitError = ref('')

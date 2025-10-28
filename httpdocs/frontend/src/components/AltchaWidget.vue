@@ -22,7 +22,7 @@ import 'altcha';
 const props = defineProps({
   apiUrl: {
     type: String,
-    default: '/api/challenge.php'
+    default: '/api/challenge'
   },
   hideFooter: {
     type: Boolean,
