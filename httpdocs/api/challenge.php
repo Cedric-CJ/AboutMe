@@ -66,7 +66,12 @@ if ($APP_DIR === null) {
   http_response_code(500);
   exit(json_encode(['error' => 'App directory not found']));
 }
-require_once $APP_DIR . '/security/altcha.php';
+$altchaFile = $APP_DIR . '/security/altcha.php';
+if (!@is_file($altchaFile)) {
+  http_response_code(500);
+  exit(json_encode(['error' => 'ALTCHA library not found']));
+}
+require_once $altchaFile;
 
 try {
   $challenge = generateAltchaChallenge();

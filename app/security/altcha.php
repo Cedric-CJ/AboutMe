@@ -48,22 +48,51 @@ function getEnv($key, $default = null) {
  * 
  * @return array Challenge-Daten
  */
+
+function altchaRandomBytes(int $length): string {
+  if (function_exists('random_bytes')) {
+    return random_bytes($length);
+  }
+  if (function_exists('openssl_random_pseudo_bytes')) {
+    $bytes = openssl_random_pseudo_bytes($length, $cryptoStrong);
+    if ($bytes !== false && $cryptoStrong === true) {
+      return $bytes;
+    }
+  }
+  $bytes = '';
+  while (strlen($bytes) < $length) {
+    $bytes .= chr(mt_rand(0, 255));
+  }
+  return substr($bytes, 0, $length);
+}
+
+function altchaRandomInt(int $min, int $max): int {
+  if (function_exists('random_int')) {
+    try {
+      return random_int($min, $max);
+    } catch (Throwable $e) {
+      // fallback below
+    }
+  }
+  return mt_rand($min, $max);
+}
+
 function generateAltchaChallenge(): array {
   $secret = getEnv('ALTCHA_SECRET_KEY');
   if (!$secret) {
     throw new RuntimeException('ALTCHA_SECRET_KEY not set in .env');
   }
   
-  // Salt generieren (zufällige Zeichenkette)
-  $salt = bin2hex(random_bytes(16));
+  // Salt generieren (zufÃ¤llige Zeichenkette)
+  $salt = bin2hex(altchaRandomBytes(16));
   
-  // Zufällige Zahl für den Challenge
-  $number = random_int(10000, 999999);
+  // ZufÃ¤llige Zahl fÃ¼r den Challenge
+  $number = altchaRandomInt(10000, 999999);
   
   // Challenge berechnen: HMAC-SHA256 von Salt + Number
   $challenge = hash_hmac('sha256', $salt . $number, $secret);
   
-  // Signature generieren (für spätere Verifizierung)
+  // Signature generieren (fÃ¼r spÃ¤tere Verifizierung)
   $signature = hash_hmac('sha256', json_encode([
     'algorithm' => 'SHA-256',
     'challenge' => $challenge,
@@ -80,7 +109,7 @@ function generateAltchaChallenge(): array {
 }
 
 /**
- * Verifiziert eine ALTCHA-Lösung
+ * Verifiziert eine ALTCHA-LÃ¶sung
  * 
  * @param string $payload Base64-encoded JSON payload
  * @return bool True wenn valid
@@ -102,7 +131,7 @@ function verifyAltcha(string $payload): bool {
     return false;
   }
   
-  // Pflichtfelder prüfen
+  // Pflichtfelder prÃ¼fen
   $required = ['algorithm', 'challenge', 'number', 'salt', 'signature'];
   foreach ($required as $field) {
     if (!isset($data[$field])) {
@@ -110,12 +139,12 @@ function verifyAltcha(string $payload): bool {
     }
   }
   
-  // Nur SHA-256 unterstützt
+  // Nur SHA-256 unterstÃ¼tzt
   if ($data['algorithm'] !== 'SHA-256') {
     return false;
   }
   
-  // Lösung verifizieren: hash(salt + number) muss challenge ergeben
+  // LÃ¶sung verifizieren: hash(salt + number) muss challenge ergeben
   $expectedChallenge = hash_hmac('sha256', $data['salt'] . $data['number'], $secret);
   if (!hash_equals($expectedChallenge, $data['challenge'])) {
     return false;

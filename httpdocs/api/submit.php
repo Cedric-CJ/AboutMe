@@ -89,7 +89,12 @@ if ($APP_DIR === null) {
   exit(json_encode(['ok' => false, 'error' => 'App directory not found']));
 }
 // ALTCHA Payload validieren
-require_once $APP_DIR . '/security/altcha.php';
+$altchaFile = $APP_DIR . '/security/altcha.php';
+if (!@is_file($altchaFile)) {
+  http_response_code(500);
+  exit(json_encode(['ok' => false, 'error' => 'ALTCHA library not found']));
+}
+require_once $altchaFile;
 if (!verifyAltcha($input['altcha'])) {
   http_response_code(422);
   exit(json_encode(['ok' => false, 'error' => 'ALTCHA verification failed']));
@@ -115,7 +120,12 @@ if ($errors) {
 }
 
 // 10) Mailversand via PHPMailer
-require $APP_DIR . '/vendor/autoload.php';
+$autoload = $APP_DIR . '/vendor/autoload.php';
+if (!@is_file($autoload)) {
+  http_response_code(500);
+  exit(json_encode(['ok' => false, 'error' => 'Mailer library not found']));
+}
+require $autoload;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 

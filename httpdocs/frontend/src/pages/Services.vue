@@ -246,7 +246,7 @@ const API_URL = (() => {
       return 'http://127.0.0.1:8000/api/submit.php'
     }
   }
-  return '/api/submit'
+  return '/api/submit/'
 })()
 
 const CHALLENGE_URL = (() => {
@@ -254,12 +254,12 @@ const CHALLENGE_URL = (() => {
     return API_URL.replace('submit.php', 'challenge.php')
   }
   if (API_URL.endsWith('/submit')) {
-    return API_URL.slice(0, -('/submit'.length)) + '/challenge'
+    return API_URL.slice(0, -('/submit'.length)) + '/challenge/'
   }
   if (API_URL.endsWith('/submit/')) {
-    return API_URL.slice(0, -('/submit/'.length)) + '/challenge'
+    return API_URL.slice(0, -('/submit/'.length)) + '/challenge/'
   }
-  return '/api/challenge'
+  return '/api/challenge/'
 })()
 const isSubmitting = ref(false)
 const submitError = ref('')
