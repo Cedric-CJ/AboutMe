@@ -109,6 +109,7 @@ function altchaRandomInt(int $min, int $max): int {
     try {
       return random_int($min, $max);
     } catch (Throwable $e) {
+      // fall back to mt_rand
     }
   }
   return mt_rand($min, $max);
@@ -132,7 +133,8 @@ function generateAltchaChallenge(): array {
     'algorithm' => 'SHA-256',
     'challenge' => $challenge,
     'salt' => $salt,
-    'signature' => $signature
+    'signature' => $signature,
+    'maxnumber' => 99999
   ];
 }
 
