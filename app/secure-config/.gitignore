@@ -3,6 +3,8 @@
 *.ini
 *.json
 *.txt
+mail.secrets.php
+.htaccess_backup
 
 # Allow the README to stay committed.
 !README.md

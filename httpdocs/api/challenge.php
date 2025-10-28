@@ -54,26 +54,35 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 // ALTCHA Challenge generieren (robuster Pfad: innerhalb httpdocs/app oder außerhalb in ../app)
-$APP_DIR = null;
-$candidates = [
-  __DIR__ . '/../app',      // httpdocs/app
-  __DIR__ . '/../../app',   // account-root/app
-];
-foreach ($candidates as $c) {
-  $resolved = @realpath($c);
-  if ($resolved !== false && @is_dir($resolved)) {
-    $APP_DIR = $resolved;
-    break;
+function resolveAppDir(): ?string {
+  $docRoot = $_SERVER['DOCUMENT_ROOT'] ?? null;
+  $candidates = array_filter([
+    __DIR__ . '/../app',
+    __DIR__ . '/../../app',
+    $docRoot ? rtrim($docRoot, '/\\') . '/app' : null,
+    $docRoot ? dirname(rtrim($docRoot, '/\\')) . '/app' : null,
+  ]);
+  foreach ($candidates as $candidate) {
+    $resolved = @realpath($candidate);
+    if ($resolved !== false && @is_dir($resolved)) {
+      return $resolved;
+    }
   }
+  return null;
 }
+
+$APP_DIR = resolveAppDir();
+header('X-Debug-App-Dir: ' . (string)$APP_DIR);
 if ($APP_DIR === null) {
   http_response_code(500);
-  exit(json_encode(['error' => 'App directory not found']));
+  echo json_encode(['error' => 'App directory not found']);
+  exit();
 }
 $altchaFile = $APP_DIR . '/security/altcha.php';
 if (!@is_file($altchaFile)) {
   http_response_code(500);
-  exit(json_encode(['error' => 'ALTCHA library not found']));
+  echo json_encode(['error' => 'ALTCHA library not found']);
+  exit();
 }
 require_once $altchaFile;
 
@@ -82,6 +91,7 @@ try {
   echo json_encode($challenge);
 } catch (Throwable $e) {
   http_response_code(500);
+  header('X-Debug-Error: ' . substr($e->getMessage(), 0, 120));
   $resp = ['error' => 'Challenge generation failed'];
   if (isset($_GET['debug'])) {
     $resp['message'] = $e->getMessage();

@@ -77,10 +77,12 @@ if (empty($input['altcha'])) {
 
 // ALTCHA Payload validieren (robuster Pfad: httpdocs/app oder account-root/app)
 $APP_DIR = null;
-$candidates = [
-  __DIR__ . '/../app',      // httpdocs/app
-  __DIR__ . '/../../app',   // account-root/app
-];
+$candidates = array_filter([
+  __DIR__ . '/../app',
+  __DIR__ . '/../../app',
+  isset($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/\\') . '/app' : null,
+  isset($_SERVER['DOCUMENT_ROOT']) ? dirname(rtrim($_SERVER['DOCUMENT_ROOT'], '/\\')) . '/app' : null,
+]);
 foreach ($candidates as $c) {
   $resolved = @realpath($c);
   if ($resolved !== false && @is_dir($resolved)) {
@@ -88,6 +90,7 @@ foreach ($candidates as $c) {
     break;
   }
 }
+header('X-Debug-App-Dir: ' . (string)$APP_DIR);
 if ($APP_DIR === null) {
   http_response_code(500);
   exit(json_encode(['ok' => false, 'error' => 'App directory not found']));

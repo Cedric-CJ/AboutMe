@@ -31,7 +31,8 @@ dist/
 dist
 
 # Environment files (comprehensive coverage)
-
+scripts
+generate_mail_secrets.php
 *token.json*
 *credentials.json*
 
