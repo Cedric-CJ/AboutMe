@@ -133,6 +133,54 @@ require $autoload;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+/**
+ * Decode helper for values stored with simple prefixes (e.g. base64:...).
+ */
+function decodeSecretValue($value) {
+  if (!is_string($value)) {
+    return $value;
+  }
+  $prefix = 'base64:';
+  if (strpos($value, $prefix) === 0) {
+    $decoded = base64_decode(substr($value, strlen($prefix)), true);
+    if ($decoded !== false) {
+      return $decoded;
+    }
+  }
+  return $value;
+}
+
+/**
+ * Load additional secrets from app/secure-config/mail.secrets.php if present.
+ */
+function loadSecureConfig(): array {
+  static $cache = null;
+  if ($cache !== null) {
+    return $cache;
+  }
+  $cache = [];
+  $files = [
+    __DIR__ . '/../app/secure-config/mail.secrets.php',
+    __DIR__ . '/../../app/secure-config/mail.secrets.php',
+  ];
+  foreach ($files as $file) {
+    if (!is_readable($file)) {
+      continue;
+    }
+    $data = include $file;
+    if (!is_array($data)) {
+      continue;
+    }
+    foreach ($data as $k => $v) {
+      if (!is_string($k)) {
+        continue;
+      }
+      $cache[$k] = decodeSecretValue($v);
+    }
+  }
+  return $cache;
+}
+
 // Environment-Loader
 function env($key, $default = null) {
   static $vars = null;
@@ -151,12 +199,18 @@ function env($key, $default = null) {
         if (count($parts) === 2) {
           $k = trim($parts[0]);
           $v = trim($parts[1]);
-          if ($k !== '') $vars[$k] = $v;
+          if ($k !== '') {
+            $vars[$k] = decodeSecretValue($v);
+          }
         }
       }
     }
+    // Allow manual secure-config overrides to win
+    foreach (loadSecureConfig() as $k => $v) {
+      $vars[$k] = $v;
+    }
   }
-  return $vars[$key] ?? $default;
+  return array_key_exists($key, $vars) ? $vars[$key] : $default;
 }
 
 // Domain erkennen: spezialcode.de => de, specialcode.de => en
@@ -167,26 +221,43 @@ function detectDomainLang(): string {
   return 'de'; // Fallback
 }
 
-// Hole ENV mit Sprachsuffix, z. B. SMTP_HOST_DE oder SMTP_HOST_EN, fallback auf ohne Suffix
-function envLang(string $baseKey, ?string $lang = null, $default = null) {
+// Hole ENV mit Sprachsuffix, z. B. SMTP_HOST_DE oder SMTP_HOST_EN, fallback optional
+function envLang(string $baseKey, ?string $lang = null, $default = null, bool $requireExact = false) {
   $lang = $lang ?: detectDomainLang();
   $suffix = strtoupper($lang);
-  $val = env($baseKey . '_' . $suffix, null);
-  if ($val !== null && $val !== '') return $val;
+  $keyExact = $baseKey . '_' . $suffix;
+  $val = env($keyExact, null);
+  if ($val !== null && $val !== '') {
+    return $val;
+  }
+  if ($requireExact) {
+    throw new RuntimeException('Missing configuration key: ' . $keyExact);
+  }
   return env($baseKey, $default);
 }
 
 try {
   $lang = detectDomainLang();
-  $toYou = envLang('FROM_EMAIL', $lang);
-  $fromE = envLang('FROM_EMAIL', $lang);
+  $fromE = envLang('FROM_EMAIL', $lang, null, true);
   $fromN = envLang('FROM_NAME', $lang) ?: 'Website';
+  $toYou = envLang('TO_EMAIL', $lang, null, true);
+  $smtpHost = envLang('SMTP_HOST', $lang, null, true);
+  $smtpPort = (int)envLang('SMTP_PORT', $lang, 587);
+  $smtpUser = envLang('SMTP_USER', $lang, null, true);
+  $smtpPass = envLang('SMTP_PASS', $lang, null, true);
+
+  if ($smtpPort <= 0) {
+    $smtpPort = 587;
+  }
+  if (empty($fromE) || empty($smtpHost) || empty($smtpUser) || empty($smtpPass)) {
+    throw new RuntimeException('SMTP configuration incomplete for domain context: ' . $lang);
+  }
 
   // 9a) E-Mail an dich (Firmen-Benachrichtigung)
   $m = new PHPMailer(true);
   $m->isSMTP();
-  $m->Host = envLang('SMTP_HOST', $lang);
-  $m->Port = (int)envLang('SMTP_PORT', $lang, 587);
+  $m->Host = $smtpHost;
+  $m->Port = $smtpPort;
   $m->SMTPAuth = true;
   // Encryption: SMTPS for port 465, otherwise STARTTLS
   if ($m->Port === 465) {
@@ -194,8 +265,8 @@ try {
   } else {
     $m->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
   }
-  $m->Username = envLang('SMTP_USER', $lang);
-  $m->Password = envLang('SMTP_PASS', $lang);
+  $m->Username = $smtpUser;
+  $m->Password = $smtpPass;
   $m->CharSet = 'UTF-8';
 
   // WICHTIG: From = deine Domain (keine Spoofs); Reply-To = Kunde
@@ -224,16 +295,16 @@ try {
   // 9b) Bestätigungs-E-Mail an den Kunden
   $m2 = new PHPMailer(true);
   $m2->isSMTP();
-  $m2->Host = envLang('SMTP_HOST', $lang);
-  $m2->Port = (int)envLang('SMTP_PORT', $lang, 587);
+  $m2->Host = $smtpHost;
+  $m2->Port = $smtpPort;
   $m2->SMTPAuth = true;
   if ($m2->Port === 465) {
     $m2->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
   } else {
     $m2->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
   }
-  $m2->Username = envLang('SMTP_USER', $lang);
-  $m2->Password = envLang('SMTP_PASS', $lang);
+  $m2->Username = $smtpUser;
+  $m2->Password = $smtpPass;
   $m2->CharSet = 'UTF-8';
   
   $m2->setFrom($fromE, $fromN);
@@ -257,7 +328,11 @@ try {
   $logDir = dirname($logPath);
   if (!is_dir($logDir)) @mkdir($logDir, 0750, true);
   @error_log('[mail_error] ' . date('c') . ' ip=' . $ip . ' msg=' . $e->getMessage() . "\n", 3, $logPath);
-  
-  http_response_code(500);
-  echo json_encode(['ok' => false, 'error' => 'Versand fehlgeschlagen. Bitte versuchen Sie es später erneut.']);
+
+  $status = ($e instanceof RuntimeException) ? 503 : 500;
+  http_response_code($status);
+  $publicError = $status === 503
+    ? 'Service derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.'
+    : 'Versand fehlgeschlagen. Bitte versuchen Sie es später erneut.';
+  echo json_encode(['ok' => false, 'error' => $publicError]);
 }

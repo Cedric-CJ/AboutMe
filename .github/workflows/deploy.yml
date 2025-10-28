@@ -40,6 +40,8 @@ jobs:
         working-directory: ./httpdocs/frontend
         env:
           NODE_ENV: production
+          VITE_BACKEND_ACTIVE: 'true'
+          VITE_INQUIRY_API: '/api/submit/'
 
       - name: Upload GH Pages artifact
         uses: actions/upload-artifact@v4
@@ -70,6 +72,12 @@ jobs:
             --exclude '.env.*' \
             --exclude '*.env' \
             --exclude '*.env.*' \
+            --exclude '.venv/' \
+            --exclude '.venv/*' \
+            --exclude '*.ven' \
+            --exclude '*.venv' \
+            --exclude 'secure-config/' \
+            --exclude 'secure-config/*' \
             ./app/ ./webroot/app/
 
           # Harden Apache/PHP behaviour inside httpdocs
@@ -85,7 +93,7 @@ jobs:
             Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
           </IfModule>
 
-          <FilesMatch "(?i)\.(env|ini|log|sql|sqlite|yml|yaml|json|lock|md|sh|bat|ps1|phar)$">
+          <FilesMatch "(?i)\.(env|ini|log|sql|sqlite|yml|yaml|json|lock|md|sh|bat|ps1|phar|ven|venv)$">
             Require all denied
           </FilesMatch>
 
@@ -107,7 +115,7 @@ jobs:
           Options -Indexes
           ServerSignature Off
 
-          <FilesMatch "(?i)\.(env|ini|log|sql|sqlite|yml|yaml|json|lock|md|phar)$">
+          <FilesMatch "(?i)\.(env|ini|log|sql|sqlite|yml|yaml|json|lock|md|phar|ven|venv)$">
             Require all denied
           </FilesMatch>
 
@@ -117,7 +125,9 @@ jobs:
 
           <IfModule mod_rewrite.c>
             RewriteEngine On
+            RewriteBase /api/
             RewriteCond %{REQUEST_FILENAME} !-f
+            RewriteCond %{REQUEST_FILENAME} !-d
             RewriteRule ^([A-Za-z0-9_-]+)/?$ $1.php [L]
           </IfModule>
           EOF
@@ -126,7 +136,7 @@ jobs:
           # Protect backend helper directory from direct web access (PHP-only include area)
           Options -Indexes
           Require all denied
-          <FilesMatch "(?i)\.(php|phar|inc|env|json|lock|ini|log|txt|sql|sqlite)$">
+          <FilesMatch "(?i)\.(php|phar|inc|env|json|lock|ini|log|txt|sql|sqlite|ven|venv)$">
             Require all denied
           </FilesMatch>
           EOF
@@ -193,6 +203,7 @@ jobs:
             **/*.env
             **/*.env.*
             **/logs/**
+            app/secure-config/**
 
   ftp_specialcode:
     needs: build
@@ -224,3 +235,4 @@ jobs:
             **/*.env
             **/*.env.*
             **/logs/**
+            app/secure-config/**

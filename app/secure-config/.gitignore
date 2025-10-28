@@ -1,0 +1,8 @@
+# Ignore any secret PHP files that get manually uploaded here.
+*.php
+*.ini
+*.json
+*.txt
+
+# Allow the README to stay committed.
+!README.md

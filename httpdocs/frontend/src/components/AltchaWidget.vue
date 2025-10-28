@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="altcha-container">
     <altcha-widget
       ref="altchaWidget"
@@ -7,6 +7,7 @@
       :hidelogo="hideLogo"
       :style="{ '--altcha-color-text': textColor }"
       :lang="lang"
+      :strings="widgetStrings"
       @statechange="handleStateChange"
       @verified="handleVerified"
       @error="handleError"
@@ -16,7 +17,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import 'altcha';
 
 const props = defineProps({
@@ -50,17 +51,53 @@ const verified = ref(false);
 const error = ref(null);
 const challengeUrl = ref(props.apiUrl);
 
+const i18n = computed(() => {
+  if (props.lang === 'de') {
+    return {
+      verificationFailed: 'Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.',
+      verificationFailedLater: 'Verifizierung fehlgeschlagen. Bitte versuchen Sie es spÃ¤ter erneut.',
+      verificationExpired: 'Verifizierung abgelaufen. Bitte erneut versuchen.',
+      verifying: 'ÃœberprÃ¼fung lÃ¤uft â€¦',
+      verifyingWait: 'ÃœberprÃ¼fung lÃ¤uft â€¦ bitte warten.',
+      genericError: 'Ein Fehler ist aufgetreten.'
+    };
+  }
+  return {
+    verificationFailed: 'Verification failed. Please try again.',
+    verificationFailedLater: 'Verification failed. Please try again later.',
+    verificationExpired: 'Verification expired. Please try again.',
+    verifying: 'Verifying...',
+    verifyingWait: 'Verifying... please wait.',
+    genericError: 'An error occurred.'
+  };
+});
+
+const widgetStrings = computed(() => {
+  if (props.lang === 'de') {
+    const aria = 'ALTCHA Webseite (Ã¶ffnet sich in neuem Fenster)';
+    return JSON.stringify({
+      ariaLinkLabel: aria,
+      error: i18n.value.verificationFailedLater,
+      expired: i18n.value.verificationExpired,
+      footer: `GeschÃ¼tzt von <a href="https://altcha.org" target="_blank" aria-label="${aria}">ALTCHA</a>`,
+      label: 'Ich bin kein Roboter',
+      verified: 'Verifiziert',
+      verifying: i18n.value.verifying,
+      waitAlert: i18n.value.verifyingWait
+    });
+  }
+  return undefined;
+});
+
 /**
  * Handle state changes from ALTCHA widget
  */
 function handleStateChange(event) {
   const state = event.detail?.state;
   emit('statechange', state);
-  
+
   if (state === 'error') {
-    error.value = props.lang === 'de'
-      ? 'Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.'
-      : 'Verification failed. Please try again.';
+    error.value = i18n.value.verificationFailed;
   } else {
     error.value = null;
   }
@@ -82,14 +119,12 @@ function handleVerified(event) {
 function handleError(event) {
   const msg = event.detail?.error;
   if (msg && typeof msg === 'string') {
-    // Keep original message if present, but localize common default
-    error.value = props.lang === 'de' && /verification failed|failed to fetch/i.test(msg)
-      ? 'Verifizierung fehlgeschlagen. Bitte versuchen Sie es erneut.'
+    // Keep original message if present, but localise common defaults.
+    error.value = /verification failed|failed to fetch/i.test(msg)
+      ? i18n.value.verificationFailed
       : msg;
   } else {
-    error.value = props.lang === 'de'
-      ? 'Ein Fehler ist aufgetreten'
-      : 'An error occurred';
+    error.value = i18n.value.genericError;
   }
   verified.value = false;
   payload.value = null;
@@ -118,7 +153,7 @@ function reset() {
     payload.value = null;
     verified.value = false;
     error.value = null;
-    
+
     // Reset the web component
     try {
       altchaWidget.value.reset();
@@ -175,3 +210,4 @@ altcha-widget {
 :deep(altcha-widget .altcha-status) { display: none !important; }
 :deep(altcha-widget .altcha-message) { display: none !important; }
 </style>
+
