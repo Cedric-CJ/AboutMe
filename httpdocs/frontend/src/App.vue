@@ -41,8 +41,8 @@
           |
           <RouterLink :to="legalLinks.privacy" class="small-link highlight-link">{{ legalLabels.privacy }}</RouterLink>
         </div>
-        <!-- GitHub Stats Carousel -->
-        <div class="gh-carousel">
+        <!-- GitHub Stats Carousel (hidden if no data / fallback if primary down) -->
+        <div v-if="hasGhStats" class="gh-carousel">
           <button class="gh-arrow left" @click="prevGh" aria-label="Previous">‹</button>
           <a href="https://gh-stats-gen.vercel.app/" target="_blank" rel="noopener" class="gh-frame">
             <img :alt="ghStats[ghIdx].alt" :src="ghStats[ghIdx].src" loading="lazy" />
@@ -124,8 +124,11 @@ const accentLabel = computed(() => currentLang.value === 'en' ? 'Choose accent c
 const legalLabels = computed(() => currentLang.value === 'en' ? ({ publisher: 'Publisher', privacy: 'Privacy' }) : ({ publisher: 'Impressum', privacy: 'Datenschutz' }))
 const legalLinks = computed(() => currentLang.value === 'en' ? ({ publisher: '/publisher', privacy: '/privacy' }) : ({ publisher: '/impressum', privacy: '/datenschutz' }))
 
-// GitHub stats carousel data and controls
-const ghStats = [
+// GitHub stats carousel with availability check + fallback
+const ghStats = ref([])
+const ghIdx = ref(0)
+const hasGhStats = computed(() => ghStats.value.length > 0)
+const primaryGhSources = [
   {
     alt: "Cedric-CJ's Stats",
     src: 'https://github-readme-stats.vercel.app/api?username=Cedric-CJ&theme=great-gatsby&show_icons=true&hide_border=true&count_private=true'
@@ -139,9 +142,67 @@ const ghStats = [
     src: 'https://github-readme-stats.vercel.app/api/top-langs/?username=Cedric-CJ&theme=great-gatsby&show_icons=true&hide_border=true&layout=compact'
   }
 ]
-const ghIdx = ref(0)
-function nextGh(){ ghIdx.value = (ghIdx.value + 1) % ghStats.length }
-function prevGh(){ ghIdx.value = (ghIdx.value + ghStats.length - 1) % ghStats.length }
+const fallbackGhSource = {
+  alt: "Cedric-CJ's Streak (fallback)",
+  src: 'https://streak-stats.demolab.com?user=Cedric-CJ&theme=dark&locale=de&mode=weekly'
+}
+
+function nextGh(){
+  const len = ghStats.value.length
+  if (!len) return
+  ghIdx.value = (ghIdx.value + 1) % len
+}
+function prevGh(){
+  const len = ghStats.value.length
+  if (!len) return
+  ghIdx.value = (ghIdx.value + len - 1) % len
+}
+
+function probeImage(url, timeoutMs = 4000) {
+  return new Promise(resolve => {
+    const img = new Image()
+    let done = false
+    const timer = setTimeout(() => {
+      if (done) return
+      done = true
+      img.src = ''
+      resolve(false)
+    }, timeoutMs)
+    img.onload = () => {
+      if (done) return
+      done = true
+      clearTimeout(timer)
+      resolve(true)
+    }
+    img.onerror = () => {
+      if (done) return
+      done = true
+      clearTimeout(timer)
+      resolve(false)
+    }
+    const cacheBust = `${url}${url.includes('?') ? '&' : '?'}cb=${Date.now()}`
+    img.src = cacheBust
+  })
+}
+
+async function initGhStats() {
+  // 1) Try primary service (vercel). If any primary loads, we keep the full set.
+  const primaryOk = await probeImage(primaryGhSources[0].src)
+  if (primaryOk) {
+    ghStats.value = primaryGhSources
+    ghIdx.value = 0
+    return
+  }
+  // 2) Fallback to streak-stats.demolab.com
+  const fallbackOk = await probeImage(fallbackGhSource.src)
+  if (fallbackOk) {
+    ghStats.value = [fallbackGhSource]
+    ghIdx.value = 0
+    return
+  }
+  // 3) Hide carousel if nothing works
+  ghStats.value = []
+}
 
 function setAccent(c) {
   store.setAccent(c)
@@ -190,6 +251,9 @@ onMounted(() => {
   }
   window.addEventListener('local_storage_cleared', onLocalCleared)
   ;(window.__app_onLocalClearedHandlers ||= []).push(onLocalCleared)
+
+  // Lazy-load GitHub stats; fall back or hide if service is down
+  initGhStats()
 })
 
 onBeforeUnmount(() => {
