@@ -122,7 +122,10 @@ function generateAltchaChallenge(): array {
   }
   $salt = bin2hex(altchaRandomBytes(16));
   $number = altchaRandomInt(0, 99999);
-  $challenge = hash_hmac('sha256', $salt . $number, $secret);
+  // The puzzle must be solvable client-side, so the challenge is a plain hash
+  // of salt + number (no secret involved). The secret is only used to sign the
+  // payload to prevent tampering.
+  $challenge = hash('sha256', $salt . $number);
   $signature = hash_hmac('sha256', json_encode([
     'algorithm' => 'SHA-256',
     'challenge' => $challenge,
@@ -159,7 +162,8 @@ function verifyAltcha(string $payload): bool {
   if ($data['algorithm'] !== 'SHA-256') {
     return false;
   }
-  $expectedChallenge = hash_hmac('sha256', $data['salt'] . $data['number'], $secret);
+  // Validate the proof-of-work: recompute the plain hash of salt + number.
+  $expectedChallenge = hash('sha256', $data['salt'] . $data['number']);
   if (!hash_equals($expectedChallenge, $data['challenge'])) {
     return false;
   }

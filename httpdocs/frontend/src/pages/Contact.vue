@@ -114,11 +114,20 @@ const API_URL = (() => {
   }
   if (typeof window !== 'undefined') {
     const origin = window.location.origin ?? ''
+    const knownHosts = [
+      'https://specialcode.de',
+      'https://www.specialcode.de',
+      'https://spezialcode.de',
+      'https://www.spezialcode.de'
+    ]
+    if (knownHosts.includes(origin)) {
+      return `${origin}/api/submit.php`
+    }
     if (/https?:\/\/(localhost|127\.0\.0\.1)/i.test(origin)) {
       return 'http://127.0.0.1:8000/api/submit.php'
     }
   }
-  return '/api/submit/'
+  return '/api/submit.php'
 })()
 
 const CHALLENGE_URL = (() => {

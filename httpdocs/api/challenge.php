@@ -47,15 +47,12 @@ if ($isAllowedOrigin) {
     header('Access-Control-Allow-Credentials: true');
 }
 
-// Always allow these headers for CORS
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, X-Requested-With');
-header('Access-Control-Max-Age: 86400'); // Cache preflight for 24 hours
-
-// Handle preflight request
+header('Access-Control-Allow-Headers: Content-Type, X-Requested-With, X-ALTCHA-Spam-Filter');
+header('Access-Control-Max-Age: 86400');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204); // No Content
-    exit();
+  http_response_code(204);
+  exit();
 }
 
 // Only allow GET method for actual requests
@@ -121,3 +118,4 @@ try {
     }
     echo json_encode($response);
 }
+

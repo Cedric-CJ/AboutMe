@@ -23,7 +23,7 @@ import 'altcha';
 const props = defineProps({
   apiUrl: {
     type: String,
-    default: '/api/challenge/'
+    default: '/api/challenge.php'
   },
   hideFooter: {
     type: Boolean,
@@ -119,7 +119,6 @@ function handleVerified(event) {
 function handleError(event) {
   const msg = event.detail?.error;
   if (msg && typeof msg === 'string') {
-    // Keep original message if present, but localise common defaults.
     error.value = /verification failed|failed to fetch/i.test(msg)
       ? i18n.value.verificationFailed
       : msg;
