@@ -42,12 +42,12 @@
           <RouterLink :to="legalLinks.privacy" class="small-link highlight-link">{{ legalLabels.privacy }}</RouterLink>
         </div>
         <!-- GitHub Stats Carousel (hidden if no data / fallback if primary down) -->
-        <div v-if="hasGhStats" class="gh-carousel">
-          <button class="gh-arrow left" @click="prevGh" aria-label="Previous">‹</button>
+        <div v-if="showGhCarousel" class="gh-carousel">
+          <button v-if="showGhNav" class="gh-arrow left" @click="prevGh" aria-label="Previous">‹</button>
           <a href="https://gh-stats-gen.vercel.app/" target="_blank" rel="noopener" class="gh-frame">
             <img :alt="ghStats[ghIdx].alt" :src="ghStats[ghIdx].src" loading="lazy" />
           </a>
-          <button class="gh-arrow right" @click="nextGh" aria-label="Next">›</button>
+          <button v-if="showGhNav" class="gh-arrow right" @click="nextGh" aria-label="Next">›</button>
         </div>
       </nav>
     </header>
@@ -127,7 +127,8 @@ const legalLinks = computed(() => currentLang.value === 'en' ? ({ publisher: '/p
 // GitHub stats carousel with availability check + fallback
 const ghStats = ref([])
 const ghIdx = ref(0)
-const hasGhStats = computed(() => ghStats.value.length > 0)
+const showGhCarousel = computed(() => ghStats.value.length > 0)
+const showGhNav = computed(() => ghStats.value.length > 1)
 const primaryGhSources = [
   {
     alt: "Cedric-CJ's Stats",

@@ -244,7 +244,8 @@ try {
   $lang = detectDomainLang();
   $fromE = envLang('FROM_EMAIL', $lang, null, true);
   $fromN = envLang('FROM_NAME', $lang) ?: 'Website';
-  $toYou = envLang('TO_EMAIL', $lang, null, true);
+  // If TO_EMAIL is missing, gracefully fall back to FROM_EMAIL instead of throwing (prevents 503)
+  $toYou = envLang('TO_EMAIL', $lang, null, false) ?: $fromE;
   $smtpHost = envLang('SMTP_HOST', $lang, null, true);
   $smtpPort = (int)envLang('SMTP_PORT', $lang, 587);
   $smtpUser = envLang('SMTP_USER', $lang, null, true);
@@ -338,5 +339,14 @@ try {
   $publicError = $status === 503
     ? 'Service derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.'
     : 'Versand fehlgeschlagen. Bitte versuchen Sie es später erneut.';
-  echo json_encode(['ok' => false, 'error' => $publicError]);
+  // Return detailed error only when debug=1 is provided (never include secrets)
+  $response = ['ok' => false, 'error' => $publicError];
+  if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+    $response['debug'] = [
+      'message' => $e->getMessage(),
+      'file' => $e->getFile(),
+      'line' => $e->getLine()
+    ];
+  }
+  echo json_encode($response);
 }
