@@ -245,7 +245,12 @@ try {
   $fromE = envLang('FROM_EMAIL', $lang, null, true);
   $fromN = envLang('FROM_NAME', $lang) ?: 'Website';
   // If TO_EMAIL is missing, gracefully fall back to FROM_EMAIL instead of throwing (prevents 503)
-  $toYou = envLang('TO_EMAIL', $lang, null, false) ?: $fromE;
+  try {
+    $toYou = envLang('TO_EMAIL', $lang, null, false) ?: $fromE;
+  } catch (Throwable $e) {
+    // Older deploys may still throw if requireExact was true; fallback to from-address
+    $toYou = $fromE;
+  }
   $smtpHost = envLang('SMTP_HOST', $lang, null, true);
   $smtpPort = (int)envLang('SMTP_PORT', $lang, 587);
   $smtpUser = envLang('SMTP_USER', $lang, null, true);
@@ -276,6 +281,9 @@ try {
 
   // WICHTIG: From = deine Domain (keine Spoofs); Reply-To = Kunde
   $m->setFrom($fromE, $fromN);
+  // Set envelope sender (Return-Path) to your domain to avoid SPF/DMARC issues,
+  // but the logical "sender" for the header is the user via Reply-To.
+  $m->Sender = $fromE;
   $m->addAddress($toYou, $fromN);
   $m->addReplyTo($email, $name);
   
@@ -291,7 +299,7 @@ try {
   if ($phone) $bodyText .= "Telefon: $phone\n";
   if ($subject) $bodyText .= "Betreff: $subject\n";
   if ($service_id) $bodyText .= "Service: $service_id\n";
-  $bodyText .= "Quelle: $source\n\n";
+  // Quelle im internen Mailtext nicht erforderlich
   $bodyText .= "Nachricht:\n$message";
   
   $m->Body = $bodyText;
@@ -314,13 +322,36 @@ try {
   
   $m2->setFrom($fromE, $fromN);
   $m2->addAddress($email, $name);
-  $m2->Subject = 'Wir haben Ihre Anfrage erhalten';
-  
-  $confirmationText = "Hallo $name,\n\n";
-  $confirmationText .= "vielen Dank für Ihre Nachricht. Wir haben Ihre Anfrage erhalten und werden uns kurzfristig bei Ihnen melden.\n\n";
-  $confirmationText .= "Ihre Nachricht:\n$message\n\n";
-  $confirmationText .= "Mit freundlichen Grüßen\n$fromN";
-  
+
+  // Sprache der Nachricht heuristisch erkennen (DE/EN)
+  $detectMessageLang = function(string $text, string $fallback) {
+    $t = mb_strtolower($text);
+    $scoreDe = 0; $scoreEn = 0;
+    foreach ([' der ', ' die ', ' das ', ' und ', ' bitte', ' danke', 'hallo', 'grüße', 'gruesse', 'ß', 'ä', 'ö', 'ü'] as $m) {
+      if (mb_strpos($t, $m) !== false) $scoreDe++;
+    }
+    foreach ([' the ', ' and ', ' you ', ' please', ' thanks', ' thank you', ' hello', ' hi ', 'regards'] as $m) {
+      if (mb_strpos($t, $m) !== false) $scoreEn++;
+    }
+    if ($scoreDe === $scoreEn) return $fallback; // tie-breaker: domain language
+    return ($scoreDe > $scoreEn) ? 'de' : 'en';
+  };
+  $msgLang = $detectMessageLang($message, $lang);
+
+  if ($msgLang === 'en') {
+    $m2->Subject = 'We received your inquiry';
+    $confirmationText = "Hello $name,\n\n";
+    $confirmationText .= "Thank you for your message. We have received your inquiry and will get back to you shortly.\n\n";
+    $confirmationText .= "Your message:\n$message\n\n";
+    $confirmationText .= "Best regards\nCedric Arnhold\nSpecialcode";
+  } else {
+    $m2->Subject = 'Wir haben Ihre Anfrage erhalten';
+    $confirmationText = "Hallo $name,\n\n";
+    $confirmationText .= "vielen Dank für Ihre Nachricht. Wir haben Ihre Anfrage erhalten und werden uns kurzfristig bei Ihnen melden.\n\n";
+    $confirmationText .= "Ihre Nachricht:\n$message\n\n";
+    $confirmationText .= "Mit freundlichen Grüßen\nCedric Arnhold\nSpezialcode";
+  }
+
   $m2->Body = $confirmationText;
   $m2->send();
 
