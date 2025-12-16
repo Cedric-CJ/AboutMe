@@ -63,7 +63,7 @@ export default {
 }
 
 .GridGallery [class*="item"]:hover { 
-  border: 2px solid var(--accent-raw, #3b82f6); 
+  border: 2px solid var(--accent-raw, var(--accent-default, #f0c33c)); 
   z-index: 1;
   transform: scale(1.02);
 }
@@ -103,7 +103,7 @@ export default {
   
   .GridGallery [class*="item"]:hover {
     transform: scale(1.01);
-    border: 1px solid var(--accent-raw, #3b82f6);
+    border: 1px solid var(--accent-raw, var(--accent-default, #f0c33c));
   }
 }
 

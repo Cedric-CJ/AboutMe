@@ -44,6 +44,8 @@
 
 <script>
 import { onMounted, ref } from 'vue'
+import { TweenMax, TimelineMax, Power0, Power2, Power4, Expo } from 'gsap'
+import _ from 'lodash'
 // Replaces the element text with an array of spans
 // and returns it
 function splitTextInSpans(elem) {
@@ -80,7 +82,7 @@ function intro() {
     _.forEach(lines, (line, i) => {
       tl.to(lines[i], 2, {
         scaleX: 1,
-        ease: 'Expo.easeOut'
+        ease: Expo.easeOut
       }, i / 10)
     })
 
@@ -89,32 +91,32 @@ function intro() {
       }, 1)
       .to(squareDarkWrapper, 1.5, {
         scale: 1.4,
-        ease: 'Expo.easeOut'
+        ease: Expo.easeOut
       }, 1)
       .to(square, 2, {
         rotationZ: 45,
-        ease: 'Expo.easeOut'
+        ease: Expo.easeOut
       }, 1.5)
       .to(sparks, 1, {
         strokeDashoffset: 0,
-        ease: 'Expo.easeOut'
+        ease: Expo.easeOut
       }, 1.5)
       .to(sparks, 1, {
         strokeDashoffset: 145,
-        ease: 'Expo.easeOut'
+        ease: Expo.easeOut
       }, 1.5)
       .to(outerCircle, 1.4, {
         strokeDashoffset: 0,
-        ease: 'Expo.easeInOut'
+        ease: Expo.easeInOut
       }, 1.7)
       .to(outerCircle, .4, {
         opacity: 0,
-        ease: 'Power4.easeOut'
+        ease: Power4.easeOut
       }, 2.7)
       .to(logo, 1, {
         opacity: 1,
         scale: 1,
-        ease: 'Power4.easeOut'
+        ease: Power4.easeOut
       }, 2.7)
 
     return tl
@@ -128,7 +130,7 @@ function intro() {
     tl.set(lineSeparator, { scaleX: 0 })
       .to(lineSeparator, 1, {
         scaleX: 1,
-        ease: 'Expo.easeOut'
+        ease: Expo.easeOut
       }, 3)
 
     _.forEach(words, word => {
@@ -140,7 +142,7 @@ function intro() {
         const delay = (3 + ((Math.abs(spans.length / 2 - j)) / 20)).toFixed(2)
         tlWords.to(span, 1.4, {
           y: 0,
-          ease: 'Expo.easeOut'
+          ease: Expo.easeOut
         }, delay)
       })
     })
@@ -169,12 +171,12 @@ function intro() {
         const startTime = _.random(5, true)
         tl.to(line, .4, {
             scaleX: 1,
-            ease: 'Expo.Power4'
+            ease: Expo.easeOut
           }, startTime)
           .to(line, 2, {
             scaleX: 0,
             x: '+=' + line.style.width,
-            ease: 'Power4.easeOut'
+            ease: Power4.easeOut
           }, startTime + .4)
       }
 
@@ -183,7 +185,7 @@ function intro() {
         TweenMax.to(wrapper, .75, {
             rotationX: ry,
             rotationY: rx,
-            ease: 'Power0.easenone'
+            ease: Power0.easeNone
           })
       }
 
@@ -231,7 +233,11 @@ function intro() {
 function chooseIntroForegroundFromAccent() {
   try {
     const root = document.documentElement
-    let accent = getComputedStyle(root).getPropertyValue('--accent-raw').trim()
+    // Force a consistently readable intro text (white on dark overlay)
+    root.style.setProperty('--intro-foreground', '#ffffff')
+
+    // Keep a minimal safety check: if accent is extremely light, stay on white anyway
+    const accent = getComputedStyle(root).getPropertyValue('--accent-raw').trim()
     if (!accent) return
     let r, g, b
     if (accent.startsWith('rgb')) {
@@ -246,8 +252,9 @@ function chooseIntroForegroundFromAccent() {
     }
     if (typeof r === 'number' && typeof g === 'number' && typeof b === 'number') {
       const yiq = (r * 299 + g * 587 + b * 114) / 1000
-      const fg = yiq >= 128 ? '#111111' : '#ffffff'
-      root.style.setProperty('--intro-foreground', fg)
+      if (yiq < 220) {
+        root.style.setProperty('--intro-foreground', '#ffffff')
+      }
     }
   } catch (e) { /* noop */ }
 }
@@ -264,8 +271,8 @@ export default {
       // lock scroll while intro is visible
       const prevOverflow = document.body.style.overflow
       document.body.style.overflow = 'hidden'
-      // Safeguard: ensure GSAP and lodash are present
-      if (typeof window !== 'undefined' && typeof window.TimelineMax !== 'undefined' && typeof window._ !== 'undefined') {
+      // Run animation using locally bundled GSAP/Lodash (no external CDN)
+      if (typeof window !== 'undefined') {
         try {
           const tlLogo = new TimelineMax()
           const tlWords = new TimelineMax()
@@ -278,7 +285,7 @@ export default {
           TweenMax.to(overlay, 1.8, {
             delay: fadeDelay,
             opacity: 0,
-            ease: 'Power2.easeInOut',
+            ease: Power2.easeInOut,
             onComplete: () => { 
               isVisible.value = false 
               document.body.style.overflow = prevOverflow
@@ -298,9 +305,7 @@ export default {
           }, 1200)
         }
       } else {
-        // eslint-disable-next-line no-console
-        console.warn('Intro dependencies missing: ensure GSAP v2 and lodash are loaded')
-        // End intro quickly if deps missing
+        // End intro quickly if no browser environment
         setTimeout(() => { 
           isVisible.value = false
           document.body.style.overflow = prevOverflow
@@ -321,7 +326,9 @@ introBg = var(--intro-neutral, #2e2e2e);
 /* Full-screen overlay glass */
 .intro-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  inset: -2px;
+  width: calc(100vw + 4px);
+  height: calc(100vh + 4px);
   z-index: 9999;
   /* tint with neutral color (use unquote to keep CSS var intact for Stylus) */
   background: unquote('rgba(var(--intro-neutral-rgb, 46, 46, 46), 0.08)');
@@ -439,7 +446,7 @@ html, body {
 
 .pango-words {
   size: 190px 120px;
-  font-family: 'Lato';
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 3rem;
   font-weight: 300;
   /* Use high-contrast foreground from theme with fallback */

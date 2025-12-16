@@ -3,6 +3,7 @@ import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router
 const routes = [
   // Unified Home at '/': wrapper decides by preferred language
   { path: '/', name: 'home', component: () => import('../pages/Home.vue'), meta: { showIntro: true } },
+  { path: '/legal-gate', name: 'legal-gate', component: () => import('../pages/LegalGate.vue') },
 
   // German primary paths
   // Use ASCII primary path; keep umlaut as alias to avoid server issues on refresh
@@ -36,6 +37,33 @@ const router = createRouter({
   // Always use clean history; FTP uses .htaccess fallback and GH Pages uses 404.html
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
+})
+
+// Lightweight bot gate for legal pages (session-based) + contact overlay routing
+const legalPaths = ['/impressum', '/datenschutz', '/privacy', '/publisher']
+const contactPaths = ['/contact', '/kontakt']
+router.beforeEach((to, from, next) => {
+  try {
+    // Turn contact routes into overlay instead of a standalone page
+    if (contactPaths.includes(to.path)) {
+      try { window.dispatchEvent(new CustomEvent('open_contact_overlay')) } catch (e) {}
+      // Direct load on /contact: redirect to home while keeping overlay flag
+      if (!from || !from.name) {
+        sessionStorage.setItem('contact_overlay_request', '1')
+        return next({ path: '/', replace: true })
+      }
+      return next(false) // stay on current page, just open overlay
+    }
+
+    if (to.name === 'legal-gate') return next()
+    if (legalPaths.includes(to.path)) {
+      const pass = sessionStorage.getItem('legal_pass') === '1'
+      if (!pass) {
+        return next({ path: '/legal-gate', query: { target: to.fullPath } })
+      }
+    }
+  } catch (e) {}
+  return next()
 })
 
 export default router

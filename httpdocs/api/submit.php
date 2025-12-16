@@ -2,6 +2,7 @@
 declare(strict_types=1);
 session_start();
 header('Content-Type: application/json; charset=utf-8');
+mb_internal_encoding('UTF-8');
 
 // 1) CORS (erlaube NUR deine Domains)
 header('Vary: Origin');
@@ -285,6 +286,8 @@ try {
   // but the logical "sender" for the header is the user via Reply-To.
   $m->Sender = $fromE;
   $m->addAddress($toYou, $fromN);
+  // Hidden backup copy so new requests are not missed on mobile
+  $m->addBCC('cedric.jon.arnhold@gmail.com', 'Cedric Arnhold (Backup)');
   $m->addReplyTo($email, $name);
   
   $emailSubject = 'Neue Anfrage über das Kontaktformular';
@@ -338,18 +341,21 @@ try {
   };
   $msgLang = $detectMessageLang($message, $lang);
 
+  $host = $_SERVER['HTTP_ORIGIN'] ?? ($_SERVER['HTTP_HOST'] ?? '');
+  $brandDomain = stripos($host, 'spezialcode') !== false ? 'spezialcode.de' : 'specialcode.de';
+
   if ($msgLang === 'en') {
-    $m2->Subject = 'We received your inquiry';
-    $confirmationText = "Hello $name,\n\n";
-    $confirmationText .= "Thank you for your message. We have received your inquiry and will get back to you shortly.\n\n";
+    $m2->Subject = 'Inquiry received - ' . $brandDomain;
+    $confirmationText  = "Hello $name,\n\n";
+    $confirmationText .= "I've received your message. I usually reply within the next 7 business days.\n\n";
+    $confirmationText .= "Best regards\nCedric Arnhold\nSpecialcode\n\n";
     $confirmationText .= "Your message:\n$message\n\n";
-    $confirmationText .= "Best regards\nCedric Arnhold\nSpecialcode";
   } else {
-    $m2->Subject = 'Wir haben Ihre Anfrage erhalten';
-    $confirmationText = "Hallo $name,\n\n";
-    $confirmationText .= "vielen Dank für Ihre Nachricht. Wir haben Ihre Anfrage erhalten und werden uns kurzfristig bei Ihnen melden.\n\n";
-    $confirmationText .= "Ihre Nachricht:\n$message\n\n";
-    $confirmationText .= "Mit freundlichen Grüßen\nCedric Arnhold\nSpezialcode";
+    $m2->Subject = 'Anfrage erhalten - ' . $brandDomain;
+    $confirmationText  = "Hallo $name,\n\n";
+    $confirmationText .= "deine Nachricht ist bei mir eingegangen. Ich melde mich in der Regel innerhalb der nächsten 7 Werktage bei dir.\n\n";
+    $confirmationText .= "Viele Grüße\nCedric Arnhold\nSpezialcode\n\n";
+    $confirmationText .= "Deine Nachricht:\n$message\n\n";
   }
 
   $m2->Body = $confirmationText;

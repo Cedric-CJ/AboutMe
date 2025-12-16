@@ -1,21 +1,23 @@
 {
   "name": "frontend",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "concurrently -k -n php,vite -c yellow,cyan \"yarn php:dev\" \"vite\"",
+    "dev:vite": "vite",
     "php:dev": "php -S 127.0.0.1:8000 ../router.php",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@adyen/adyen-web": "^5.67.0",
     "altcha": "0.6.5",
-    "axios": "^1.8.4",
+    "gsap": "^3.13.0",
+    "lodash": "^4.17.21",
     "pinia": "^2.2.6",
     "vue": "^3.5.12",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.4.5",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",

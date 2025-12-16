@@ -1,13 +1,17 @@
-<template>
-  <div class="app-root min-h-screen text-foreground" :class="{ 'intro-active': showIntro, 'content-visible': contentVisible }" @click="handleClickOutside">
+﻿<template>
+  <div
+    class="app-root min-h-screen text-foreground"
+    :class="{ 'intro-active': showIntro, 'content-visible': contentVisible }"
+    @click="handleClickOutside"
+    :style="{ '--site-bg-image': `url(${heroBg})` }"
+  >
     <div class="site-bg" aria-hidden="true" />
-    <div class="bg-mark" aria-hidden="true" />
 
     <!-- Global Intro overlay (fades out after playing) -->
     <Intro v-if="showIntro" @complete="handleIntroComplete" />
 
     <!-- Hamburger Button -->
-    <header>
+    <header class="top-nav">
       <label class="menubutton" @click.stop>
         <input type="checkbox" v-model="isMenuOpen" />
         <svg viewBox="0 0 32 32">
@@ -16,49 +20,61 @@
         </svg>
       </label>
 
-      <!-- Slide-in Navigation -->
-      <nav :class="[{ visible: isMenuOpen }]" id="navMenu" @click.stop>
-        <div class="menu-top">
-          <div class="lang-switch">
-            <img v-if="currentLang==='en'" :src="flagDe" alt="Deutsch" @click="switchLang('de')" />
-            <img v-else :src="flagEn" alt="English" @click="switchLang('en')" />
-          </div>
-        </div>
-        <div class="menu-links">
-          <p v-for="item in menuItems" :key="item.to">
-            <RouterLink :to="item.to">{{ item.label }}</RouterLink>
-          </p>
+      <!-- Top Navigation -->
+      <nav :class="['nav-bar', { visible: isMenuOpen }]" id="navMenu" @click.stop>
+        <div class="nav-surface">
+          <div class="menu-links">
+            <RouterLink v-for="item in menuItems" :key="item.to" :to="item.to" class="nav-chip">{{ item.label }}</RouterLink>
+            <button type="button" class="menu-contact-link nav-chip" @click="openContactFromMenu">
+              {{ currentLang==='en' ? 'Contact' : 'Kontakt' }}
+            </button>
 
-          <div class="accent-selector mt-6">
-            <p class="text-sm text-zinc-400">{{ accentLabel }}</p>
-            <div class="mt-3 grid grid-cols-5 gap-2">
-              <button v-for="c in colors" :key="c" :style="{background:c}" class="h-8 rounded-md border border-white/20" @click="setAccent(c)" />
+            <div class="nav-chip tools-chip accent-picker">
+              <button type="button" class="accent-toggle" @click="toggleAccentDropdown">
+                <span class="accent-swatch"></span>
+                <svg viewBox="0 0 14 14" aria-hidden="true">
+                  <path d="M2 4.5 7 9.5 12 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <span class="tools-sep"></span>
+              <button class="lang-btn" type="button" @click="switchLang(currentLang==='en' ? 'de' : 'en')">
+                <img v-if="currentLang==='en'" :src="flagDe" alt="Deutsch" />
+                <img v-else :src="flagEn" alt="English" />
+              </button>
+              <Transition name="fade">
+                <div v-if="accentDropdownOpen" class="accent-dropdown" id="accentDropdown">
+                  <div class="accent-list">
+                    <button
+                      v-for="c in colors"
+                      :key="c"
+                      type="button"
+                      class="accent-swatch-option"
+                      :style="{ background: c }"
+                      @click="chooseAccent(c)"
+                    />
+                  </div>
+                </div>
+              </Transition>
             </div>
           </div>
-        </div>
-        <div class="footer-links mt-6 text-sm text-zinc-400">
-          <RouterLink :to="legalLinks.publisher" class="small-link highlight-link">{{ legalLabels.publisher }}</RouterLink>
-          |
-          <RouterLink :to="legalLinks.privacy" class="small-link highlight-link">{{ legalLabels.privacy }}</RouterLink>
-        </div>
-        <!-- GitHub Stats Carousel (hidden if no data / fallback if primary down) -->
-        <div v-if="showGhCarousel" class="gh-carousel">
-          <button v-if="showGhNav" class="gh-arrow left" @click="prevGh" aria-label="Previous">‹</button>
-          <a href="https://gh-stats-gen.vercel.app/" target="_blank" rel="noopener" class="gh-frame">
-            <img :alt="ghStats[ghIdx].alt" :src="ghStats[ghIdx].src" loading="lazy" />
-          </a>
-          <button v-if="showGhNav" class="gh-arrow right" @click="nextGh" aria-label="Next">›</button>
         </div>
       </nav>
     </header>
 
     <main class="app-main max-w-6xl mx-auto px-4 pt-10 pb-20">
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <Transition name="page-fade" mode="out-in">
+          <component :is="Component" />
+        </Transition>
+      </RouterView>
     </main>
+
+    <Transition name="fade">
+      <Contact v-if="showContact" :prefill="contactPrefill" @close="closeContactOverlay" />
+    </Transition>
 
     <Coockiebanner :lang="currentLang" />
     <Footer />
-    <div class="glass-overlay" :class="{ active: isMenuOpen }" @click="isMenuOpen=false"></div>
   </div>
   
 </template>
@@ -69,14 +85,16 @@ import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import Footer from './components/layout/Footer.vue'
 import Intro from './components/Intro.vue'
 import Coockiebanner from './components/layout/Coockiebanner.vue'
+import Contact from './pages/Contact.vue'
 import { useThemeStore } from './stores/theme'
-import flagDe from '@/assets/Pictures/flag-de.webp'
-import flagEn from '@/assets/Pictures/flag-us.webp'
+import flagDe from '@/assets/Pictures/flag-de-classic.svg'
+import flagEn from '@/assets/Pictures/flag-us-classic.svg'
+import heroBg from '@/assets/hero-bg.jpg'
 
 const store = useThemeStore()
-const accent = computed(() => store.accent)
-const colors = ['#FF3030', '#0042ff', '#228B22', '#7c3aed', '#12b3a6']
+const colors = ['var(--accent-red)', 'var(--accent-yellow)', 'var(--accent-green)', 'var(--accent-purple)', 'var(--accent-teal)']
 const isMenuOpen = ref(false)
+const accentDropdownOpen = ref(false)
 const route = useRoute()
 const router = useRouter()
 // Reactive tick to force recompute when preferred_lang changes
@@ -105,7 +123,6 @@ const menuItems = computed(() => {
       { to: '/gallery', label: 'Gallery' },
       { to: '/blog', label: 'Blog' },
       { to: '/projects', label: 'Projects' },
-      { to: '/contact', label: 'Contact' },
       { to: '/service', label: 'Services' },
     ]
   }
@@ -115,7 +132,6 @@ const menuItems = computed(() => {
     { to: '/gallerie', label: 'Galerie' },
     { to: '/blog', label: 'Blog' },
     { to: '/projekte', label: 'Projekte' },
-    { to: '/kontakt', label: 'Kontakt' },
     { to: '/leistungen', label: 'Leistungen' },
   ]
 })
@@ -124,89 +140,15 @@ const accentLabel = computed(() => currentLang.value === 'en' ? 'Choose accent c
 const legalLabels = computed(() => currentLang.value === 'en' ? ({ publisher: 'Publisher', privacy: 'Privacy' }) : ({ publisher: 'Impressum', privacy: 'Datenschutz' }))
 const legalLinks = computed(() => currentLang.value === 'en' ? ({ publisher: '/publisher', privacy: '/privacy' }) : ({ publisher: '/impressum', privacy: '/datenschutz' }))
 
-// GitHub stats carousel with availability check + fallback
-const ghStats = ref([])
-const ghIdx = ref(0)
-const showGhCarousel = computed(() => ghStats.value.length > 0)
-const showGhNav = computed(() => ghStats.value.length > 1)
-const primaryGhSources = [
-  {
-    alt: "Cedric-CJ's Stats",
-    src: 'https://github-readme-stats.vercel.app/api?username=Cedric-CJ&theme=great-gatsby&show_icons=true&hide_border=true&count_private=true'
-  },
-  {
-    alt: "Cedric-CJ's Streak",
-    src: 'https://github-readme-streak-stats.herokuapp.com/?user=Cedric-CJ&theme=great-gatsby&hide_border=true'
-  },
-  {
-    alt: "Cedric-CJ's Top Languages",
-    src: 'https://github-readme-stats.vercel.app/api/top-langs/?username=Cedric-CJ&theme=great-gatsby&show_icons=true&hide_border=true&layout=compact'
-  }
-]
-const fallbackGhSource = {
-  alt: "Cedric-CJ's Streak (fallback)",
-  src: 'https://streak-stats.demolab.com?user=Cedric-CJ&theme=dark&locale=de&mode=weekly'
-}
-
-function nextGh(){
-  const len = ghStats.value.length
-  if (!len) return
-  ghIdx.value = (ghIdx.value + 1) % len
-}
-function prevGh(){
-  const len = ghStats.value.length
-  if (!len) return
-  ghIdx.value = (ghIdx.value + len - 1) % len
-}
-
-function probeImage(url, timeoutMs = 4000) {
-  return new Promise(resolve => {
-    const img = new Image()
-    let done = false
-    const timer = setTimeout(() => {
-      if (done) return
-      done = true
-      img.src = ''
-      resolve(false)
-    }, timeoutMs)
-    img.onload = () => {
-      if (done) return
-      done = true
-      clearTimeout(timer)
-      resolve(true)
-    }
-    img.onerror = () => {
-      if (done) return
-      done = true
-      clearTimeout(timer)
-      resolve(false)
-    }
-    const cacheBust = `${url}${url.includes('?') ? '&' : '?'}cb=${Date.now()}`
-    img.src = cacheBust
-  })
-}
-
-async function initGhStats() {
-  // 1) Try primary service (vercel). If any primary loads, we keep the full set.
-  const primaryOk = await probeImage(primaryGhSources[0].src)
-  if (primaryOk) {
-    ghStats.value = primaryGhSources
-    ghIdx.value = 0
-    return
-  }
-  // 2) Fallback to streak-stats.demolab.com
-  const fallbackOk = await probeImage(fallbackGhSource.src)
-  if (fallbackOk) {
-    ghStats.value = [fallbackGhSource]
-    ghIdx.value = 0
-    return
-  }
-  // 3) Hide carousel if nothing works
-  ghStats.value = []
-}
-
 function setAccent(c) {
   store.setAccent(c)
+}
+function chooseAccent(c) {
+  setAccent(c)
+  accentDropdownOpen.value = false
+}
+function toggleAccentDropdown() {
+  accentDropdownOpen.value = !accentDropdownOpen.value
 }
 
 onMounted(() => {
@@ -238,6 +180,8 @@ onMounted(() => {
   // React to local storage clear action from cookie banner
   const onLocalCleared = () => {
     try {
+      localStorage.removeItem('blog_read_flags')
+      localStorage.removeItem('special_themes_enabled')
       // if not on homepage, navigate there to meet intro route condition
       if (!(route?.name === 'home' || route?.path === '/')) {
         router.replace('/')
@@ -253,8 +197,17 @@ onMounted(() => {
   window.addEventListener('local_storage_cleared', onLocalCleared)
   ;(window.__app_onLocalClearedHandlers ||= []).push(onLocalCleared)
 
-  // Lazy-load GitHub stats; fall back or hide if service is down
-  initGhStats()
+  // Listen for contact overlay requests (from contact routes or buttons)
+  const onContactOverlay = (e) => {
+    contactPrefill.value = e?.detail || null
+    showContact.value = true
+  }
+  window.addEventListener('open_contact_overlay', onContactOverlay)
+  ;(window.__app_onContactOverlayHandlers ||= []).push(onContactOverlay)
+  if (sessionStorage.getItem('contact_overlay_request') === '1') {
+    showContact.value = true
+    sessionStorage.removeItem('contact_overlay_request')
+  }
 })
 
 onBeforeUnmount(() => {
@@ -264,11 +217,16 @@ onBeforeUnmount(() => {
   const lcHandlers = window.__app_onLocalClearedHandlers || []
   lcHandlers.forEach(h => window.removeEventListener('local_storage_cleared', h))
   window.__app_onLocalClearedHandlers = []
+  const contactHandlers = window.__app_onContactOverlayHandlers || []
+  contactHandlers.forEach(h => window.removeEventListener('open_contact_overlay', h))
+  window.__app_onContactOverlayHandlers = []
 })
 
 // Intro visibility logic: show on ALL routes if no recent cookie, else suppress
 const showIntro = ref(false)
 const contentVisible = ref(false) // becomes true when page content should start fading in
+const showContact = ref(false)
+const contactPrefill = ref(null)
 const INTRO_KEY = 'intro_last_seen_ms'
 const INTRO_COOLDOWN_MS = 60 * 60 * 1000 // 1 hour
 // Note: session gating removed per requirement to show on all pages if cookie missing/expired
@@ -326,10 +284,21 @@ watch(showIntro, (visible) => {
   }
 })
 
+watch(isMenuOpen, (open) => {
+  if (!open) accentDropdownOpen.value = false
+})
+
 function handleClickOutside(e){
-  const nav = document.getElementById('navMenu')
-  if (isMenuOpen.value && nav && !nav.contains(e.target)) {
-    isMenuOpen.value = false
+  const dropdown = document.getElementById('accentDropdown')
+  if (accentDropdownOpen.value && dropdown && !dropdown.contains(e.target)) {
+    accentDropdownOpen.value = false
+  }
+  if (isMenuOpen.value) {
+    const nav = document.getElementById('navMenu')
+    const burger = document.querySelector('.menubutton')
+    if (nav && !nav.contains(e.target) && (!burger || !burger.contains(e.target))) {
+      isMenuOpen.value = false
+    }
   }
 }
 
@@ -371,6 +340,20 @@ function switchLang(lang){
   }
   isMenuOpen.value = false
 }
+
+function openContactFromMenu(){
+  isMenuOpen.value = false
+  try {
+    window.dispatchEvent(new CustomEvent('open_contact_overlay'))
+  } catch (e) {
+    window.dispatchEvent(new Event('open_contact_overlay'))
+  }
+}
+
+function closeContactOverlay(){
+  showContact.value = false
+  contactPrefill.value = null
+}
 </script>
 
 <style scoped>
@@ -379,85 +362,267 @@ function switchLang(lang){
 .app-root > footer { margin-top: auto; }
 .fade-enter-active, .fade-leave-active { transition: opacity .2s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+:deep(.page-fade-enter-active),
+:deep(.page-fade-leave-active) { transition: opacity 1s ease, transform 1s ease; }
+:deep(.page-fade-enter-from),
+:deep(.page-fade-leave-to) { opacity: 0; transform: translateY(8px); }
+
+.top-nav { position: relative; z-index: 320; }
 
 #navMenu {
   position: fixed;
-  top: 0; left: 0; width: 40vw; max-width: 400px; min-width: 220px; height: 100%;
-  background: rgba(0,0,0,.7); backdrop-filter: blur(10px);
-  transform: translateX(-100%);
-  transition: transform .5s ease, opacity .5s ease; opacity: 0; z-index: 290;
-  padding: 24px; border-right: 1px solid rgba(255,255,255,.1);
-  padding-top: 96px; /* avoid overlap with hamburger icon */
+  inset: 0 0 auto 0;
+  padding: 7px 20px 0; /* breathing room around the bar */
+  transform: translateY(-120%);
+  opacity: 0;
+  transition: transform .45s ease, opacity .35s ease;
+  pointer-events: none;
+  z-index: 310;
 }
-#navMenu.visible { opacity: 1; transform: translateX(0); pointer-events: auto; }
-.menubutton { cursor: pointer; position: fixed; top: 1.5rem; left: 2rem; z-index: 300; }
+#navMenu.visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.nav-surface {
+  position: relative;
+  width: calc(100vw - 32px);
+  margin: 0 auto;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 18px;
+  padding: 12px 22px 12px 0px; /* reserve space so links don't sit under the burger */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.28), 0 0 0 1px rgba(255,255,255,.02);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+}
+.nav-legal {
+  margin: 8px auto 12px;
+  width: min(1180px, 100%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: rgba(255,255,255,.7);
+  font-size: 12px;
+}
+.nav-legal .legal-link {
+  color: inherit;
+  text-decoration: none;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: background .2s ease, color .2s ease;
+}
+.nav-legal .legal-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+.nav-legal .dot { opacity: .7; }
+
+.menu-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 6px;
+}
+.nav-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #dfe6f5;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: 12px;
+  letter-spacing: .2px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.08);
+  transition: background .2s ease, color .2s ease, transform .2s ease, border-color .2s ease;
+}
+.nav-chip.router-link-active,
+.nav-chip:focus-visible {
+  color: #fff;
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.12);
+}
+.nav-chip:hover {
+  color: #fff;
+  background: rgba(255,255,255,.08);
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,.14);
+}
+
+.menu-contact-link{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-raw, var(--accent-default, #f0c33c));
+  color: var(--accent-text, #00111a);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  box-shadow: 0 12px 35px rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .4);
+  transition: transform .2s ease, box-shadow .2s ease;
+  white-space: nowrap;
+}
+.menu-contact-link:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .45); }
+.menu-contact-link:active { transform: translateY(-1px); }
+
+.accent-picker { position: relative; }
+.accent-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
+  justify-content: center;
+}
+.accent-swatch {
+  width: 18px; height: 18px; border-radius: 8px;
+  background: var(--accent-raw, var(--accent-default, #f0c33c));
+  box-shadow: 0 0 0 1px rgba(255,255,255,.18), 0 8px 16px rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .4);
+}
+.accent-toggle svg { width: 14px; height: 14px; opacity: .7; }
+
+.accent-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: rgba(8,12,18,.92);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.3);
+  min-width: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+}
+.accent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.accent-swatch-option {
+  width: 100%;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 4px 10px rgba(0,0,0,.22);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.accent-swatch-option:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(0,0,0,.35); border-color: rgba(255,255,255,.32); }
+
+.lang-switch { display: flex; align-items: center; gap: 8px; position: static; }
+.lang-switch img {
+  width: clamp(32px, 5vw, 35px);
+  height: clamp(24px, 4vw, 30px);
+  object-fit: cover;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  opacity: .92;
+  box-shadow: 0 8px 18px rgba(0,0,0,.22);
+  transition: transform .2s ease, opacity .2s ease, box-shadow .2s ease;
+}
+.lang-switch img:hover { transform: translateY(-1px); opacity: 1; box-shadow: 0 12px 22px rgba(0,0,0,.28); }
+.lang-btn img {
+  width: clamp(32px, 5vw, 35px);
+  height: clamp(24px, 4vw, 30px);
+  border-radius: 8px;
+  box-shadow: 0 6px 14px rgba(0,0,0,.22);
+  border: none;
+  object-fit: cover;
+}
+.tools-chip {
+  gap: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}   
+.tools-sep {
+  width: 1px;
+  height: 18px;
+  background: rgba(255,255,255,.18);
+}
+.tools-chip .lang-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menubutton {
+  cursor: pointer;
+  position: fixed;
+  top: 18px;
+  left: 24px;
+  z-index: 330;
+  padding: 8px;
+}
 .menubutton input { display: none; }
-.menubutton svg { height: 3em; transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1); }
-.line { fill: none; stroke: var(--accent-raw, #12b3a6); stroke-linecap: round; stroke-linejoin: round; stroke-width: 3; transition: stroke-dasharray 600ms cubic-bezier(0.4,0,0.2,1), stroke-dashoffset 600ms cubic-bezier(0.4,0,0.2,1); }
+.menubutton svg { height: 2.7em; transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1); }
+.line { fill: none; stroke: var(--accent-raw, var(--accent-default, #f0c33c)); stroke-linecap: round; stroke-linejoin: round; stroke-width: 3; transition: stroke-dasharray 600ms cubic-bezier(0.4,0,0.2,1), stroke-dashoffset 600ms cubic-bezier(0.4,0,0.2,1); }
 .line-top-bottom { stroke-dasharray: 12 63; }
 .menubutton input:checked + svg { transform: rotate(-45deg); }
 .menubutton input:checked + svg .line-top-bottom { stroke-dasharray: 20 300; stroke-dashoffset: -32.42; }
-.glass-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); opacity: 0; pointer-events: none; transition: opacity .3s; z-index: 200; }
-.glass-overlay.active { opacity: 1; pointer-events: auto; }
-.menu-links p a { color: #fff; text-decoration: none; }
-.menu-links p a:hover { text-decoration: underline; }
-.menu-links { display:flex; flex-direction:column; gap: 10px; }
-
-.menu-top { position: absolute; top: 0; left: 0; right: 0; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; gap: 8px }
-.home-link a{ color:#fff; font-weight:600; text-decoration:none }
-.home-link a:hover{ text-decoration: underline }
-.lang-switch { position: fixed; top: 1.5rem; right: 2rem; z-index: 301 }
-.lang-switch img { width: 40px; height: auto; cursor: pointer; opacity: .95; filter: drop-shadow(0 1px 1px rgba(0,0,0,.4)); }
-.lang-switch img:hover { opacity: 1 }
-
-/* GitHub stats layout */
-.gh-stats { 
-  margin-top: 12px; 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px; 
-  align-items: start;
+@media (max-width: 1024px){
+  #navMenu 
+  .nav-surface {
+    width: 95vw;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .menubutton {
+    position: fixed;
+    top: calc(1rem + 3px);
+    left: calc(1rem + 15px);
+    transform: none;
+  }
+  .menu-links { justify-content: flex-end; width: 100%; }
+  .menu-actions { justify-content: flex-end; width: 100%; }
 }
-.gh-stats a { display: block; width: 100%; }
-.gh-stats img { width: 100%; max-width: 100%; height: auto; display: block; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); background: rgba(0,0,0,.15); }
-
-/* GitHub stats carousel styles */
-.gh-carousel { margin-top: 12px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; }
-.gh-frame { 
-  display: grid; 
-  place-items: center; 
-  width: 100%; 
-  height: 180px; /* fixed height to avoid layout shift between images */
-  border-radius: 10px; 
-  overflow: hidden; 
-  border: 0;}
-.gh-frame img { 
-  width: 100%; 
-  height: 100%; 
-  object-fit: contain; 
-  object-position: center; 
-  display: block; 
+@media (max-width: 700px){
+  #navMenu { padding: 12px 8px 0; }
+  .nav-surface {
+    padding: 12px 12px 4px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px;
+    align-items: center;
+    width: calc(100vw - 16px);
+    margin-top: 64px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 14px;
+  }
+  .menubutton { top: 1rem; left: 1rem; }
+  .menu-links {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  .menu-links .nav-chip,
+  .menu-links .menu-contact-link {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
 }
-.gh-arrow { 
-  appearance:none; border:none; cursor:pointer; 
-  height: 36px; width: 36px; border-radius: 999px; 
-  background: rgba(0,0,0,.35); color: var(--accent-raw, #12b3a6);
-  border: 1px solid rgba(255,255,255,.2);
-  display:flex; align-items:center; justify-content:center;
-  font-size: 22px; line-height: 1; 
-}
-.gh-arrow:hover { filter: brightness(1.05) }
-.gh-arrow:active { transform: scale(.98) }
-
-@media (max-width: 640px){
-  #navMenu { width: 85vw; max-width: none; }
-}
-
-/* Desktop: keep paddings compact so footer remains visible without scrolling */
 @media (min-width:1024px){
   .app-main{ padding-top: 2rem !important; padding-bottom: 0rem !important; }
 } 
-/* Extra compact for very short heights */
 @media (min-width:1024px) and (max-height: 700px){
   .app-main{ padding-top: .75rem !important; padding-bottom: .5rem !important; }
 }

@@ -44,7 +44,7 @@ const textCanvas = ref(null)
 // Accent color from CSS variable
 function getAccent() {
   const v = getComputedStyle(document.documentElement).getPropertyValue('--accent-raw').trim()
-  return v || '#7dd3fc'
+  return v || '#f0c33c'
 }
 
 // --- Three.js Storm Background (loaded via dynamic script) ---
@@ -157,7 +157,7 @@ async function initThreeStorm() {
 
   function getAccent() {
     const v = getComputedStyle(document.documentElement).getPropertyValue('--accent-raw').trim()
-    return v || '#7dd3fc'
+    return v || '#f0c33c'
   }
 
   function computeRotation() {
@@ -453,9 +453,8 @@ onBeforeUnmount(() => {
   position: relative;
   z-index: 20;
   font-size: clamp(2.5rem, 8vw, 6rem);
-  font-weight: 400; /* Eater is a display font with regular weight */
-  /* Use Google Font "Eater" (linked in index.html) */
-  font-family: 'Eater', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight: 700;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   color: var(--acc-bright);
   text-shadow:
     0 0 1px var(--acc-core),
@@ -518,10 +517,10 @@ onBeforeUnmount(() => {
 
 /* Accent palette derived from global --accent-raw; falls back to cyan/teal mix */
 :host, .flash-intro {
-  --acc-raw: var(--accent-raw, #12b3a6);
+  --acc-raw: var(--accent-raw, var(--accent-default, #f0c33c));
   --acc-core: color-mix(in oklab, var(--acc-raw) 85%, #ffffff 15%);
-  --acc-bright: color-mix(in oklab, var(--acc-raw) 70%, #7dd3fc 30%);
-  --acc-outer: color-mix(in oklab, var(--acc-raw) 40%, #7dd3fc 60%);
+  --acc-bright: color-mix(in oklab, var(--acc-raw) 70%, #ffffff 30%);
+  --acc-outer: color-mix(in oklab, var(--acc-raw) 40%, #ffffff 60%);
 }
 
 /* Font is loaded via external <link> in index.html */

@@ -1,6 +1,6 @@
 /* Zentrales Styling */
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
     margin: 0;
     padding: 0;
     color: var(--text-color);
@@ -34,9 +34,9 @@ img, picture, video { display: block; }
 :root {
     --background-color: Black;
     --text-color: #ffffff;
-    --primary-color: #228B22;
+    --primary-color: var(--accent-raw, var(--accent-default, #f0c33c));
     --special-text-color: #ffffff;
-    --timeline-background: #f39c12;
+    --timeline-background: var(--accent-raw, var(--accent-default, #f0c33c));
     --card-background-color: #737373;
     --text-color-blog: rgba(18, 18, 18, 0.8);
     --blog-background-color: #9f9b9b;
@@ -234,7 +234,7 @@ footer a {
 }
 
 .preloader-text {
-    font-family: 'Roboto Slab', serif;
+    font-family: "Georgia", "Times New Roman", serif;
 }
 
 .animated-text {
@@ -256,7 +256,7 @@ footer a {
     border: none;
     border-radius: 5px;
     color: #ffffff;
-    background-color: #FF3030;
+    background-color: var(--accent-red, #ff5353);
     font-size: 1rem;
 }
 
@@ -266,7 +266,7 @@ footer a {
     border: none;
     border-radius: 5px;
     color: #ffffff;
-    background-color: #228B22;
+    background-color: var(--accent-green, #45b945);
     font-size: 1rem;
 }
 
@@ -276,7 +276,7 @@ footer a {
     border: none;
     border-radius: 5px;
     color: #ffffff;
-    background-color: #0042ff;
+    background-color: var(--accent-teal, #12b3a6);
     font-size: 1rem;
 }
 

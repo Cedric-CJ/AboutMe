@@ -352,7 +352,7 @@ async function fetchExchangeRate(index){
 
 .content .city-info .info-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px }
 .content .city-info .live-title{ margin:0 0 6px 0; font-size:1.1em; font-weight:700; letter-spacing:.2px }
-.content .city-info .live-badge{ font-size:.75em; padding:.2em .5em; border-radius:999px; background: rgba(125, 211, 252, .15); color:#7dd3fc; border:1px solid rgba(125,211,252,.35) }
+.content .city-info .live-badge{ font-size:.75em; padding:.2em .5em; border-radius:999px; background: rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .15); color: var(--accent-raw, var(--accent-default, #f0c33c)); border:1px solid rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .35) }
 .content .city-info ul{ list-style:none; padding:0; margin:0 }
 .content .city-info li{ position:relative; margin:.2rem 0; text-align:left; opacity:0; transform:translateX(-20px); transition:opacity .3s ease, transform .3s ease; overflow-wrap: anywhere }
 .content .city-info .country-line{ display:flex; align-items:center; gap:.5rem; margin-top:.15rem }

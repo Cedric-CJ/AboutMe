@@ -35,6 +35,7 @@ scripts
 generate_mail_secrets.php
 *token.json*
 *credentials.json*
+Uni Projekte/
 
 # Logs and debug files
 npm-debug.log*

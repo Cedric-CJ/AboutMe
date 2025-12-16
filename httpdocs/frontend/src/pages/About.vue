@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="page-bottom-gap">
     <h2 class="text-white text-2xl font-semibold">
       {{ lang === 'en' ? "Hi, I'm" : 'Hi, ich bin' }} <span ref="twRef" class="typewriter-text"></span>
     </h2>
@@ -8,20 +8,18 @@
         <div class="text-zinc-300 space-y-4 max-w-none">
           <template v-if="lang === 'de'">
             <p class="text-justify">
-              Ich heiße Cedric Arnhold, bin {{ age }} Jahre alt und studiere Wirtschaftsinformatik an der HTW Berlin. Neben dem Studium setze ich gerne Ideen in funktionierende Projekte um – so wie diese Webseite. Während meines Pflichtpraktikums im BMDV konnte ich erste Erfahrungen in der Systemadministration sammeln.
+              Ich heiße Cedric Arnhold, bin {{ age }} Jahre alt und studiere Wirtschaftsinformatik an der HTW Berlin. Neben dem Studium setze ich gern Ideen in funktionierende Projekte um – so wie diese Webseite. Während meines Pflichtpraktikums im BMDV konnte ich erste Erfahrungen in der Systemadministration sammeln und unterstütze seit 2025 auch <a href="https://netz23.de" target="_blank" rel="noopener" class="accent-link">netz23</a> bei Web- und Infrastrukturthemen.
             </p>
             <p class="text-justify">
-              Aktuell arbeite ich daran, einen eigenen Online-Shop aufzubauen und tauche dabei tiefer in die Welt von WordPress ein. Parallel bereite ich mich auf Zertifizierungen im Bereich Server-Infrastruktur und Backup-Umgebungen vor, um meine beruflichen Perspektiven weiter zu stärken.
-              Darüber hinaus betreue ich die Webseiten meines <a href="https://mz24.net/" target="_blank" rel="noopener" class="accent-link">Vaters</a> und meiner <a href="https://buntpapieratelier.de/" target="_blank" rel="noopener" class="accent-link">Freundin</a>. Auf der Seite <RouterLink to="/blog" class="accent-link">Blog</RouterLink> werde ich künftig mehr über meine Projekte und Learnings teilen.
+              Aktuell arbeite ich daran, einen eigenen Online-Shop aufzubauen und tauche dabei tiefer in WordPress ein. Parallel bereite ich mich auf Zertifizierungen im Bereich Server-Infrastruktur und Backup-Umgebungen vor. Außerdem betreue ich die Webseiten meines <a href="https://mz24.net/" target="_blank" rel="noopener" class="accent-link">Vaters</a> und meiner <a href="https://buntpapieratelier.de/" target="_blank" rel="noopener" class="accent-link">Freundin</a>. Im <RouterLink to="/blog" class="accent-link">Blog</RouterLink> halte ich Learnings und Projekte fest.
             </p>
           </template>
           <template v-else>
             <p class="text-justify">
-              My name is Cedric Arnhold, I'm {{ age }} years old, and I'm studying Business Informatics at HTW Berlin. Besides my studies, I enjoy turning ideas into functional projects – like this website. During my mandatory internship at the Federal Ministry for Digital and Transport (BMDV), I was able to gain my first experience in system administration.
+              My name is Cedric Arnhold, I'm {{ age }} years old, and I'm studying Business Informatics at HTW Berlin. I enjoy turning ideas into working products—like this site. During my internship at the Federal Ministry for Digital and Transport (BMDV) I gained first experience in system administration and since 2025 I also support <a href="https://netz23.de" target="_blank" rel="noopener" class="accent-link">netz23</a> with web and infrastructure topics.
             </p>
             <p class="text-justify">
-              I'm currently working on building my own online store and delving deeper into the world of WordPress. At the same time, I'm preparing for certifications in server infrastructure and backup environments to further strengthen my career prospects.
-              I also manage my <a href="https://mz24.net/" target="_blank" rel="noopener" class="accent-link">father's</a> and my <a href="https://buntpapieratelier.de/" target="_blank" rel="noopener" class="accent-link">girlfriend's</a> websites. I'll be sharing more about my projects and learnings on the <RouterLink to="/blog" class="accent-link">Blog</RouterLink> page in the future.
+              I'm currently building an online store and digging deeper into WordPress, while preparing certifications in server infrastructure and backup setups. I also manage my <a href="https://mz24.net/" target="_blank" rel="noopener" class="accent-link">father's</a> and my <a href="https://buntpapieratelier.de/" target="_blank" rel="noopener" class="accent-link">girlfriend's</a> websites. I share more updates and learnings on the <RouterLink to="/blog" class="accent-link">Blog</RouterLink> page.
             </p>
           </template>
         </div>
@@ -118,6 +116,12 @@ const eventsDe = [
     tags: ['Datenanalyse', 'Systemarchitektur', 'Software Engineering', 'Projektarbeit']
   },
   {
+    year: 2025,
+    title: 'Werkstudent netz23',
+    description: 'SolarWinds ARM: Rollen- und Rechtepflege. Nessus-Scans inkl. Auswertung/Reports. Tickets & Doku in Redmine; Abstimmung und Auswertungen über Thunderbird/Office.',
+    tags: ['SolarWinds ARM', 'Nessus', 'Redmine', 'Thunderbird', 'Office']
+  },
+  {
     year: 2024,
     title: 'Praktikum BMDV Abteilung Z33',
     description: '3,5-monatiges Fachpraktikum im IT-Bereich. Schwerpunkt: Server-Betrieb und Infrastruktur-Management.',
@@ -154,6 +158,12 @@ const eventsEn = [
     title: 'Bachelor of Science – Business Informatics (HTW Berlin)',
     description: 'Expected Bachelor graduation at the University of Applied Sciences (HTW) Berlin.',
     tags: ['Data Analysis', 'Systems Architecture', 'Software Engineering', 'Project Work']
+  },
+  {
+    year: 2025,
+    title: 'Working student netz23',
+    description: 'SolarWinds ARM access upkeep; Nessus scans plus analysis and reporting. Tickets and docs in Redmine; coordination and summaries via Thunderbird/Office.',
+    tags: ['SolarWinds ARM', 'Nessus', 'Redmine', 'Thunderbird', 'Office']
   },
   {
     year: 2024,

@@ -9,13 +9,20 @@
   --r-lg:16px; --r-md:12px; --r-sm:10px;
   --blur:12px; --glass-alpha:.14; --glass-b-alpha:.28;
 
+  /* Accent palette shortcuts (edit once here, reuse across CSS) */
+  --accent-yellow: #f0c33c;
+  --accent-red: #ff5353;
+  --accent-green: #45b945;
+  --accent-purple: #9f6ef5;
+  --accent-teal: #12b3a6;
+
   --background: 0 0% 4%;
   --foreground: 0 0% 98%;
   --card: 0 0% 6%;
   --card-foreground: 0 0% 98%;
   --popover: 0 0% 6%;
   --popover-foreground: 0 0% 98%;
-  --primary: 187 92% 48%;
+  --primary: 0 0% 96%;
   --primary-foreground: 0 0% 98%;
   --secondary: 0 0% 14.9%;
   --secondary-foreground: 0 0% 98%;
@@ -24,6 +31,9 @@
   --accent-h: 180; --accent-s: 70%; --accent-l: 70%;
   --accent: var(--accent-h) var(--accent-s) var(--accent-l);
   --accent-foreground: 0 0% 98%;
+  --accent-text: #00111a;
+  --accent-default: var(--accent-yellow);
+  --accent-rgb-default: 240, 195, 60;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 14.9%;
@@ -37,10 +47,30 @@
   --intro-neutral-rgb: 46, 46, 46;
   /* Default readable foreground for Intro overlay (falls back to accent-foreground in component) */
   --intro-foreground: #ffffff;
+
+  /* Default applied accent (overwritten by JS on selection) */
+  --accent-raw: var(--accent-default);
+  --accent-rgb: var(--accent-rgb-default);
 }
 
+/* Optional helpers: apply a preset accent via CSS class */
+.accent-theme-yellow { --accent-raw: var(--accent-yellow); --accent-rgb: var(--accent-rgb-default); }
+.accent-theme-red { --accent-raw: var(--accent-red); --accent-rgb: 255, 83, 83; }
+.accent-theme-green { --accent-raw: var(--accent-green); --accent-rgb: 69, 185, 69; }
+.accent-theme-purple { --accent-raw: var(--accent-purple); --accent-rgb: 159, 110, 245; }
+.accent-theme-teal { --accent-raw: var(--accent-teal); --accent-rgb: 18, 179, 166; }
+
 html, body, #app { height: 100%; }
-body { @apply bg-background text-foreground; font-family: 'Acme', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; hyphens: auto; word-break: break-word; }
+body {
+  @apply bg-background text-foreground;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", Helvetica, Arial, sans-serif;
+  hyphens: auto;
+  word-break: break-word;
+  overflow-x: hidden;
+}
+html { overflow-x: hidden; }
+.pb-20{ padding-bottom: 2rem; } /* override tailwind default (5rem) */
+.page-bottom-gap{ padding-bottom: 2rem; }
 
 /* Glass elements aligned with vorlage */
 .glass-card {
@@ -52,48 +82,33 @@ body { @apply bg-background text-foreground; font-family: 'Acme', system-ui, -ap
 }
 .glass-btn{
   position:relative; color:var(--text-high);
-  border:1px solid rgba(var(--accent-rgb, 18,179,166), .8);
-  background: linear-gradient(135deg, rgba(var(--accent-rgb, 18,179,166), .5), rgba(255,255,255,.15));
+  border:1px solid rgba(var(--accent-rgb, var(--accent-rgb-default)), .8);
+  background: linear-gradient(135deg, rgba(var(--accent-rgb, var(--accent-rgb-default)), .5), rgba(255,255,255,.15));
   backdrop-filter: blur(var(--blur)) saturate(140%);
   -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
-  box-shadow: 0 0 20px rgba(var(--accent-rgb, 18,179,166), .3);
+  box-shadow: 0 0 20px rgba(var(--accent-rgb, var(--accent-rgb-default)), .3);
 }
 .glass-btn::before{ content:""; position:absolute; inset:1px; border-radius:inherit; pointer-events:none; background:linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,0)); mix-blend-mode:screen; opacity:.7 }
 .glass-btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 40px rgba(0,0,0,.35) }
 .glass-btn:active{ transform:none; box-shadow: 0 6px 18px rgba(0,0,0,.32) }
 .glass-btn-secondary{ color:var(--text-high); border:1px solid rgba(255,255,255,.24); background: rgba(255,255,255,.10); backdrop-filter: blur(var(--blur)) saturate(140%); -webkit-backdrop-filter: blur(var(--blur)) saturate(140%) }
 
-/* SMOOTH ANIMATED BACKGROUND */
+/* Calm background with privacy-craft hero image */
 .site-bg{
   position:fixed; inset:0; z-index:-3;
-  background:
-    linear-gradient(135deg, #0a0f14 0%, #0f1419 25%, #1a2832 50%, rgba(var(--accent-rgb, 18,179,166), .4) 75%, rgba(var(--accent-rgb, 18,179,166), .6) 100%);
-  background-size: 400% 400%;
-  animation: gradientFlow 60s ease-in-out infinite;
-}
-@keyframes gradientFlow {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  background-image:
+    linear-gradient(120deg, rgba(6,10,16,.82) 0%, rgba(6,10,16,.76) 35%, rgba(12,24,32,.78) 65%, rgba(10,30,34,.75) 100%),
+    var(--site-bg-image, linear-gradient(135deg,#0a0f14,#0f1419));
+  background-size: cover;
+  background-position: center;
+  filter: saturate(1.05);
 }
 .site-bg::after{
   content:""; position:absolute; inset:0; pointer-events:none;
   background:
-    radial-gradient(ellipse at top left, rgba(0,0,0,.3) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom right, rgba(var(--accent-rgb, 18,179,166), .15) 0%, transparent 50%);
-  animation: fogFlicker 7s ease-in-out infinite alternate;
-}
-@keyframes fogFlicker {
-  0% { opacity: .14; filter: brightness(0.95) contrast(1.02); }
-  50%{ opacity: .23; filter: brightness(1.02) contrast(1.04); }
-  100%{ opacity: .18; filter: brightness(1.00) contrast(1.03); }
-}
-.bg-mark{ position:fixed; inset:0; z-index:-2; display:grid; place-items:center; pointer-events:none; }
-.bg-mark::after{
-  content:""; width:clamp(120px, 16vw, 240px); aspect-ratio:1;
-  background:radial-gradient(circle at 60% 40%, rgba(0,0,0,.5), transparent 60%),
-             radial-gradient(circle at 40% 60%, rgba(0,0,0,.35), transparent 60%);
-  opacity:.18; filter: drop-shadow(0 1px 0 rgba(255,255,255,.07));
-  mix-blend-mode: multiply; border-radius: 22% 78% 63% 37%/61% 30% 70% 39%;
+    radial-gradient(ellipse at 20% 20%, rgba(255,255,255,.06), transparent 40%),
+    radial-gradient(ellipse at 80% 80%, rgba(var(--accent-rgb, var(--accent-rgb-default)), .12), transparent 45%);
+  opacity:.9;
 }
 
 /* Per-page auto-contrast helpers */
@@ -102,3 +117,71 @@ body { @apply bg-background text-foreground; font-family: 'Acme', system-ui, -ap
 .page-auto-contrast h4 { text-shadow: 0 1px 2px rgba(0,0,0,.55) }
 .page-auto-contrast p,
 .page-auto-contrast li { text-shadow: 0 1px 2px rgba(0,0,0,.45) }
+
+/* Spotlight hover cards (Next-Gen inspired) */
+.spotlight-card{
+  position: relative;
+  overflow: hidden;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+.spotlight-card::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  background: radial-gradient(220px circle at var(--x, 50%) var(--y, 50%), rgba(var(--accent-rgb, var(--accent-rgb-default)), .35), transparent 52%);
+  opacity:0;
+  transition: opacity .25s ease;
+  pointer-events:none;
+}
+.spotlight-card:hover{
+  transform: translateY(-6px);
+  border-color: rgba(var(--accent-rgb, var(--accent-rgb-default)), .55);
+  box-shadow: 0 18px 55px rgba(0,0,0,.35);
+}
+.spotlight-card:hover::before{ opacity:1; }
+.spotlight-card > *{ position: relative; z-index: 1; }
+
+/* Pills & section UI */
+.pill-badge{
+  display:inline-flex; align-items:center; gap:10px;
+  padding: 10px 14px; border-radius: 9999px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  letter-spacing: .4px; color: #dff7f8;
+}
+.pill-dot{
+  width:10px; height:10px; border-radius:50%;
+  background: rgba(var(--accent-rgb, var(--accent-rgb-default)), .9);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb, var(--accent-rgb-default)), .6);
+}
+
+.trust-grid{
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap: 12px;
+}
+.trust-card{
+  background: rgba(8,12,16,.8);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  padding: 14px 16px; gap:10px; align-items:flex-start;
+  transition: border-color .2s ease, transform .25s ease;
+}
+.trust-card:hover{ border-color: rgba(var(--accent-rgb, var(--accent-rgb-default)), .6); transform: translateY(-4px) scale(1.02); box-shadow: 0 12px 30px rgba(0,0,0,.35); }
+
+.accent-divider{
+  height:1px; width:100%;
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb, var(--accent-rgb-default)), .6), transparent);
+  opacity:.85;
+}
+
+.floating-grid{
+  display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 14px;
+}
+
+/* Accent utility for SVG/text that use currentColor */
+.text-primary{
+  color: rgba(var(--accent-rgb, var(--accent-rgb-default)), 1);
+}

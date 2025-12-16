@@ -151,7 +151,7 @@ onBeforeUnmount(() => {
 .thumbnail-overlay::before { content:""; position:absolute; left:0; right:0; top:-20px; height:20px; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.25) 100%); pointer-events:none }
 .thumbnails { display: flex; gap: 8px; overflow-x: auto; flex: 1; padding: 0 4px; justify-content: center; align-items:center }
 .thumbnail { position: relative; width: 68px; height: 50px; cursor: pointer; border-radius: 8px; overflow: hidden; transition: all 0.3s ease; border: 2px solid transparent; }
-.thumbnail.active { border-color: #12b3a6; transform: scale(1.1); }
+.thumbnail.active { border-color: var(--accent-raw, var(--accent-default, #f0c33c)); transform: scale(1.1); }
 .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
 .thumbnail img.lazy-img{ filter: blur(10px); transform: scale(1.02); background:#0b0b0b }
 .thumbnail img.lazy-img[data-loaded="true"]{ filter:none; transform:none; transition: filter .25s ease, transform .25s ease }

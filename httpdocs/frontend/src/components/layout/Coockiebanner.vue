@@ -4,6 +4,7 @@
     :class="{ open: isOpen }"
     @mouseenter="isHovering = true"
     @mouseleave="isHovering = false"
+    ref="bannerRef"
   >
     <button class="cookie-icon" @click.prevent :aria-expanded="String(isOpen)" aria-label="Cookie-Informationen">
       <span class="emoji" aria-hidden="true">🍪</span>
@@ -13,7 +14,7 @@
       <template v-if="langComputed === 'de'">
         <p>
           Wir nutzen nur <strong>technisch notwendige Local-Storage-Einträge</strong>:
-          Sprache (<code>preferred_lang</code>), Farb-Akzent (<code>accent</code>) und ob das Intro schon gezeigt wurde (<code>intro_last_seen_ms</code>).<br>
+          Sprache (<code>preferred_lang</code>), Farb-Akzent (<code>accent</code>), ob das Intro schon gezeigt wurde (<code>intro_last_seen_ms</code>), gelesene Blog-Einträge (<code>blog_read_flags</code>) und Theme-Experimente (<code>special_themes_enabled</code>).<br>
           Keine Analyse, kein Tracking, kein Marketing, keine Weitergabe an Dritte.
           <RouterLink to="/datenschutz">Details</RouterLink>
         </p>
@@ -26,7 +27,7 @@
       <template v-else>
         <p>
           We only use <strong>strictly necessary local-storage entries</strong>:
-          language (<code>preferred_lang</code>), accent color (<code>accent</code>), and whether the intro was shown (<code>intro_last_seen_ms</code>).<br>
+          language (<code>preferred_lang</code>), accent color (<code>accent</code>), whether the intro was shown (<code>intro_last_seen_ms</code>), blog read markers (<code>blog_read_flags</code>), and theme experiments (<code>special_themes_enabled</code>).<br>
           No analytics, tracking, or marketing. No data is shared with third parties.
           <RouterLink to="/privacy">Details</RouterLink>
         </p>
@@ -52,6 +53,8 @@ const isHovering = ref(false)
 const keepOpen = ref(false)
 const forceClosed = ref(false)
 let closeTimer = null
+const bannerRef = ref(null)
+let outsideClickHandler = null
 const isOpen = computed(() => !forceClosed.value && (isHovering.value || keepOpen.value))
 
 // Compute language from prop, then fall back to preferred_lang localStorage, else 'en'
@@ -74,12 +77,28 @@ onMounted(() => {
   }
   window.addEventListener('preferred_lang_changed', onLangChanged)
   ;(window.__cookie_banner_onLangChanged ||= []).push(onLangChanged)
+
+  outsideClickHandler = (e) => {
+    const el = bannerRef.value
+    if (!el) return
+    if (el.contains(e.target)) return
+    keepOpen.value = false
+    isHovering.value = false
+    if (closeTimer) { clearTimeout(closeTimer); closeTimer = null }
+    forceClosed.value = true
+    setTimeout(() => { forceClosed.value = false }, 300)
+  }
+  document.addEventListener('click', outsideClickHandler)
 })
 
 onBeforeUnmount(() => {
   const handlers = window.__cookie_banner_onLangChanged || []
   handlers.forEach(h => window.removeEventListener('preferred_lang_changed', h))
   window.__cookie_banner_onLangChanged = []
+  if (outsideClickHandler) {
+    document.removeEventListener('click', outsideClickHandler)
+    outsideClickHandler = null
+  }
 })
 // Manage delayed close on mouse leave (3s)
 watch(isHovering, (h) => {
@@ -103,6 +122,8 @@ function clearLocal(){
     localStorage.removeItem('preferred_lang')
     localStorage.removeItem('accent')
     localStorage.removeItem('intro_last_seen_ms')
+    localStorage.removeItem('blog_read_flags')
+    localStorage.removeItem('special_themes_enabled')
   }catch{/* ignore */}
   // Let the app decide how to react (navigate to home and/or show intro)
   try { window.dispatchEvent(new Event('local_storage_cleared')) } catch {/* ignore */}
@@ -137,7 +158,7 @@ function clearLocal(){
   width: 40px;
   height: 40px;
   border-radius: 9999px;
-  background: var(--accent-raw, #12b3a6);
+  background: var(--accent-raw, var(--accent-default, #f0c33c));
   color: #0a0a0a;
   border: 1px solid rgba(255,255,255,.25);
   box-shadow: 0 4px 16px rgba(0,0,0,.35);
@@ -175,7 +196,7 @@ function clearLocal(){
 .cookie-text p { margin: .6rem .25rem; font-size: .9rem; line-height: 1.35; color: inherit; text-shadow: 0 1px 2px rgba(0,0,0,.6); -webkit-text-stroke: 0.2px rgba(0,0,0,.35); }
 .cookie-text code { color: inherit; opacity: .95; }
 .cookie-text a { color: inherit; text-decoration: underline; }
-.cookie-text a.clear-link { color: var(--accent-raw, #12b3a6); text-decoration: underline; font-weight: 600; }
+.cookie-text a.clear-link { color: var(--accent-raw, var(--accent-default, #f0c33c)); text-decoration: underline; font-weight: 600; }
 .cookie-text a.clear-link:hover { filter: brightness(1.1); }
 .cookie-text .actions { margin-top: .25rem; }
 
