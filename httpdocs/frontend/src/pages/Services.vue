@@ -274,7 +274,7 @@ import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import AltchaWidget from '@/components/AltchaWidget.vue'
 import BackendInProzess from '@/components/BackendInProzess.vue'
-import customCodeImage from '@/assets/Pictures/Laptop.png'
+import customCodeImage from '@/assets/icons/project-custom.png'
 
 const route = useRoute()
 const lang = computed(() => {
@@ -996,22 +996,23 @@ function setSpotlight(e){
 }
 .hero-media{
   display:flex;
-  justify-content:flex-end;
+  justify-content:center;
+  align-items:center;
 }
 .media-frame{
   position:relative;
   width:100%;
-  max-width: 100%;
-  aspect-ratio: 4 / 3;
+  max-width: 260px;
+  aspect-ratio: 1 / 1;
   border-radius: 18px;
   overflow:hidden;
   background: linear-gradient(
     135deg,
-    rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .25),
-    rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .18)
+    rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .45),
+    rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .28)
   );
-  border:1px solid rgba(255,255,255,.12);
-  box-shadow: 0 16px 50px rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow: 0 16px 50px rgba(0,0,0,.24);
 }
 .services-page .spotlight-card{
   background: linear-gradient(150deg, rgba(10,16,26,.92), rgba(14,32,44,.86));
@@ -1021,10 +1022,14 @@ function setSpotlight(e){
 .media-overlay{
   position:absolute;
   inset:0;
-  padding: 18px;
-  background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.05), transparent 45%),
-              radial-gradient(circle at 80% 80%, rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .12), transparent 50%),
-              rgba(6,10,16,.72);
+  padding: 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,.12), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .18), transparent 55%),
+    linear-gradient(145deg, rgba(20,28,40,.78), rgba(12,24,34,.68));
 }
 .chip{
   display:inline-flex;
@@ -1081,11 +1086,10 @@ function setSpotlight(e){
 .accent-close-btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(var(--accent-rgb, var(--accent-rgb-default, 240,195,60)), .45); }
 .accent-close-btn:active{ transform: translateY(0); opacity: .95; }
 .code-hero-img{
-  width:100%;
-  height:100%;
-  object-fit: cover;
-  border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(0,0,0,.35);
+  width:78%;
+  height:78%;
+  object-fit: contain;
+  display:block;
 }
 .services-page{
   padding-left: clamp(10px, 3.5vw, 18px);

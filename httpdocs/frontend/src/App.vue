@@ -6,6 +6,7 @@
     :style="{ '--site-bg-image': `url(${heroBg})` }"
   >
     <div class="site-bg" aria-hidden="true" />
+    <canvas ref="snowCanvas" class="snow-canvas" aria-hidden="true"></canvas>
 
     <!-- Global Intro overlay (fades out after playing) -->
     <Intro v-if="showIntro" @complete="handleIntroComplete" />
@@ -75,6 +76,18 @@
 
     <Coockiebanner :lang="currentLang" />
     <Footer />
+    <div class="holiday-tree" aria-hidden="true"></div>
+    <div v-if="isLocalhost" class="theme-debug" aria-label="Theme debug">
+      <label>
+        Theme:
+        <select :value="debugTheme" @change="handleDebugThemeChange">
+          <option value="auto">auto</option>
+          <option value="holiday">winter</option>
+          <option value="easter">ostern</option>
+          <option value="none">neutral</option>
+        </select>
+      </label>
+    </div>
   </div>
   
 </template>
@@ -97,6 +110,13 @@ const isMenuOpen = ref(false)
 const accentDropdownOpen = ref(false)
 const route = useRoute()
 const router = useRouter()
+const snowCanvas = ref(null)
+const debugTheme = ref('auto')
+const isLocalhost = computed(() => {
+  if (typeof window === 'undefined') return false
+  const h = String(window.location.hostname || '')
+  return h === 'localhost' || h === '127.0.0.1' || h === '::1'
+})
 // Reactive tick to force recompute when preferred_lang changes
 const __langTick = ref(0)
 
@@ -152,8 +172,24 @@ function toggleAccentDropdown() {
 }
 
 onMounted(() => {
-  // apply stored accent on first load
-  store.setAccent(store.accent)
+  // apply seasonal theme (incl. accent) on first load
+  store.applySeasonalTheme()
+  try { startSnowIfHoliday() } catch (e) {}
+  if (isLocalhost.value) {
+    try {
+      const stored = sessionStorage.getItem('debugThemeOverride') || 'auto'
+      debugTheme.value = stored || 'auto'
+      if (stored && stored !== 'auto') {
+        store.setDebugThemeOverride(stored)
+      }
+    } catch (e) {}
+    const onThemeOverrideChanged = () => {
+      store.applySeasonalTheme()
+      startSnowIfHoliday()
+    }
+    window.addEventListener('theme_override_changed', onThemeOverrideChanged)
+    ;(window.__theme_override_changed_handlers ||= []).push(onThemeOverrideChanged)
+  }
   // Initialize preferred language from hostname if not set yet
   try {
     const key = 'preferred_lang'
@@ -220,6 +256,10 @@ onBeforeUnmount(() => {
   const contactHandlers = window.__app_onContactOverlayHandlers || []
   contactHandlers.forEach(h => window.removeEventListener('open_contact_overlay', h))
   window.__app_onContactOverlayHandlers = []
+  const themeHandlers = window.__theme_override_changed_handlers || []
+  themeHandlers.forEach(h => window.removeEventListener('theme_override_changed', h))
+  window.__theme_override_changed_handlers = []
+  stopSnow()
 })
 
 // Intro visibility logic: show on ALL routes if no recent cookie, else suppress
@@ -353,6 +393,95 @@ function openContactFromMenu(){
 function closeContactOverlay(){
   showContact.value = false
   contactPrefill.value = null
+}
+
+function handleDebugThemeChange(e){
+  const val = e?.target?.value || 'auto'
+  debugTheme.value = val
+  store.setDebugThemeOverride(val === 'auto' ? null : val)
+  startSnowIfHoliday()
+}
+
+// --- Snow background (local, no external assets) ---
+let snowflakes = []
+let snowWidth = 0
+let snowHeight = 0
+let lastSnowNow = 0
+let rafSnow = null
+const maxSnowflakes = 100
+
+function resizeSnow() {
+  const canvas = snowCanvas.value
+  if (!canvas) return
+  snowWidth = canvas.width = window.innerWidth
+  snowHeight = canvas.height = window.innerHeight
+}
+function rand(min, max) { return min + Math.random() * (max - min) }
+class Snowflake {
+  constructor(anyY = false) { this.spawn(anyY) }
+  spawn(anyY = false) {
+    this.x = rand(0, snowWidth || window.innerWidth)
+    this.y = anyY ? rand(-50, (snowHeight || window.innerHeight) + 50) : rand(-50, -10)
+    this.xVel = rand(-0.05, 0.05)
+    this.yVel = rand(0.02, 0.1)
+    this.angle = rand(0, Math.PI * 2)
+    this.angleVel = rand(-0.001, 0.001)
+    this.size = rand(7, 12)
+  }
+  update(elapsed) {
+    const canvas = snowCanvas.value
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const xForce = rand(-0.001, 0.001)
+    if (Math.abs(this.xVel + xForce) < 0.075) this.xVel += xForce
+    this.x += this.xVel * elapsed
+    this.y += this.yVel * elapsed
+    this.angle += this.xVel * 0.05 * elapsed
+    if (this.y - this.size > snowHeight || this.x + this.size < 0 || this.x - this.size > snowWidth) {
+      this.spawn()
+    }
+    ctx.save()
+    ctx.beginPath()
+    ctx.arc(this.x, this.y, this.size * 0.2, 0, Math.PI * 2, false)
+    ctx.fill()
+    ctx.restore()
+  }
+}
+function renderSnow(now) {
+  const canvas = snowCanvas.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+  rafSnow = requestAnimationFrame(renderSnow)
+  const elapsed = now - lastSnowNow
+  lastSnowNow = now
+  ctx.clearRect(0, 0, snowWidth, snowHeight)
+  if (snowflakes.length < maxSnowflakes) snowflakes.push(new Snowflake())
+  ctx.fillStyle = ctx.strokeStyle = '#fff'
+  snowflakes.forEach((s) => s.update(elapsed, now))
+}
+function startSnowIfHoliday() {
+  const root = document.documentElement
+  if (!root.classList.contains('holiday-theme')) { stopSnow(); return }
+  resizeSnow()
+  snowflakes = []
+  lastSnowNow = performance.now()
+  stopSnow()
+  rafSnow = requestAnimationFrame(renderSnow)
+  window.addEventListener('resize', resizeSnow)
+  window.addEventListener('blur', stopSnow)
+  window.addEventListener('focus', resumeSnow)
+}
+function stopSnow() {
+  if (rafSnow) cancelAnimationFrame(rafSnow)
+  rafSnow = null
+}
+function resumeSnow() {
+  if (!rafSnow) {
+    lastSnowNow = performance.now()
+    rafSnow = requestAnimationFrame(renderSnow)
+  }
 }
 </script>
 

@@ -13,6 +13,46 @@ const ACCENT_PRESETS = {
   teal: '#12b3a6',
 }
 
+const HOLIDAY_ACCENT = '#a61715'
+const HOLIDAY_ACCENT_RGB = '166, 23, 21'
+
+function getFirstAdvent(year) {
+  const start = new Date(year, 10, 27) // Nov 27th (month is 0-indexed)
+  for (let i = 0; i < 7; i++) {
+    const candidate = new Date(start)
+    candidate.setDate(start.getDate() + i)
+    if (candidate.getDay() === 0) return candidate // Sunday
+  }
+  return new Date(year, 10, 27)
+}
+
+function getTotensonntag(year) {
+  const firstAdvent = getFirstAdvent(year)
+  const tot = new Date(firstAdvent)
+  tot.setDate(tot.getDate() - 7)
+  return tot
+}
+
+function getChristmasWindow(year) {
+  const totensonntag = getTotensonntag(year)
+  const start = new Date(totensonntag)
+  start.setDate(totensonntag.getDate() + 1) // Monday after Totensonntag
+  const end = new Date(year + 1, 0, 6, 23, 59, 59, 999) // Jan 6 of next year
+  return { start, end }
+}
+
+function isChristmasSeason(now = new Date()) {
+  const thisWindow = getChristmasWindow(now.getFullYear())
+  const prevWindow = getChristmasWindow(now.getFullYear() - 1)
+  return (now >= prevWindow.start && now <= prevWindow.end) || (now >= thisWindow.start && now <= thisWindow.end)
+}
+
+function shouldForceHolidayAccent(savedAccent) {
+  if (!savedAccent) return true
+  const normalized = resolveAccentValue(savedAccent)
+  return normalized === ACCENT_PRESETS['--accent-yellow'] || normalized === '#f0c33c'
+}
+
 function resolveAccentValue(value) {
   if (!value) return '#f0c33c'
   const trimmed = String(value).trim()
@@ -36,13 +76,21 @@ function getContrastYIQ(hex) {
 export const useThemeStore = defineStore('theme', {
   state: () => ({
     accent: resolveAccentValue(localStorage.getItem('accent') || '#f0c33c'), // default yellow
-    motion: true
+    motion: true,
+    debugThemeOverride: (() => {
+      try {
+        return sessionStorage.getItem('debugThemeOverride') || null
+      } catch (e) {
+        return null
+      }
+    })()
   }),
   actions: {
-    setAccent(color) {
+    setAccent(color, options = {}) {
+      const { persist = true } = options
       const resolved = resolveAccentValue(color)
       this.accent = resolved
-      localStorage.setItem('accent', resolved)
+      if (persist) localStorage.setItem('accent', resolved)
       const contrast = getContrastYIQ(resolved)
       const root = document.documentElement
       root.style.setProperty('--accent', `0 0% 0%`) // not used directly in hsl
@@ -71,6 +119,53 @@ export const useThemeStore = defineStore('theme', {
       updateOrCreateMeta('theme-color', resolved)
       updateOrCreateMeta('msapplication-navbutton-color', resolved)
     },
-    setMotion(v) { this.motion = v }
+    applySeasonalTheme(now = new Date(), options = {}) {
+      const isLocal = (() => {
+        if (typeof window === 'undefined') return false
+        const h = String(window.location.hostname || '')
+        return h === 'localhost' || h === '127.0.0.1' || h === '::1'
+      })()
+      const root = document.documentElement
+      const override = isLocal ? (options.debugOverride ?? this.debugThemeOverride) : null
+
+      let holidayActive = false
+
+      if (override === 'holiday') holidayActive = true
+      else if (override === 'none') { holidayActive = false }
+      else if (!isLocal) {
+        holidayActive = isChristmasSeason(now)
+      } else {
+        holidayActive = isChristmasSeason(now)
+      }
+
+      root.classList.toggle('holiday-theme', holidayActive)
+      root.style.setProperty('--holiday-accent-raw', HOLIDAY_ACCENT)
+      root.style.setProperty('--holiday-accent-rgb', HOLIDAY_ACCENT_RGB)
+
+      if (holidayActive) {
+        const rawStored = (() => { try { return localStorage.getItem('accent') } catch (e) { return null } })()
+        const useHolidayAccent = shouldForceHolidayAccent(rawStored)
+        const accentToApply = useHolidayAccent ? HOLIDAY_ACCENT : resolveAccentValue(rawStored || this.accent)
+        this.setAccent(accentToApply, { persist: false })
+        return
+      }
+
+      // Outside the holiday window: re-apply the stored accent without re-persisting it
+      this.setAccent(this.accent, { persist: false })
+    },
+    setMotion(v) { this.motion = v },
+    setDebugThemeOverride(mode) {
+      const isLocal = (() => {
+        if (typeof window === 'undefined') return false
+        const h = String(window.location.hostname || '')
+        return h === 'localhost' || h === '127.0.0.1' || h === '::1'
+      })()
+      if (!isLocal) return
+      const normalized = ['holiday', 'none'].includes(mode) ? mode : null
+      this.debugThemeOverride = normalized
+      try { sessionStorage.setItem('debugThemeOverride', normalized || '') } catch (e) {}
+      this.applySeasonalTheme(new Date(), { debugOverride: normalized })
+      try { window.dispatchEvent(new Event('theme_override_changed')) } catch (e) {}
+    }
   }
 })

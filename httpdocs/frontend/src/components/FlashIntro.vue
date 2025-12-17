@@ -53,17 +53,8 @@ async function initThreeStorm() {
   const mountEl = threeMount.value
   if (!mountEl) return
 
-  // Load three.js from CDN if not present
-  if (!window.THREE) {
-    await new Promise((resolve, reject) => {
-      const s = document.createElement('script')
-      s.src = 'https://unpkg.com/three@0.158.0/build/three.min.js'
-      s.async = true
-      s.onload = resolve
-      s.onerror = reject
-      document.head.appendChild(s)
-    })
-  }
+  // Keep everything local: if Three isn't bundled, skip the intro entirely (no external fetch)
+  if (!window.THREE) return
 
   function drawFogLayer() {
     if (!fctx) return
@@ -334,32 +325,8 @@ async function initThreeStorm() {
 
     // Remove white rain particles for cleaner look
 
-    // Clouds texture
-    const loader = new THREE.TextureLoader()
-    loader.load(
-      'https://static.vecteezy.com/system/resources/previews/010/884/548/original/dense-fluffy-puffs-of-white-smoke-and-fog-on-transparent-background-abstract-smoke-clouds-movement-blurred-out-of-focus-smoking-blows-from-machine-dry-ice-fly-fluttering-in-air-effect-texture-png.png',
-      (texture) => {
-        const cloudGeo = new THREE.PlaneGeometry(500, 500)
-        const cloudMaterial = new THREE.MeshLambertMaterial({ map: texture, transparent: true })
-        // Slightly tint clouds towards the accent color (subtle) and keep a ref for flicker
-        const tint = new THREE.Color(getAccent())
-        cloudMaterial.color = tint.clone().lerp(new THREE.Color('#ffffff'), 0.75)
-        cloudMaterial.emissive = tint.clone()
-        cloudMaterial.emissiveIntensity = 0.12
-        cloudMaterialRef = cloudMaterial
-        for (let p = 0; p < 25; p++) {
-          const cloud = new THREE.Mesh(cloudGeo, cloudMaterial)
-          cloud.position.set(Math.random() * 800 - 400, 500, Math.random() * 500 - 450)
-          cloud.rotation.x = 1.16
-          cloud.rotation.y = -0.12
-          cloud.rotation.z = Math.random() * 360
-          cloud.material.opacity = 0.6
-          cloudParticles.push(cloud)
-          scene.add(cloud)
-        }
-        animate()
-      }
-    )
+    // No remote textures; keep clouds off to avoid external fetches
+    animate()
 
     function animate() {
       // Subtle cloud movement

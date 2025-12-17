@@ -348,7 +348,7 @@ const trustBadgesBase = computed(() => lang.value === 'en'
       },
       {
         title: 'Open source',
-        desc: 'Code you can inspect and evolve.',
+        desc: 'You can inspect and evolve the Code.',
         icon: 'github',
         detail: 'Key building blocks stay open source so you can audit, extend or fork them. Every dependency is visible, which keeps security reviews honest.'
       },
@@ -892,7 +892,7 @@ function unlockBodyScroll(){
 .trust-cards{
   margin-top: 30px;
   display:grid;
-  grid-template-columns: repeat(3, minmax(200px,1fr));
+  grid-template-columns: repeat(3, minmax(250px,1fr));
   gap: clamp(14px, 2vw, 18px);
   width: min(100%, 1280px);
   margin-left:auto;
